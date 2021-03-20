@@ -20,7 +20,7 @@ done
 for file in $css_files
 do
   echo $file
-  result=$(curl -s -H "Content-type: text/css; charset=utf-8" --data-binary @$file https://validator.w3.org/nu/?out=text)
+  result=$(curl -s -H "Content-type: text/css; charset=utf-8" --data-binary @$file https://validator.w3.org/nu/?out=gnu)
   if [ "$result" == "" ]; then
     echo valid!
   else
