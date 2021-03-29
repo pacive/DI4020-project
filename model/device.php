@@ -61,12 +61,31 @@ DELETE FROM Devices
 WHERE DeviceId = ?;
 SQL;
 
+    public static $required_fields = array('name', 'typeId', 'roomId');
+
     private $name;
     private $typeId;
     private $typeName;
     private $roomId;
     private $roomName;
     private $status;
+
+    static function get_device_status($device_id) {
+      $db = self::get_connection();
+      $query = $db->prepare(static::SQL_GET_STATUS);
+      $query->bind_param('i', $device_id);
+      $query->execute();
+      $result = $query->get_result();
+      if ($row = $result->fetch_object()) {
+        return array('id' => $device_id, 'status' => $row->status);
+      } else {
+        return null;
+      }
+    }
+
+    protected static function bind_params(&$query, $arr) {
+      $query->bind_param('sii', $arr['name'], $arr['typeId'], $arr['roomId']);
+    }
 
     function __construct($id = null, $name = null, $typeId = null, $typeName = null, $roomId = null, $roomName = null, $status = null) {
       // Allow for reflective instantiation

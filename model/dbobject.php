@@ -16,6 +16,11 @@
     protected static function get_connection() {
       if (!isset(self::$conn)) {
         self::$conn = new \mysqli(self::MYSQL_HOST, self::MYSQL_USER, self::MYSQL_PWD, self::MYSQL_DB);
+        if (self::$conn->connect_errno) {
+          http_response_code(503);
+          header('Retry-After: 30');
+          die(self::$conn->connect_error);
+        }
       }
       return self::$conn;
     }
@@ -50,6 +55,17 @@
       } else {
         return null;
       }
+    }
+
+    static function insert($arr) {
+      $db = self::get_connection();
+      $query = $db->prepare(static::SQL_ADD);
+      static::bind_params($query, $arr);
+      $query->execute();
+      if ($query->errno) {
+        return $query->error;
+      }
+      return static::get_by_id($query->insert_id);
     }
 
     protected function __construct($id) {
