@@ -4,15 +4,31 @@
   class Device extends DBObject implements \JsonSerializable {
 
 const SQL_GET_ALL = <<<SQL
-SELECT D.DeviceId, D.DeviceName, DT.TypeName, R.RoomName, DH.Status, MAX(DH.Time) FROM Devices D
+SELECT D.DeviceId as id, 
+D.DeviceName as name, 
+DT.TypeId as typeId, 
+DT.TypeName as typeName, 
+R.RoomId as roomId, 
+R.RoomName as roomName, 
+DH.Status as status, 
+MAX(DH.Time) 
+FROM Devices D
 JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
-JOIN Room R ON (R.RoomId = D.RoomId)
+LEFT JOIN Room R ON (R.RoomId = D.RoomId)
 LEFT JOIN DeviceHistory DH ON (DH.DeviceId = D.DeviceId)
 GROUP BY D.DeviceId;
 SQL;
 
 const SQL_GET = <<<SQL
-SELECT D.DeviceId, D.DeviceName, DT.TypeName, R.RoomName, DH.Status, MAX(DH.Time) FROM Devices D
+SELECT D.DeviceId as id, 
+D.DeviceName as name, 
+DT.TypeId as typeId, 
+DT.TypeName as typeName, 
+R.RoomId as roomId, 
+R.RoomName as roomName, 
+DH.Status as status, 
+MAX(DH.Time)
+FROM Devices D
 JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
 JOIN Room R ON (R.RoomId = D.RoomId)
 JOIN DeviceHistory DH ON (DH.DeviceId = D.DeviceId)
@@ -30,6 +46,11 @@ SET DeviceName = ?, TypeId = ?, RoomId = ?
 WHERE DeviceIdId = ?;
 SQL;
 
+const SQL_GET_STATUS = <<<SQL
+SELECT Status as status, MAX(Time) FROM DeviceHistory
+WHERE DeviceId = ?;
+SQL;
+
 const SQL_UPDATE_STATUS = <<<SQL
 INSERT INTO DeviceHistory (DeviceId, Status, UserId)
 VALUES (?, ?, ?);
@@ -40,22 +61,22 @@ DELETE FROM Devices
 WHERE DeviceId = ?;
 SQL;
 
-    private $id;
     private $name;
-    private $type;
-    private $room;
+    private $typeId;
+    private $typeName;
+    private $roomId;
+    private $roomName;
     private $status;
 
-    function __construct($id, $name, $type, $room, $status) {
-      $this->id = (int) $id;
-      $this->name = $name;
-      $this->type = $type;
-      $this->room = $room;
-      $this->status = $status;
-    }
-
-    function get_id() {
-      return $this->id;
+    function __construct($id = null, $name = null, $typeId = null, $typeName = null, $roomId = null, $roomName = null, $status = null) {
+      // Allow for reflective instantiation
+      parent::__construct($id);
+      $name && $this->name = $name;
+      $this->typeId = (int) (isset($this->typeId) ? $this->typeId : ($typeId ?: self::ID_NOT_SET));
+      $typeName && $this->typeName = $typeName;
+      $this->roomId = (int) (isset($this->roomId) ? $this->roomId : ($roomId ?: self::ID_NOT_SET));
+      $roomName && $this->roomName = $roomName;
+      $status && $this->status = $status;
     }
 
     function get_name() {
@@ -78,8 +99,10 @@ SQL;
       return array(
         'id' => $this->id,
         'name' => $this->name,
-        'type' => $this->type,
-        'room' => $this->room,
+        'typeId' => $this->typeId,
+        'typeName' => $this->typeName,
+        'roomId' => $this->roomId,
+        'roomName' => $this->roomName,
         'status' => $this->status
       );
     }

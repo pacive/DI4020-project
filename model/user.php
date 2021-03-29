@@ -4,11 +4,11 @@
   class User extends DBObject implements \JsonSerializable {
 
 const SQL_GET_ALL = <<<SQL
-SELECT UserId, UserName, IsAdmin FROM Users
+SELECT UserId as id, UserName as name, IsAdmin as admin FROM Users
 SQL;
     
 const SQL_GET = <<<SQL
-SELECT UserId, UserName, IsAdmin FROM Users
+SELECT UserId as id, UserName as name, IsAdmin as admin FROM Users
 WHERE UserId = ?;
 SQL;
 
@@ -34,18 +34,14 @@ DELETE FROM Users
 WHERE UserId = ?;
 SQL;
 
-    private $id;
     private $name;
     private $admin;
 
-    function __construct($id, $name, $admin) {
-      $this->id = (int) $id;
-      $this->name = $name;
-      $this->admin = (bool) $admin;
-    }
-
-    function get_id() {
-      return $this->id;
+    function __construct($id = null, $name = null, $admin = null) {
+      // Allow for reflective instantiation
+      parent::__construct($id);
+      $name && $this->name = $name;
+      $this->admin = (bool) ($this->admin ?: $admin);
     }
 
     function get_name() {
