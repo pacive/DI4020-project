@@ -2,6 +2,7 @@
   namespace Api;
   require_once('../util/autoload.php');
   use \Model\Device;
+  use \Util\Utils;
 
   class Status extends AbstractEndpoint {
 
@@ -20,15 +21,27 @@
     }
 
     static function do_post(&$body) {
-      http_response_code(501);
+      $arr = json_decode($body, true);
+      if (Utils::validate_input($arr, array('id', 'status'))) {
+        if (Device::set_device_status($arr)) {
+          http_response_code(204);
+          return;
+        } else {
+          http_response_code(500);
+          return 'Error setting status';
+        }
+      } else {
+        http_response_code(400);
+        return 'Bad request';
+      }
     }
 
     static function do_put(&$body) {
-      http_response_code(501);
+      http_response_code(405);
     }
 
     static function do_delete() {
-      http_response_code(501);
+      http_response_code(405);
     }
   }
 

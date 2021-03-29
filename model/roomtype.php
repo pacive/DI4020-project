@@ -12,7 +12,7 @@ SELECT TypeId as id, TypeName as name FROM RoomType
 WHERE TypeId = ?;
 SQL;
 
-const SQL_ADD = <<<SQL
+const SQL_INSERT = <<<SQL
 INSERT INTO RoomType (TypeName)
 VALUES (?);
 SQL;

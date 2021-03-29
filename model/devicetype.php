@@ -12,7 +12,7 @@ SELECT TypeId as id, TypeName as name FROM DeviceType
 WHERE TypeId = ?;
 SQL;
 
-const SQL_ADD = <<<SQL
+const SQL_INSERT = <<<SQL
 INSERT INTO DeviceType (TypeName)
 VALUES (?);
 SQL;

@@ -39,8 +39,8 @@
       return $objects;
     }
 
-    protected static function db_get_by_id($class, $id) {
-      $query = self::get_connection()->prepare($class::SQL_GET);
+    protected static function db_get_by_id($id) {
+      $query = self::get_connection()->prepare(static::SQL_GET);
       $query->bind_param('i', $id);
       $query->execute();
       return $query->get_result();
@@ -48,9 +48,9 @@
 
     static function get_by_id($id) {
       $class = get_called_class();
-      $result = self::db_get_by_id($class, $id);
+      $result = self::db_get_by_id($id);
       if ($result->num_rows > 0) {
-        $obj = $result->fetch_object($class);
+        $obj = $result->fetch_object(static::class);
         return $obj->get_id() == -1 ? null : $obj;
       } else {
         return null;
@@ -59,13 +59,34 @@
 
     static function insert($arr) {
       $db = self::get_connection();
-      $query = $db->prepare(static::SQL_ADD);
-      static::bind_params($query, $arr);
+      $query = $db->prepare(static::SQL_INSERT);
+      static::bind_params_insert($query, $arr);
       $query->execute();
       if ($query->errno) {
         return $query->error;
       }
+      $query->close();
       return static::get_by_id($query->insert_id);
+    }
+
+    static function update($arr) {
+      $db = self::get_connection();
+      $query = $db->prepare(static::SQL_UPDATE);
+      static::bind_params_update($query, $arr);
+      $query->execute();
+      if ($query->errno) {
+        return $query->error;
+      }
+      $query->close();
+      return static::get_by_id($arr['id']);
+    }
+
+    static function delete($id) {
+      $query = self::get_connection()->prepare(static::SQL_DELETE);
+      $query->bind_param('i', $id);
+      $query->execute();
+      echo $query->errno.': '.$query->error;
+      return $query->errno ? false : true;
     }
 
     protected function __construct($id) {
