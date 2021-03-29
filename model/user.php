@@ -34,8 +34,14 @@ DELETE FROM Users
 WHERE UserId = ?;
 SQL;
 
+    public static $required_fields = array('name', 'password', 'admin');
+
     private $name;
     private $admin;
+
+    protected static function bind_params(&$query, $arr) {
+      $query->bind_param('ssi', $arr['name'], $arr['password'], $arr['admin']);
+    }
 
     function __construct($id = null, $name = null, $admin = null) {
       // Allow for reflective instantiation

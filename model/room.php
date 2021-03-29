@@ -54,7 +54,7 @@ VALUES (?, ?);
 SQL;
 
 const SQL_SET_COORDS = <<<SQL
-INSERT INTO Coordinates (RoomId, X, Y, Order)
+INSERT INTO Coordinates (RoomId, X, Y, Idx)
 VALUES (?, ?, ?, ?);
 SQL;
 
@@ -74,6 +74,8 @@ DELETE FROM Coordinates
 WHERE RoomId = ?;
 SQL;
     
+    public static $required_fields = array('name', 'typeId');
+
     private $name;
     private $typeId;
     private $typeName;
@@ -99,22 +101,44 @@ SQL;
 
     static function create_room(&$result) {
       if ($first_row = $result->fetch_object()) {
-        if (!$first_row->x) {
-          $coordinates = array();
+        if (isset($first_row->x)) {
+          $coordinates = array(array('x' => (int) $first_row->x, 'y' => (int) $first_row->y));
         } else {
-          $coordinates = array(array('x' => $first_row->x, 'y' => $first_row->y));
+          $coordinates = array();
         }
         while ($row = $result->fetch_object()) {
           if ($row->id != $first_row->id) {
             break;
           } else {
-            $coordinates[] = array('x' => $row->x, 'y' => $row->y);
+            $coordinates[] = array('x' => (int) $row->x, 'y' => (int) $row->y);
           }
         }
         return new Room($first_row->id, $first_row->name, $first_row->typeId, $first_row->typeName, $coordinates);
       } else {
         return null;
       }
+    }
+
+    static function insert($arr) {
+      $db = self::get_connection();
+      $query = $db->prepare(static::SQL_ADD);
+      $query->bind_param('si', $arr['name'], $arr['typeId']);
+      $query->execute();
+      if ($db->errno) {
+        return $db->error;
+      }
+
+      $new_id = $query->insert_id;
+      if (isset($arr['coordinates'])) {
+        $query = $db->prepare(static::SQL_SET_COORDS);
+        $query->bind_param('iiii', $new_id, $x, $y, $i);
+        for ($i = 0; $i < count($arr['coordinates']); $i++) {
+          $x = $arr['coordinates'][$i]['x'];
+          $y = $arr['coordinates'][$i]['y'];
+          $query->execute();
+        }
+      }
+      return static::get_by_id($new_id);
     }
 
     function __construct($id, $name, $typeId, $typeName, $coordinates) {

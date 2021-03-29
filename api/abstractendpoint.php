@@ -2,17 +2,15 @@
   namespace Api;
   require_once('../util/autoload.php');
   use \Util\Logger;
+  use \Util\Utils;
 
   abstract class AbstractEndpoint {
-
-    static $entity_class;
 
     static function verify_user($admin = true) {
 
     }
 
     static function handle_request() {
-      self::$entity_class = static::ENTITY;
       switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
           echo static::do_get();
@@ -41,18 +39,36 @@
     }
 
     static function do_get() {
+      $entity_class = static::ENTITY;
       if (isset($_GET['id'])) {
-        if ($entity = call_user_func(static::ENTITY.'::get_by_id', $_GET['id'])) {
+        if ($entity = $entity_class::get_by_id($_GET['id'])) {
           return json_encode($entity);
         } else {
           http_response_code(404);
-          return static::ENTITY.' not found';
+          return end(explode('\\', $entity_class)).' not found';
         }
       } else {
-        return json_encode(call_user_func(static::ENTITY.'::get_all'));
+        return json_encode($entity_class::get_all());
       }
     }
-    abstract static function do_post(&$body);
+
+    static function do_post(&$body) {
+      $entity_class = static::ENTITY;
+      $arr = json_decode($body, true);
+      if (Utils::validate_input($arr, $entity_class::$required_fields)) {
+        $new = $entity_class::insert($arr);
+        if ($new instanceof $entity_class) {
+          return json_encode($new);
+        } else {
+          http_response_code(500);
+          return $new;
+        }
+      } else {
+        http_response_code(400);
+        return 'Bad request';
+      }
+    }
+
     abstract static function do_put(&$body);
     abstract static function do_delete();
   }

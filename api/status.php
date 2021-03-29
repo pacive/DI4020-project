@@ -5,12 +5,10 @@
 
   class Status extends AbstractEndpoint {
 
-    const ENTITY = '\Model\Device';
-
     static function do_get() {
       if (isset($_GET['id'])) {
-        if ($device = Device::get_by_id($_GET['id'])) {
-          return json_encode($device);
+        if ($status = Device::get_device_status($_GET['id'])) {
+          return json_encode($status);
         } else {
           http_response_code(404);
           return 'Device not found';

@@ -3,7 +3,13 @@
 
   abstract class Type extends DBObject implements \JsonSerializable {
 
+    public static $required_fields = array('category', 'name');
+
     protected $name;
+
+    protected static function bind_params(&$query, $arr) {
+      $query->bind_param('s', $arr['name']);
+    }
 
     function __construct($id = null, $name = null) {
       // Allow for reflective instantiation
