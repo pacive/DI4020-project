@@ -12,7 +12,7 @@ SELECT UserId as id, UserName as name, IsAdmin as admin FROM Users
 WHERE UserId = ?;
 SQL;
 
-const SQL_ADD = <<<SQL
+const SQL_INSERT = <<<SQL
 INSERT INTO Users (UserName, Password, IsAdmin)
 VALUES (?, ?, ?);
 SQL;
@@ -34,13 +34,28 @@ DELETE FROM Users
 WHERE UserId = ?;
 SQL;
 
-    public static $required_fields = array('name', 'password', 'admin');
+    public static $required_fields_insert = array('name', 'password', 'admin');
+    public static $required_fields_update = array('id', 'name', 'admin');
 
     private $name;
     private $admin;
 
-    protected static function bind_params(&$query, $arr) {
-      $query->bind_param('ssi', $arr['name'], $arr['password'], $arr['admin']);
+    protected static function bind_params_insert(&$query, $arr) {
+      $password = password_hash($arr['password'], PASSWORD_BCRYPT);
+      $query->bind_param('ssi', $arr['name'], $password, $arr['admin']);
+    }
+
+    protected static function bind_params_update(&$query, $arr) {
+      $query->bind_param('sii', $arr['name'], $arr['admin'], $arr['id']);
+    }
+
+    static function set_password($arr) {
+      $password = password_hash($arr['password'], PASSWORD_BCRYPT);
+      $db = self::get_connection();
+      $query = $db->prepare(static::SQL_CHPWD);
+      $query->bind_param('si', $password, $arr['id']);
+      $query->execute();
+      return $query->errno ? false : true
     }
 
     function __construct($id = null, $name = null, $admin = null) {

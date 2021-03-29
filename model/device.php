@@ -35,7 +35,7 @@ JOIN DeviceHistory DH ON (DH.DeviceId = D.DeviceId)
 WHERE D.DeviceId = ?;
 SQL;
 
-const SQL_ADD = <<<SQL
+const SQL_INSERT = <<<SQL
 INSERT INTO Devices (DeviceName, TypeId, RoomId)
 VALUES (?, ?, ?);
 SQL;
@@ -61,7 +61,8 @@ DELETE FROM Devices
 WHERE DeviceId = ?;
 SQL;
 
-    public static $required_fields = array('name', 'typeId', 'roomId');
+    public static $required_fields_insert = array('name', 'typeId', 'roomId');
+    public static $required_fields_update = array('id', 'name', 'typeId', 'roomId');
 
     private $name;
     private $typeId;
@@ -83,8 +84,21 @@ SQL;
       }
     }
 
-    protected static function bind_params(&$query, $arr) {
+    static function set_device_status($arr) {
+      $db = self::get_connection();
+      $query = $db->prepare(static::SQL_UPDATE_STATUS);
+      $query->bind_param('isi', $arr['id'], $arr['status'], \Util\Session::user_id());
+      $query->execute();
+      echo $query->errno.': '.$query->error."\r\n";
+      return $query->errno ? false : true;
+    }
+
+    protected static function bind_params_insert(&$query, $arr) {
       $query->bind_param('sii', $arr['name'], $arr['typeId'], $arr['roomId']);
+    }
+
+    protected static function bind_params_update(&$query, $arr) {
+      $query->bind_param('siii', $arr['name'], $arr['typeId'], $arr['roomId'], $arr['id']);
     }
 
     function __construct($id = null, $name = null, $typeId = null, $typeName = null, $roomId = null, $roomName = null, $status = null) {

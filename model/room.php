@@ -48,7 +48,7 @@ WHERE D.RoomId = ?
 GROUP BY D.DeviceId;
 SQL;
 
-const SQL_ADD = <<<SQL
+const SQL_INSERT = <<<SQL
 INSERT INTO Room (RoomName, TypeId)
 VALUES (?, ?);
 SQL;
@@ -74,7 +74,8 @@ DELETE FROM Coordinates
 WHERE RoomId = ?;
 SQL;
     
-    public static $required_fields = array('name', 'typeId');
+    public static $required_fields_insert = array('name', 'typeId');
+    public static $required_fields_update = array('id', 'name', 'typeId');
 
     private $name;
     private $typeId;
@@ -121,24 +122,49 @@ SQL;
 
     static function insert($arr) {
       $db = self::get_connection();
-      $query = $db->prepare(static::SQL_ADD);
+      $query = $db->prepare(static::SQL_INSERT);
       $query->bind_param('si', $arr['name'], $arr['typeId']);
       $query->execute();
       if ($db->errno) {
         return $db->error;
       }
+      $query->close();
 
       $new_id = $query->insert_id;
-      if (isset($arr['coordinates'])) {
-        $query = $db->prepare(static::SQL_SET_COORDS);
-        $query->bind_param('iiii', $new_id, $x, $y, $i);
-        for ($i = 0; $i < count($arr['coordinates']); $i++) {
-          $x = $arr['coordinates'][$i]['x'];
-          $y = $arr['coordinates'][$i]['y'];
-          $query->execute();
-        }
+      if (!empty($arr['coordinates'])) {
+        static::set_coordinates($new_id, $arr['coordinates']);
       }
       return static::get_by_id($new_id);
+    }
+
+    static function update($arr) {
+      $db = self::get_connection();
+      $query = $db->prepare(static::SQL_UPDATE);
+      $query->bind_param('sii', $arr['name'], $arr['typeId'], $arr['id']);
+      $query->execute();
+      if ($db->errno) {
+        return $db->error;
+      }
+      $query->close();
+
+      if (isset($arr['coordinates'])) {
+        $query = $db->prepare(static::SQL_DELETE_COORDS);
+        $query->bind_param('i', $arr['id']);
+        $query->execute();
+        $query->close();
+        static::set_coordinates($arr['id'], $arr['coordinates']);
+      }
+      return static::get_by_id($new_id);
+    }
+
+    private static function set_coordinates($id, &$coordinates) {
+      $query = $db->prepare(static::SQL_SET_COORDS);
+      $query->bind_param('iiii', $id, $x, $y, $i);
+      for ($i = 0; $i < count($arr['coordinates']); $i++) {
+        $x = $coordinates[$i]['x'];
+        $y = $coordinates[$i]['y'];
+        $query->execute();
+      }
     }
 
     function __construct($id, $name, $typeId, $typeName, $coordinates) {

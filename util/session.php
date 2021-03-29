@@ -10,20 +10,13 @@
     }
 
     static function user() {
-      if (isset($_SESSION['UserName'])) {
-        return $_SESSION['UserName'];
-      } else {
-        return null;
-      }
+      return isset($_SESSION['UserName']) ? $_SESSION['UserName'] : null;
     }
 
     static function user_id() {
-      if (isset($_SESSION['UserId'])) {
-        return $_SESSION['UserId'];
-      } else {
-        return -1;
-      }
+      return isset($_SESSION['UserId']) ? $_SESSION['UserId'] : null;
     }
+
     static function is_admin() {
       return isset($_SESSION['IsAdmin']) && (bool) $_SESSION['IsAdmin'];
     }

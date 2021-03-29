@@ -55,7 +55,7 @@
     static function do_post(&$body) {
       $entity_class = static::ENTITY;
       $arr = json_decode($body, true);
-      if (Utils::validate_input($arr, $entity_class::$required_fields)) {
+      if (Utils::validate_input($arr, $entity_class::$required_fields_insert)) {
         $new = $entity_class::insert($arr);
         if ($new instanceof $entity_class) {
           return json_encode($new);
@@ -69,7 +69,37 @@
       }
     }
 
-    abstract static function do_put(&$body);
-    abstract static function do_delete();
+    static function do_put(&$body) {
+      $entity_class = static::ENTITY;
+      $arr = json_decode($body, true);
+      if (Utils::validate_input($arr, $entity_class::$required_fields_update)) {
+        $new = $entity_class::update($arr);
+        if ($new instanceof $entity_class) {
+          return json_encode($new);
+        } else {
+          http_response_code(500);
+          return $new;
+        }
+      } else {
+        http_response_code(400);
+        return 'Bad request';
+      }
+    }
+
+    static function do_delete() {
+      $entity_class = static::ENTITY;
+      if (isset($_GET['id'])) {
+        if ($entity_class::delete($_GET['id'])) {
+          http_response_code(204);
+          return;
+        } else {
+          http_response_code(500);
+          return 'Error';
+        }
+      } else {
+        http_response_code(400);
+        return 'Bad request: id not specified';
+      }
+    }
   }
 ?>
