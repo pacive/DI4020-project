@@ -85,7 +85,6 @@
       $query = self::get_connection()->prepare(static::SQL_DELETE);
       $query->bind_param('i', $id);
       $query->execute();
-      echo $query->errno.': '.$query->error;
       return $query->errno ? false : true;
     }
 
