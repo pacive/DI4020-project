@@ -3,26 +3,22 @@
   require_once('../util/autoload.php');
   use \Model\Room;
 
-  switch ($_SERVER['REQUEST_METHOD']) {
-    case 'GET':
-      echo json_encode(Room::get_all());
-      break;
-    case 'POST':
-      $body = file_get_contents('php://input');
-      echo add_room($body);
-      break;
-    case 'PUT':
-      $body = file_get_contents('php://input');
-      echo update_room($body);
-      break;
-    case 'DELETE':
-      $body = file_get_contents('php://input');
-      echo delete_room($body);
-      break;
-    default:
-      http_response_code(405);
-      echo 'Method not supported';
-      break;
+  class Rooms extends AbstractEndpoint {
+
+    const ENTITY = '\Model\Room';
+
+    static function do_post(&$body) {
+      http_response_code(501);
+    }
+
+    static function do_put(&$body) {
+      http_response_code(501);
+    }
+
+    static function do_delete() {
+      http_response_code(501);
+    }
   }
-  \Util\Logger::log_access();
+
+  Rooms::handle_request();
 ?>

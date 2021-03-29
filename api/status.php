@@ -3,18 +3,36 @@
   require_once('../util/autoload.php');
   use \Model\Device;
 
-  switch ($_SERVER['REQUEST_METHOD']) {
-    case 'GET':
-      echo get_device_status();
-      break;
-    case 'POST':
-      $body = file_get_contents('php://input');
-      echo set_device_status($body);
-      break;
-    default:
-      http_response_code(405);
-      echo 'Method not supported';
-      break;
+  class Status extends AbstractEndpoint {
+
+    const ENTITY = '\Model\Device';
+
+    static function do_get() {
+      if (isset($_GET['id'])) {
+        if ($device = Device::get_by_id($_GET['id'])) {
+          return json_encode($device);
+        } else {
+          http_response_code(404);
+          return 'Device not found';
+        }
+      } else {
+        http_response_code(400);
+        return 'Device id must be set';
+      }
+    }
+
+    static function do_post(&$body) {
+      http_response_code(501);
+    }
+
+    static function do_put(&$body) {
+      http_response_code(501);
+    }
+
+    static function do_delete() {
+      http_response_code(501);
+    }
   }
-  \Util\Logger::log_access();
+
+  Status::handle_request();
 ?>
