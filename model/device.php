@@ -10,13 +10,15 @@ DT.TypeId as typeId,
 DT.TypeName as typeName, 
 R.RoomId as roomId, 
 R.RoomName as roomName, 
-DH.Status as status, 
-MAX(DH.Time) 
+DH.Status as status
 FROM Devices D
 JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
 LEFT JOIN Room R ON (R.RoomId = D.RoomId)
-LEFT JOIN DeviceHistory DH ON (DH.DeviceId = D.DeviceId)
-GROUP BY D.DeviceId;
+LEFT JOIN (
+  SELECT DH1.DeviceId, DH1.Status FROM DeviceHistory DH1
+	LEFT JOIN DeviceHistory DH2 ON DH1.DeviceId = DH2.DeviceId AND DH1.DeviceHistoryId < DH2.DeviceHistoryId
+	WHERE DH2.DeviceId IS NULL
+  ) DH ON DH.DeviceId = D.DeviceId
 SQL;
 
 const SQL_GET = <<<SQL
@@ -26,13 +28,14 @@ DT.TypeId as typeId,
 DT.TypeName as typeName, 
 R.RoomId as roomId, 
 R.RoomName as roomName, 
-DH.Status as status, 
-MAX(DH.Time)
+DH.Status as status
 FROM Devices D
 JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
-JOIN Room R ON (R.RoomId = D.RoomId)
-JOIN DeviceHistory DH ON (DH.DeviceId = D.DeviceId)
-WHERE D.DeviceId = ?;
+LEFT JOIN Room R ON (R.RoomId = D.RoomId)
+LEFT JOIN DeviceHistory DH ON DH.DeviceId = D.DeviceId
+WHERE D.DeviceId = 6
+ORDER BY DH.DeviceHistoryId DESC
+LIMIT 1
 SQL;
 
 const SQL_INSERT = <<<SQL
@@ -47,8 +50,10 @@ WHERE DeviceIdId = ?;
 SQL;
 
 const SQL_GET_STATUS = <<<SQL
-SELECT Status as status, MAX(Time) FROM DeviceHistory
-WHERE DeviceId = ?;
+SELECT DH.Status as status, DH.Time FROM DeviceHistory DH
+WHERE DH.DeviceId = 6
+ORDER BY DeviceHistoryId DESC
+LIMIT 1
 SQL;
 
 const SQL_UPDATE_STATUS = <<<SQL

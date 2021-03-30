@@ -23,7 +23,7 @@ function login() {
   }
 }
 
-window.onload = function() {
+window.onload = () => {
   document.getElementById("submit").addEventListener("click", login);
   document.addEventListener("keypress", function(ev) { ev.key == "Enter" ? login() : null; });
 }
