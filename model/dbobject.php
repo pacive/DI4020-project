@@ -1,28 +1,15 @@
 <?php
   namespace Model;
+  use \Util\DB;
+
   abstract class DBObject {
 
-    const MYSQL_HOST = 'localhost';
-    const MYSQL_USER = 'andalf20';
-    const MYSQL_PWD = 'lIKQfkgyLj';
-    const MYSQL_DB = 'andalf20_db';
-    
     const ID_NOT_SET = -1;
-
-    private static $conn;
 
     protected $id;
 
     protected static function get_connection() {
-      if (!isset(self::$conn)) {
-        self::$conn = new \mysqli(self::MYSQL_HOST, self::MYSQL_USER, self::MYSQL_PWD, self::MYSQL_DB);
-        if (self::$conn->connect_errno) {
-          http_response_code(503);
-          header('Retry-After: 30');
-          die(self::$conn->connect_error);
-        }
-      }
-      return self::$conn;
+      return DB::get_connection();
     }
 
     protected static function db_get_all() {

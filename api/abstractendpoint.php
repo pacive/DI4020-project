@@ -3,14 +3,20 @@
   require_once('../util/autoload.php');
   use \Util\Logger;
   use \Util\Utils;
+  use \Util\Session;
 
   abstract class AbstractEndpoint {
 
-    static function verify_user($admin = true) {
-
-    }
+    protected static function verify_user($admin = false) {
+      if (($admin && Session::is_admin()) || Session::logged_in()) {
+        return;
+      }
+      http_response_code(403);
+      die('Unauthorized');
+  }
 
     static function handle_request() {
+      self::verify_user();
       switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
           echo static::do_get();
@@ -34,11 +40,11 @@
       Logger::log_access();
     }
 
-    static function get_body() {
+    protected static function get_body() {
       return file_get_contents('php://input');
     }
 
-    static function do_get() {
+    protected static function do_get() {
       $entity_class = static::ENTITY;
       if (isset($_GET['id'])) {
         if ($entity = $entity_class::get_by_id($_GET['id'])) {
@@ -52,7 +58,8 @@
       }
     }
 
-    static function do_post(&$body) {
+    protected static function do_post(&$body) {
+      self::verify_user(true);
       $entity_class = static::ENTITY;
       $arr = json_decode($body, true);
       if (Utils::validate_input($arr, $entity_class::$required_fields_insert)) {
@@ -69,7 +76,8 @@
       }
     }
 
-    static function do_put(&$body) {
+    protected static function do_put(&$body) {
+      self::verify_user(true);
       $entity_class = static::ENTITY;
       $arr = json_decode($body, true);
       if (Utils::validate_input($arr, $entity_class::$required_fields_update)) {
@@ -86,7 +94,8 @@
       }
     }
 
-    static function do_delete() {
+    protected static function do_delete() {
+      self::verify_user(true);
       $entity_class = static::ENTITY;
       if (isset($_GET['id'])) {
         if ($entity_class::delete($_GET['id'])) {
