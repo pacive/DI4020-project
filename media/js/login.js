@@ -12,14 +12,18 @@ function login() {
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
       if (this.status == 204) {
-        if (confirm("Logged in! Click OK to proceed")) {
-          window.location.assign(PROJECT_ROOT);
-        }
+        window.location.assign(PROJECT_ROOT);
       } else {
-        alert(this.responseText);
+        let elem = document.createElement("p");
+        let text = document.createTextNode("Invalid username and password");
+        elem.appendChild(text);
+        document.getElementById("login").appendChild(elem);
       }
     }
   }
 }
 
-document.getElementById("submit").addEventListener("click", login);
+window.onload = function() {
+  document.getElementById("submit").addEventListener("click", login);
+  document.addEventListener("keypress", function(ev) { ev.key == "Enter" ? login() : null; });
+}
