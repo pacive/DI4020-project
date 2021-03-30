@@ -2,6 +2,7 @@
   namespace Util;
   class Logger {
     static function log_access() {
+      return;
       echo '<br />'.$_SERVER['REQUEST_METHOD'];
       echo '<br />'.$_SERVER['REQUEST_URI'];
       echo '<br />'.http_response_code();
