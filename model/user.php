@@ -1,7 +1,7 @@
 <?php
   namespace Model;
 
-  class User extends DBObject implements {
+  class User extends DBObject {
 
 const SQL_GET_ALL = <<<SQL
 SELECT UserId as id, UserName as name, IsAdmin as admin FROM Users
@@ -55,7 +55,7 @@ SQL;
       $query = $db->prepare(static::SQL_CHPWD);
       $query->bind_param('si', $password, $arr['id']);
       $query->execute();
-      return $query->errno ? false : true
+      return $query->errno ? false : true;
     }
 
     function __construct($id = null, $name = null, $admin = null) {

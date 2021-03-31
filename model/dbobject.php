@@ -50,8 +50,9 @@
       if ($query->errno) {
         return $query->error;
       }
+      $new_id = $query->insert_id;
       $query->close();
-      return static::get_by_id($query->insert_id);
+      return static::get_by_id($new_id);
     }
 
     static function update($arr) {

@@ -3,8 +3,8 @@
 
   abstract class Type extends DBObject {
 
-    public static $required_fields_insert = array('category', 'name');
-    public static $required_fields_update = array('id', 'category', 'name');
+    public static $required_fields_insert = array('name');
+    public static $required_fields_update = array('id', 'name');
 
     protected $name;
 
