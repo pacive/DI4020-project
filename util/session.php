@@ -1,11 +1,10 @@
 <?php
   namespace Util;
-  use \DateTime;
-  use \DateInterval;
 
   class Session {
 
-    const TIMEOUT = 'PT2H';
+    const TIMEOUT = 1800;
+    const REFRESH_INTERVAL = 900;
 
 const SQL_VERIFY_USER = <<<SQL
 SELECT UserName as user, Password as pwd, UserId as id, IsAdmin as admin 
@@ -25,6 +24,9 @@ SQL;
     }
 
     static function logged_in() {
+      if (self::validate()) {
+        self::refresh_session();
+      };
       return self::validate();
     }
 
@@ -42,14 +44,21 @@ SQL;
 
     static function timestamp() {
       if (isset($_SESSION['Timestamp'])) {
-        return (new DateTime)->setTimestamp((int) $_SESSION['Timestamp']);
+        return (int) $_SESSION['Timestamp'];
       } else {
-        return (new DateTime)->setTimestamp(0);
+        return 0;
       }
     }
 
-    static function expired() {
-      return self::timestamp()->add(new DateInterval(self::TIMEOUT)) < new DateTime();
+    private static function expired() {
+      return self::timestamp() < time() - self::TIMEOUT;
+    }
+
+    private static function refresh_session() {
+      if (self::timestamp() < time() - self::REFRESH_INTERVAL) {
+        $_SESSION['Timestamp'] = time();
+        session_regenerate_id();
+      }
     }
 
     static function is_user($id) {
@@ -67,7 +76,7 @@ SQL;
           $_SESSION['UserName'] = $row->user;
           $_SESSION['UserId'] = (int) $row->id;
           $_SESSION['IsAdmin'] = (bool) $row->admin;
-          $_SESSION['Timestamp'] = (new DateTime)->getTimestamp();
+          $_SESSION['Timestamp'] = time();
           return true;
         }
       }

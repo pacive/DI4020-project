@@ -4,7 +4,8 @@ const API_BASE = PROJECT_ROOT + "api/";
 function createDevicesList() {
   JSON.parse(sessionStorage.rooms).forEach(room => {
     document.body.appendChild(createRoomElement(room));
-  });  
+  });
+  startSse();
 }
 
 function createRoomElement(room) {
@@ -87,12 +88,7 @@ function doDelete(uri, body, callback) {
 function setStatus(deviceId, status) {
   let data = { "id": deviceId, "status": status };
   let uri = API_BASE + "status.php"
-  doPost(uri, JSON.stringify(data), (status) => {
-    if (status == 204) {
-      let p = document.getElementById("device-" + deviceId);
-      p.getElementsByTagName("input")[0].value = status;
-    }
-  });
+  doPost(uri, JSON.stringify(data), () => { return; });
 }
 
 function apiExplorer() {
@@ -138,6 +134,16 @@ function login() {
       }
     }
   });
+}
+
+function startSse() {
+  var events = new EventSource(API_BASE + "events.php");
+  events.onmessage = (event) => {
+    console.log(event.data);
+    let data = JSON.parse(event.data);
+    let p = document.getElementById("device-" + data.id);
+    p.getElementsByTagName("input")[0].value = data.status;
+  }
 }
 
 window.onload = () => {

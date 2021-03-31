@@ -13,7 +13,7 @@
       }
       http_response_code(403);
       die('Unauthorized');
-  }
+    }
 
     static function handle_request() {
       self::verify_user();
