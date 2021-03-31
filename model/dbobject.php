@@ -2,11 +2,9 @@
   namespace Model;
   use \Util\DB;
 
-  abstract class DBObject {
+  abstract class DBObject implements \JsonSerializable {
 
     const ID_NOT_SET = -1;
-
-    protected $id;
 
     protected static function get_connection() {
       return DB::get_connection();
@@ -75,12 +73,20 @@
       return $query->errno ? false : true;
     }
 
+    protected $id;
+
     protected function __construct($id) {
       $this->id = (int) (isset($this->id) ? $this->id : ($id ?: self::ID_NOT_SET));
     }
 
     function get_id() {
       return $this->id;
+    }
+
+    abstract function to_array();
+
+    function jsonSerialize() {
+      return $this->to_array();
     }
   }
 ?>

@@ -1,7 +1,7 @@
 <?php
   namespace Model;
   
-  class Device extends DBObject implements \JsonSerializable {
+  class Device extends DBObject {
 
 const SQL_GET_ALL = <<<SQL
 SELECT D.DeviceId as id, 
@@ -69,13 +69,6 @@ SQL;
     public static $required_fields_insert = array('name', 'typeId', 'roomId');
     public static $required_fields_update = array('id', 'name', 'typeId', 'roomId');
 
-    private $name;
-    private $typeId;
-    private $typeName;
-    private $roomId;
-    private $roomName;
-    private $status;
-
     static function get_device_status($device_id) {
       $db = self::get_connection();
       $query = $db->prepare(static::SQL_GET_STATUS);
@@ -106,6 +99,13 @@ SQL;
       $query->bind_param('siii', $arr['name'], $arr['typeId'], $arr['roomId'], $arr['id']);
     }
 
+    private $name;
+    private $typeId;
+    private $typeName;
+    private $roomId;
+    private $roomName;
+    private $status;
+
     function __construct($id = null, $name = null, $typeId = null, $typeName = null, $roomId = null, $roomName = null, $status = null) {
       // Allow for reflective instantiation
       parent::__construct($id);
@@ -133,7 +133,7 @@ SQL;
       return $this->status;
     }
 
-    function jsonSerialize() {
+    function to_array() {
       return array(
         'id' => $this->id,
         'name' => $this->name,
