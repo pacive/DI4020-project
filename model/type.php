@@ -1,7 +1,7 @@
 <?php
   namespace Model;
 
-  abstract class Type extends DBObject implements \JsonSerializable {
+  abstract class Type extends DBObject {
 
     public static $required_fields_insert = array('category', 'name');
     public static $required_fields_update = array('id', 'category', 'name');
@@ -26,7 +26,7 @@
       return $this->name;
     }
 
-    function jsonSerialize() {
+    function to_array() {
       return array('id' => $this->id, 'name' => $this->name);
     }
   }

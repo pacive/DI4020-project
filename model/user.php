@@ -1,7 +1,7 @@
 <?php
   namespace Model;
 
-  class User extends DBObject implements \JsonSerializable {
+  class User extends DBObject implements {
 
 const SQL_GET_ALL = <<<SQL
 SELECT UserId as id, UserName as name, IsAdmin as admin FROM Users
@@ -73,7 +73,7 @@ SQL;
       return $this->admin;
     }
 
-    function jsonSerialize() {
+    function to_array() {
       return array('id' => $this->id, 'name' => $this->name, 'admin' => $this->admin);
     }
   }
