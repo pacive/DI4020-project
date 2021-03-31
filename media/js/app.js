@@ -41,11 +41,7 @@ function doGet(uri, callback) {
   xhr.send();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
-      if (this.status == 200) {
-        callback(this.response);
-      } else {
-        return null;
-      }
+      callback(this.status, this.response);
     }
   }
 }
@@ -58,11 +54,7 @@ function doPost(uri, body, callback) {
   xhr.send(body);
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
-      if (this.status == 200) {
-        callback(this.response);
-      } else if (this.status == 204) {
-        callback();
-      }
+      callback(this.status, this.response);
     }
   }
 }
@@ -75,11 +67,7 @@ function doPut(uri, body, callback) {
   xhr.send(body);
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
-      if (this.status == 200) {
-        callback(this.response);
-      } else if (this.status == 204) {
-        callback();
-      }
+      callback(this.status, this.response);
     }
   }
 }
@@ -91,11 +79,7 @@ function doDelete(uri, body, callback) {
   xhr.send();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
-      if (this.status == 200) {
-        callback(this.response);
-      } else if (this.status == 204) {
-        callback();
-      }
+      callback(this.status, this.response);
     }
   }
 }
@@ -103,10 +87,11 @@ function doDelete(uri, body, callback) {
 function setStatus(deviceId, status) {
   let data = { "id": deviceId, "status": status };
   let uri = API_BASE + "status.php"
-  doPost(uri, JSON.stringify(data), () => {
-    console.log("setStatus Callback (" + deviceId + ", " + status + ")");
-    let p = document.getElementById("device-" + deviceId);
-    p.getElementsByTagName("input")[0].value = status;
+  doPost(uri, JSON.stringify(data), (status) => {
+    if (status == 204) {
+      let p = document.getElementById("device-" + deviceId);
+      p.getElementsByTagName("input")[0].value = status;
+    }
   });
 }
 
@@ -135,18 +120,48 @@ function apiExplorer() {
   }
 }
 
-window.onload = () => {
-  if (document.location.pathname == PROJECT_ROOT || document.location.pathname == PROJECT_ROOT + "index.html") {
-    getAll("rooms", "?includeDevices=true", (data) => {
-    sessionStorage.setItem('rooms', data);
-      createDevicesList();
-    });
-  } else if (document.location.pathname == PROJECT_ROOT + "apiexplorer.html") {
-    document.getElementById("submit").addEventListener("click", apiExplorer);
-    document.addEventListener("keypress", function(ev) { 
-      if (ev.key == "Enter" && !ev.shiftKey) {
-        apiExplorer();
+function login() {
+  let json = { username: document.getElementById("username").value, password: document.getElementById("password").value };
+  let uri = PROJECT_ROOT + "/api/auth.php";
+  
+  doPost(uri, JSON.stringify(json), (status) => {
+    if (status == 204) {
+      window.location.assign(PROJECT_ROOT);
+    } else {
+      let p = document.getElementById("error");
+      if (p === null || p === undefined) {
+        p = document.createElement("p");
+        p.id = "error";
+        p.class = "error";
+        p.appendChild(document.createTextNode("Invalid username and password"));
+        document.getElementById("login").appendChild(p);
       }
-    });
+    }
+  });
+}
+
+window.onload = () => {
+  switch (document.location.pathname) {
+    case PROJECT_ROOT:
+    case PROJECT_ROOT + "index.html":
+      getAll("rooms", "?includeDevices=true", (status, data) => {
+        if (status = 200) {
+          sessionStorage.setItem('rooms', data);
+          createDevicesList();
+        }
+      });
+      break;
+    case PROJECT_ROOT + "apiexplorer.html":
+      document.getElementById("submit").addEventListener("click", apiExplorer);
+      document.addEventListener("keypress", function(ev) { 
+        if (ev.key == "Enter" && !ev.shiftKey) {
+          apiExplorer();
+        }
+      });
+      break;
+    case PROJECT_ROOT + "login.html":
+      document.getElementById("submit").addEventListener("click", login);
+      document.addEventListener("keypress", function(ev) { ev.key == "Enter" ? login() : null; });
+      break;    
   }
 }
