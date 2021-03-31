@@ -33,7 +33,7 @@ FROM Devices D
 JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
 LEFT JOIN Room R ON (R.RoomId = D.RoomId)
 LEFT JOIN DeviceHistory DH ON DH.DeviceId = D.DeviceId
-WHERE D.DeviceId = 6
+WHERE D.DeviceId = ?
 ORDER BY DH.DeviceHistoryId DESC
 LIMIT 1
 SQL;
@@ -46,12 +46,12 @@ SQL;
 const SQL_UPDATE = <<<SQL
 UPDATE Devices
 SET DeviceName = ?, TypeId = ?, RoomId = ?
-WHERE DeviceIdId = ?;
+WHERE DeviceId = ?;
 SQL;
 
 const SQL_GET_STATUS = <<<SQL
 SELECT DH.Status as status, DH.Time FROM DeviceHistory DH
-WHERE DH.DeviceId = 6
+WHERE DH.DeviceId = ?
 ORDER BY DeviceHistoryId DESC
 LIMIT 1
 SQL;

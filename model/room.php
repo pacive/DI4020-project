@@ -179,9 +179,9 @@ SQL;
       if ($db->errno) {
         return $db->error;
       }
+      $new_id = $query->insert_id;
       $query->close();
 
-      $new_id = $query->insert_id;
       if (!empty($arr['coordinates'])) {
         static::set_coordinates($new_id, $arr['coordinates']);
       }
@@ -205,13 +205,13 @@ SQL;
         $query->close();
         static::set_coordinates($arr['id'], $arr['coordinates']);
       }
-      return static::get_by_id($new_id);
+      return static::get_by_id($arr['id']);
     }
 
     private static function set_coordinates($id, &$coordinates) {
-      $query = $db->prepare(static::SQL_SET_COORDS);
+      $query = self::get_connection()->prepare(static::SQL_SET_COORDS);
       $query->bind_param('iiii', $id, $x, $y, $i);
-      for ($i = 0; $i < count($arr['coordinates']); $i++) {
+      for ($i = 0; $i < count($coordinates); $i++) {
         $x = $coordinates[$i][0];
         $y = $coordinates[$i][1];
         $query->execute();

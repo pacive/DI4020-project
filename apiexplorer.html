@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SmartHome.net</title>
+  </head>
+  <body>
+    <form name="apiexplorer" id="apiexplorer">
+      <select name="method" id="method">
+        <option value="GET">GET</option>
+        <option value="PUT">PUT</option>
+        <option value="POST">POST</option>
+        <option value="DELETE">DELETE</option>
+      </select>
+      <select name="endpoint" id="endpoint">
+        <option value="devices">devices.php</option>
+        <option value="rooms">rooms.php</option>
+        <option value="status">status.php</option>
+        <option value="users">users.php</option>
+        <option value="devicetypes">devicetypes.php</option>
+        <option value="roomtypes">roomtypes.php</option>
+      </select>
+      <input type="text" name="query" id="query" placeholder="?param=value" />
+      <input type="button" id="submit" value="Send" />
+      <input type="reset" value="Clear" />
+      <br />
+      <textarea name="body" id="body" cols="100" rows="10"></textarea>
+      <br />
+      <textarea name="result" id="result" cols="100" rows="30"></textarea>
+      <br />
+    </form>
+    <script src="media/js/app.js"></script>
+  </body>
+</html>

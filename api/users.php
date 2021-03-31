@@ -3,6 +3,7 @@
   require_once('../util/autoload.php');
   use \Model\User;
   use \Util\Session;
+  use \Util\Utils;
 
   class Users extends AbstractEndpoint {
 
@@ -19,6 +20,7 @@
 
     static function do_put(&$body) {
       $arr = json_decode($body, true);
+      $return;
       if (Utils::validate_input($arr, User::$required_fields_update)) {
         if (!Session::is_admin()) {
           http_response_code(403);
@@ -26,19 +28,20 @@
         }
         $new = User::update($arr);
         if ($new instanceof User) {
-          return json_encode($new);
+          $return = json_encode($new);
         } else {
           http_response_code(500);
           return $new;
         }
-      } elseif (isset($arr['id']) && isset($arr['password'])) {
+      }
+
+      if (isset($arr['id']) && isset($arr['password'])) {
         if (!(Session::is_admin() || Session::is_user($arr['id']))) {
           http_response_code(403);
           return 'Forbidden';
         }
         if (User::set_password($arr)) {
-          http_response_code(204);
-          return;
+          http_response_code(isset($return) ? 200 : 204);
         } else {
           http_response_code(500);
           return 'Error updating password';
@@ -47,6 +50,7 @@
         http_response_code(400);
         return 'Bad request';
       }
+      return $return;
     }
   }
 

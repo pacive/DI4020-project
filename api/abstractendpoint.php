@@ -37,6 +37,8 @@
           echo 'Method not supported';
           break;
       }
+      $content_type = http_response_code() == 200 ? 'application/json' : 'text/plain';
+      header("Content-Type: $content_type");
       Logger::log_access();
     }
 
