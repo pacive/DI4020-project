@@ -9,6 +9,14 @@ function closeBar() {
   document.getElementById("sideBar").style.width = "0";
 }
 
+function showRoomPopUp(room) {
+  let existing = document.getElementById('roompopup');
+  if (existing !== null) {
+    document.body.removeChild(existing);
+  }
+  document.body.appendChild(createRoomElement(room))
+}
+
 function createDevicesList(room = null) {
   let rooms = JSON.parse(sessionStorage.rooms)
   if (room !== null) {
@@ -20,8 +28,25 @@ function createDevicesList(room = null) {
   }
 }
 
+function createArea(room) {
+  let area = document.createElement('area');
+  area.shape = 'poly';
+  area.coords = room.coordinates.toString();
+  area.tabIndex = room.id;
+  area.addEventListener('click', () => {
+    showRoomPopUp(room);
+  });
+  document.getElementById('blueprint').appendChild(area);
+}
+
 function createRoomElement(room) {
   let div = document.createElement("div");
+  div.id = 'roompopup';
+  let close = div.appendChild(document.createElement("span"));
+  close.appendChild(document.createTextNode('X'));
+  close.addEventListener('click', () => {
+    document.body.removeChild(div);
+  });
   let title = div.appendChild(document.createElement("h6"));
   title.appendChild(document.createTextNode(room.name));
   room.devices.forEach(device => {
@@ -50,46 +75,32 @@ function getAll(endpoint, params = "", callback) {
 function doGet(uri, callback) {
   let xhr = new XMLHttpRequest();
   xhr.open("GET", uri, true);
-  xhr.setRequestHeader("Accept", "application/json");
-  xhr.send();
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      callback(this.status, this.response);
-    }
-  }
+  doRequest(xhr, callback);
 }
 
 function doPost(uri, body, callback) {
   let xhr = new XMLHttpRequest();
   xhr.open("POST", uri, true);
-  xhr.setRequestHeader("Accept", "application/json");
   xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.send(body);
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      callback(this.status, this.response);
-    }
-  }
+  doRequest(xhr, callback, body);
 }
 
 function doPut(uri, body, callback) {
   let xhr = new XMLHttpRequest();
   xhr.open("PUT", uri, true);
-  xhr.setRequestHeader("Accept", "application/json");
   xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.send(body);
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      callback(this.status, this.response);
-    }
-  }
+  doRequest(xhr, callback, body);
 }
 
 function doDelete(uri, callback) {
   let xhr = new XMLHttpRequest();
   xhr.open("DELETE", uri, true);
+  doRequest(xhr, callback);
+}
+
+function doRequest(xhr, callback, body = null) {
   xhr.setRequestHeader("Accept", "application/json");
-  xhr.send();
+  xhr.send(body);
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
       callback(this.status, this.response);
@@ -130,7 +141,9 @@ function startSse() {
     let data = JSON.parse(event.data);
     sessionStorage.setItem('device-' + data.id, data.status);
     let p = document.getElementById("device-" + data.id);
-    p.getElementsByTagName("input")[0].value = data.status;
+    if (p !== null) {
+      p.getElementsByTagName("input")[0].value = data.status;
+    }
   }
 }
 
@@ -138,12 +151,16 @@ function init() {
   getAll("rooms", "?includeDevices=true", (status, data) => {
     if (status = 200) {
       sessionStorage.setItem('rooms', data);
+      let rooms = JSON.parse(data);
+      rooms.forEach(room => {
+        createArea(room);
+      })
       startSse();
     }
   });
-  let loginForm = document.getElementById("login")
+  let loginForm = document.getElementById("login");
   if (loginForm !== null) {
-    loginForm.getElementById('submit').addEventListener('click', login);
+    loginForm.querySelector('#submit').addEventListener('click', login);
     document.addEventListener('keypress', function(ev) { ev.key == 'Enter' ? login() : null; });
   }
   document.getElementById('open').addEventListener('click', openBar);

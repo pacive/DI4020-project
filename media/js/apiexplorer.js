@@ -1,3 +1,6 @@
+const PROJECT_ROOT = "/~andalf20/project/";
+const API_BASE = PROJECT_ROOT + "api/";
+
 function apiExplorer() {
   let method = document.getElementById("method").value;
   let uri = API_BASE + document.getElementById("endpoint").value + ".php";
@@ -23,7 +26,7 @@ function apiExplorer() {
   }
 }
 
-window.addEventListener('load' = () => {
+window.addEventListener('load', () => {
   document.getElementById("submit").addEventListener("click", apiExplorer);
   document.addEventListener("keypress", function(ev) { 
     if (ev.key == "Enter" && !ev.shiftKey) {

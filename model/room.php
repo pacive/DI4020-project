@@ -42,15 +42,15 @@ DH.Status as deviceStatus
 FROM Room R
 JOIN RoomType RT ON (RT.TypeId = R.TypeId)
 LEFT JOIN Coordinates C ON (C.RoomId = R.RoomId)
-JOIN Devices D ON (D.RoomId = R.RoomId)
-JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
+LEFT JOIN Devices D ON (D.RoomId = R.RoomId)
+LEFT JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
 LEFT JOIN (
   SELECT DH1.DeviceId, DH1.Status FROM DeviceHistory DH1
 	LEFT JOIN DeviceHistory DH2 ON DH1.DeviceId = DH2.DeviceId AND DH1.DeviceHistoryId < DH2.DeviceHistoryId
 	WHERE DH2.DeviceId IS NULL
   ) DH ON DH.DeviceId = D.DeviceId
-GROUP BY D.DeviceId
-ORDER BY D.DeviceId
+GROUP BY R.RoomId, D.DeviceId
+ORDER BY R.RoomId, D.DeviceId
 SQL;
 
 const SQL_GET_INCL_DEVICES = <<<SQL
@@ -67,8 +67,8 @@ DH.Status as deviceStatus
 FROM Room R
 JOIN RoomType RT ON (RT.TypeId = R.TypeId)
 LEFT JOIN Coordinates C ON (C.RoomId = R.RoomId)
-JOIN Devices D ON (D.RoomId = R.RoomId)
-JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
+LEFT JOIN Devices D ON (D.RoomId = R.RoomId)
+LEFT JOIN DeviceType DT ON (DT.TypeId = D.TypeId)
 LEFT JOIN (
   SELECT DH1.DeviceId, DH1.Status FROM DeviceHistory DH1
 	LEFT JOIN DeviceHistory DH2 ON DH1.DeviceId = DH2.DeviceId AND DH1.DeviceHistoryId < DH2.DeviceHistoryId
