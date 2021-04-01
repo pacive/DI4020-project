@@ -1,0 +1,57 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+#header {
+    position: absolute;
+    /*margin: auto; */
+    top: 50px;
+    left:33%; /* vet inte hur ja¢g får denna exakt i mitten*/
+} 
+.sideBar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    background-color: black;
+    transition: 0.7s;
+}
+.sideBar p {
+    color:white;
+    font-family:Arial, Helvetica, sans-serif;
+    margin-left: 20px;
+    margin: 30px;
+}
+#logout {
+    position: absolute;
+    bottom: 20px;
+}
+.sideBar p:hover {
+    color: #726f6f;
+}
+.sideBar #close {
+    position: absolute;
+    top: 0;
+    right: 15px;
+    margin-left: 10px;
+    font-size: 35px;
+}
+#open {
+    font-size: 35px;
+}
+.sideBar .option {
+    position: absolute;
+    top: 50px;
+}
+.sideBar .admin {
+    position: absolute;
+    bottom: 100px;   
+}
+.image {
+    position: absolute;
+    left: 30%;
+    top: 250px;
+}
+
