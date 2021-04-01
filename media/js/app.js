@@ -1,11 +1,23 @@
 const PROJECT_ROOT = "/~andalf20/project/";
 const API_BASE = PROJECT_ROOT + "api/";
 
-function createDevicesList() {
-  JSON.parse(sessionStorage.rooms).forEach(room => {
-    document.body.appendChild(createRoomElement(room));
-  });
-  startSse();
+function openBar() {
+  document.getElementById("sideBar").style.width = "20%";
+}
+
+function closeBar() {
+  document.getElementById("sideBar").style.width = "0";
+}
+
+function createDevicesList(room = null) {
+  let rooms = JSON.parse(sessionStorage.rooms)
+  if (room !== null) {
+    document.body.appendChild(createRoomElement(rooms[room]));
+  } else {
+    rooms.forEach(room => {
+      document.body.appendChild(createRoomElement(room));
+    });  
+  }
 }
 
 function createRoomElement(room) {
@@ -73,7 +85,7 @@ function doPut(uri, body, callback) {
   }
 }
 
-function doDelete(uri, body, callback) {
+function doDelete(uri, callback) {
   let xhr = new XMLHttpRequest();
   xhr.open("DELETE", uri, true);
   xhr.setRequestHeader("Accept", "application/json");
@@ -89,31 +101,6 @@ function setStatus(deviceId, status) {
   let data = { "id": deviceId, "status": status };
   let uri = API_BASE + "status.php"
   doPost(uri, JSON.stringify(data), () => { return; });
-}
-
-function apiExplorer() {
-  let method = document.getElementById("method").value;
-  let uri = API_BASE + document.getElementById("endpoint").value + ".php";
-  let query = document.getElementById("query").value;
-  let body = document.getElementById("body").value;
-
-  let xhr = new XMLHttpRequest();
-  xhr.open(method, uri + query, true);
-  xhr.setRequestHeader("Accept", "application/json");
-  var start = new Date();
-  xhr.send(body);
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      var time = new Date() - start;
-      document.getElementById("result").innerHTML = this.status + " " + this.statusText + 
-      " (" + time + " ms)"
-      if (this.getResponseHeader("Content-Type") == "application/json") {
-        document.getElementById("result").innerHTML += "\r\n\r\n" + JSON.stringify(JSON.parse(this.response), null, 2);
-      } else {
-        document.getElementById("result").innerHTML += "\r\n\r\n" + this.response;
-      }
-    }
-  }
 }
 
 function login() {
@@ -141,33 +128,26 @@ function startSse() {
   events.onmessage = (event) => {
     console.log(event.data);
     let data = JSON.parse(event.data);
+    sessionStorage.setItem('device-' + data.id, data.status);
     let p = document.getElementById("device-" + data.id);
     p.getElementsByTagName("input")[0].value = data.status;
   }
 }
 
-window.onload = () => {
-  switch (document.location.pathname) {
-    case PROJECT_ROOT:
-    case PROJECT_ROOT + "index.html":
-      getAll("rooms", "?includeDevices=true", (status, data) => {
-        if (status = 200) {
-          sessionStorage.setItem('rooms', data);
-          createDevicesList();
-        }
-      });
-      break;
-    case PROJECT_ROOT + "apiexplorer.html":
-      document.getElementById("submit").addEventListener("click", apiExplorer);
-      document.addEventListener("keypress", function(ev) { 
-        if (ev.key == "Enter" && !ev.shiftKey) {
-          apiExplorer();
-        }
-      });
-      break;
-    case PROJECT_ROOT + "login.html":
-      document.getElementById("submit").addEventListener("click", login);
-      document.addEventListener("keypress", function(ev) { ev.key == "Enter" ? login() : null; });
-      break;    
-  }
+function init() {
+  getAll("rooms", "?includeDevices=true", (status, data) => {
+    if (status = 200) {
+      sessionStorage.setItem('rooms', data);
+      startSse();
+    }
+  });
 }
+
+window.addEventListener('load' = () => {
+  init();
+  let loginForm = document.getElementById("login")
+  if (loginForm !== null) {
+    loginForm.getElementById('submit').addEventListener('click', login);
+    document.addEventListener('keypress', function(ev) { ev.key == 'Enter' ? login() : null; });
+  }
+});
