@@ -141,13 +141,15 @@ function init() {
       startSse();
     }
   });
-}
-
-window.addEventListener('load' = () => {
-  init();
   let loginForm = document.getElementById("login")
   if (loginForm !== null) {
     loginForm.getElementById('submit').addEventListener('click', login);
     document.addEventListener('keypress', function(ev) { ev.key == 'Enter' ? login() : null; });
   }
+  document.getElementById('open').addEventListener('click', openBar);
+  document.getElementById('close').addEventListener('click', closeBar);
+}
+
+window.addEventListener('load', () => {
+  init();
 });
