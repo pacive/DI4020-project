@@ -11,21 +11,17 @@ function closeBar() {
 
 function showRoomPopUp(room) {
   let existing = document.getElementById('roompopup');
-  if (existing !== null) {
-    document.body.removeChild(existing);
-  }
-  document.body.appendChild(createRoomElement(room))
-}
+  existing !== null && imageDiv.removeChild(existing);
 
-function createDevicesList(room = null) {
-  let rooms = JSON.parse(sessionStorage.rooms)
-  if (room !== null) {
-    document.body.appendChild(createRoomElement(rooms[room]));
-  } else {
-    rooms.forEach(room => {
-      document.body.appendChild(createRoomElement(room));
-    });  
-  }
+  let imageDiv = document.getElementById('image');
+  let roomElem = imageDiv.appendChild(createRoomElement(room));
+
+  let image = imageDiv.getElementsByTagName('img')[0];
+  let roomCenter = calculateCenter(coordinates);
+
+  roomElem.style.left = roomCenter[0] + (roomCenter[0] < (image.offsetWidth / 2) ? -roomElem.offsetWidth : 0) + 'px';
+  roomElem.style.top = roomCenter[1] + (roomCenter[1] < (image.offsetHeight / 2) ? -roomElem.offsetHeight : 0) + 'px';
+  roomElem.style.visibility = 'visible';
 }
 
 function createArea(room) {
@@ -42,6 +38,7 @@ function createArea(room) {
 function createRoomElement(room) {
   let div = document.createElement("div");
   div.id = 'roompopup';
+  div.setAttribute('class', 'roompopup');
   let close = div.appendChild(document.createElement("span"));
   close.appendChild(document.createTextNode('X'));
   close.addEventListener('click', () => {
@@ -52,6 +49,7 @@ function createRoomElement(room) {
   room.devices.forEach(device => {
     div.appendChild(createDeviceElement(device));
   });
+  div.style.visibility ='hidden';
   return div;
 }
 
@@ -60,10 +58,15 @@ function createDeviceElement(device) {
   p.id = "device-" + device.id;
   let nameElem = p.appendChild(document.createElement("span"));
   nameElem.appendChild(document.createTextNode(device.name + ": "));
-  let button = p.appendChild(document.createElement("input"));
-  button.type = "button"
-  button.value = device.status;
-  button.addEventListener("click", () => { setStatus(device.id, button.value == "ON" ? "OFF" : "ON"); });
+  if (device.typeName == 'Sensor') {
+    let statusText = p.appendChild(document.createElement('span'));
+    statusText.appendChild(document.createTextNode(device.status));
+  } else {
+    let toggle = p.appendChild(document.createElement("input"));
+    toggle.type = 'checkbox';
+    toggle.checked = getStatus(device.id) == 'ON';
+    toggle.addEventListener('change', () => { setStatus(device.id, toggle.checked ? "ON" : "OFF"); });
+  }
   return p;
 }
 
@@ -114,6 +117,10 @@ function setStatus(deviceId, status) {
   doPost(uri, JSON.stringify(data), () => { return; });
 }
 
+function getStatus(deviceId) {
+  return sessionStorage.getItem('device-' + deviceId);
+}
+
 function login() {
   let json = { username: document.getElementById("username").value, password: document.getElementById("password").value };
   let uri = PROJECT_ROOT + "/api/auth.php";
@@ -134,6 +141,28 @@ function login() {
   });
 }
 
+function calculateCenter(coordinates) {
+  let center = [];
+  if (coordinates.length < 4) {
+    for (let i = 0; i < 2; i++) {
+      center[i] = coordinates.reduce((total, current) => {
+        return total + current[i];
+      }, 0) / coordinates.length;
+    }
+  } else {
+    for (let i = 0; i < 2; i++) {
+      min = coordinates.reduce((min, current) => {
+        return current[i] < min ? current[i] : min;
+      }, Number.MAX_VALUE);
+      max = coordinates.reduce((max, current) => {
+        return current[i] > max ? current[i] : max;
+      }, Number.MIN_VALUE);
+      center[i] = (min + max) / 2;
+    }
+  }
+  return center;
+}
+
 function startSse() {
   var events = new EventSource(API_BASE + "events.php");
   events.onmessage = (event) => {
@@ -149,7 +178,7 @@ function startSse() {
 
 function init() {
   getAll("rooms", "?includeDevices=true", (status, data) => {
-    if (status = 200) {
+    if (status == 200) {
       sessionStorage.setItem('rooms', data);
       let rooms = JSON.parse(data);
       rooms.forEach(room => {
