@@ -55,3 +55,10 @@ body {
     top: 250px;
 }
 
+.roompopup {
+    position: absolute;
+    width: fit-content;
+    background-color: white;
+    padding: 4px;
+    box-shadow: 2px 2px 2px gray;
+}
