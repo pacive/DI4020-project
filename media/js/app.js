@@ -10,14 +10,15 @@ function closeBar() {
 }
 
 function showRoomPopUp(room) {
+  let imageDiv = document.getElementById('image');
+
   let existing = document.getElementById('roompopup');
   existing !== null && imageDiv.removeChild(existing);
 
-  let imageDiv = document.getElementById('image');
   let roomElem = imageDiv.appendChild(createRoomElement(room));
 
   let image = imageDiv.getElementsByTagName('img')[0];
-  let roomCenter = calculateCenter(coordinates);
+  let roomCenter = calculateCenter(room.coordinates);
 
   roomElem.style.left = roomCenter[0] + (roomCenter[0] < (image.offsetWidth / 2) ? -roomElem.offsetWidth : 0) + 'px';
   roomElem.style.top = roomCenter[1] + (roomCenter[1] < (image.offsetHeight / 2) ? -roomElem.offsetHeight : 0) + 'px';
