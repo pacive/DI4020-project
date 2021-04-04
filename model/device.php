@@ -1,6 +1,9 @@
 <?php
   namespace Model;
   
+  /*
+   * Class for representing and handling devices
+   */
   class Device extends DBObject {
 
 const SQL_GET_ALL = <<<SQL
@@ -69,6 +72,9 @@ SQL;
     public static $required_fields_insert = array('name', 'typeId', 'roomId');
     public static $required_fields_update = array('id', 'name', 'typeId', 'roomId');
 
+    /*
+     * Gets the status for the specified device
+     */
     static function get_device_status($device_id) {
       $db = self::get_connection();
       $query = $db->prepare(static::SQL_GET_STATUS);
@@ -82,19 +88,30 @@ SQL;
       }
     }
 
-    static function set_device_status($arr) {
+    /*
+     * Sets the status for the specified device
+     */
+    static function set_device_status($id, $status) {
       $db = self::get_connection();
       $query = $db->prepare(static::SQL_UPDATE_STATUS);
-      $query->bind_param('isi', $arr['id'], $arr['status'], \Util\Session::user_id());
+      $query->bind_param('isi', $id, $status, \Util\Session::user_id());
       $query->execute();
       echo $query->errno.': '.$query->error."\r\n";
       return $query->errno ? false : true;
     }
 
+    /*
+     * Binds the correct parameters to a supplied mysqli::statement prepared with
+     * self::SQL_INSERT
+     */
     protected static function bind_params_insert(&$query, $arr) {
       $query->bind_param('sii', $arr['name'], $arr['typeId'], $arr['roomId']);
     }
 
+    /*
+     * Binds the correct parameters to a supplied mysqli::statement prepared with
+     * self::SQL_UPDATE
+     */
     protected static function bind_params_update(&$query, $arr) {
       $query->bind_param('siii', $arr['name'], $arr['typeId'], $arr['roomId'], $arr['id']);
     }
@@ -106,8 +123,11 @@ SQL;
     private $roomName;
     private $status;
 
+    /*
+     * Constructor for object respresenting a device. Checks if properties are set
+     * before the call to __construct to allow reflective instantiation
+     */
     function __construct($id = null, $name = null, $typeId = null, $typeName = null, $roomId = null, $roomName = null, $status = null) {
-      // Allow for reflective instantiation
       parent::__construct($id);
       $name && $this->name = $name;
       $this->typeId = (int) (isset($this->typeId) ? $this->typeId : ($typeId ?: self::ID_NOT_SET));
@@ -117,22 +137,37 @@ SQL;
       $status && $this->status = $status;
     }
 
+    /*
+     * Gets the name of the device
+     */
     function get_name() {
       return $this->name;
     }
 
+    /*
+     * Gets the type of the device
+     */
     function get_type() {
       return $this->type;
     }
 
+    /*
+     * Gets the room the device belongs to
+     */
     function get_room() {
       return $this->room;
     }
 
+    /*
+     * Gets the status of the device
+     */
     function get_status() {
       return $this->status;
     }
 
+    /*
+     * Convert to an associative array.
+     */
     function to_array() {
       return array(
         'id' => $this->id,

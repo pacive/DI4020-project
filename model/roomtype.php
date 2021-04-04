@@ -1,6 +1,9 @@
 <?php
   namespace Model;
 
+  /*
+   * Class for representing and handling room types
+   */
   class RoomType extends Type {
 
 const SQL_GET_ALL = <<<SQL

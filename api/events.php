@@ -3,7 +3,10 @@
   require_once('../util/autoload.php');
   use \Util\DB;
 
- class Events extends AbstractEndpoint {
+  /*
+   * Endpoint for subscribing to SSE
+   */
+  class Events extends AbstractEndpoint {
 
 const TIMEOUT = 600;
 const INTERVAL = 2;
@@ -22,6 +25,14 @@ WHERE DeviceHistoryId > ?
 ORDER BY DeviceHistoryId
 SQL;
 
+    /*
+     * Overrides function from AbstractEndpoint. Sets the correct headers then
+     * pushes the latest status for each device (unless the client supplies the
+     * Last-Event-ID request header). 
+     * 
+     * Finally starts a loop to poll the database for updates and sends them to the
+     * client.
+     */
     static function handle_request() {
       self::verify_user();
       session_write_close();
@@ -37,6 +48,9 @@ SQL;
       self::loop($last_id);
     }
 
+    /*
+     * Sends the latest status for each device to the client
+     */
     private static function push_latest($last_id) {
       $db = DB::get_connection();
       $query = $db->prepare(self::SQL_GET_LATEST);
@@ -55,6 +69,10 @@ SQL;
       return $last_id;
     }
 
+    /*
+     * Polls the database every self::INTERVAL seconds and sends any new entries
+     * to the client. Times out after self::TIMEOUT seconds
+     */
     private static function loop($last_id) {
       $db = DB::get_connection();
       $query = $db->prepare(self::SQL_GET_UPDATES);

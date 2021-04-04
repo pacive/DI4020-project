@@ -5,8 +5,15 @@
   use \Util\Utils;
   use \Util\Session;
 
+  /*
+   * Abstract base class for the different api endpoints
+   */
   abstract class AbstractEndpoint {
 
+    /*
+     * Verifies that the user is properly logged in, and optionally that the user is an admin.
+     * If not, terminates the script and returns a 403 response code.
+     */
     protected static function verify_user($admin = false) {
       if (($admin && Session::is_admin()) || Session::logged_in()) {
         return;
@@ -15,6 +22,10 @@
       die('Unauthorized');
     }
 
+    /*
+     * Dispatches the request to different functions depenting on the request method.
+     * prints the result to the output stream, and logs the access.
+     */
     static function handle_request() {
       self::verify_user();
       switch ($_SERVER['REQUEST_METHOD']) {
@@ -42,10 +53,17 @@
       Logger::log_access();
     }
 
+    /*
+     * Gets the request's body for PUT and POST requests
+     */
     protected static function get_body() {
       return file_get_contents('php://input');
     }
 
+    /*
+     * Generic handler for a GET request. Gets the corresponding entity from the db
+     * and returns it json-encoded, or all entities if no id is provided in the query
+     */
     protected static function do_get() {
       $entity_class = static::ENTITY;
       if (isset($_GET['id'])) {
@@ -60,6 +78,10 @@
       }
     }
 
+    /*
+     * Generic handler for a POST request. Inserts the provided json-object into the db
+     * and returns the newly inserted entity
+     */
     protected static function do_post(&$body) {
       self::verify_user(true);
       $entity_class = static::ENTITY;
@@ -78,6 +100,10 @@
       }
     }
 
+    /*
+     * Generic handler for a PUT request. Updates the entity with the id provided in the 
+     * json-object into the db and returns the newly updated entity
+     */
     protected static function do_put(&$body) {
       self::verify_user(true);
       $entity_class = static::ENTITY;
@@ -96,6 +122,10 @@
       }
     }
 
+    /*
+     * Generic handler for a DELETE request. Deletes the corresponding entity from the db.
+     * Returns a 204 response code on success
+     */
     protected static function do_delete() {
       self::verify_user(true);
       $entity_class = static::ENTITY;

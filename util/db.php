@@ -1,6 +1,9 @@
 <?php
   namespace Util;
 
+  /*
+   * Handles connections to the MySQL database
+   */
   class DB {
 
     private static $mysql_host = 'localhost';
@@ -10,6 +13,9 @@
     
     private static $conn;
 
+    /*
+     * Connects to the database, or returns the connection if one already exists
+     */
     static function get_connection() {
       if (!isset(self::$conn)) {
         self::$conn = new \mysqli(self::$mysql_host, self::$mysql_user, self::$mysql_pwd, self::$mysql_db);

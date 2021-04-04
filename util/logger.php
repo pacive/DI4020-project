@@ -1,6 +1,16 @@
 <?php
   namespace Util;
+
+  /*
+   * Handles logging of requests
+   */
   class Logger {
+
+    /*
+     * TODO
+     * 
+     * Log the request method, uri, response code and user to the database
+     */
     static function log_access() {
       return;
       echo '<br />'.$_SERVER['REQUEST_METHOD'];
