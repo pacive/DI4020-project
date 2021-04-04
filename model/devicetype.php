@@ -1,6 +1,9 @@
 <?php
   namespace Model;
 
+  /*
+   * Class for representing and handling device types
+   */
   class DeviceType extends Type {
 
 const SQL_GET_ALL = <<<SQL

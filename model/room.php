@@ -1,6 +1,9 @@
 <?php
   namespace Model;
 
+  /*
+   * Class for representing and handling rooms
+   */
   class Room extends DBObject {
 
 const SQL_GET_ALL = <<<SQL
@@ -108,6 +111,10 @@ SQL;
     public static $required_fields_insert = array('name', 'typeId');
     public static $required_fields_update = array('id', 'name', 'typeId');
 
+    /*
+     * Gets all rooms from the db and returns them as an array of the corresponding objects.
+     * May optionally include the devices that belongs to each room
+     */
     static function get_all($incl_devices = false) {
       $db = self::get_connection();
       $result = $db->query($incl_devices ? static::SQL_GET_ALL_INCL_DEVICES : static::SQL_GET_ALL);
@@ -122,6 +129,10 @@ SQL;
       return $rooms;
     }
 
+    /*
+     * Gets a specific room from the db.
+     * May optionally include the devices that belongs to each room
+     */
     static function get_by_id($id, $incl_devices = false) {
       $query = self::get_connection()->prepare($incl_devices ? static::SQL_GET_INCL_DEVICES :static::SQL_GET);
       $query->bind_param('i', $id);
@@ -130,10 +141,15 @@ SQL;
       return self::create_room($result);
     }
 
+    /*
+     * Construct a room ocject from the records returned from the db
+     */
     static function create_room(&$result) {
       if ($first_row = $result->fetch_object()) {
         $coordinates = isset($first_row->coordinates) ? self::parse_coordinates($first_row->coordinates) : array();
         $room = new Room($first_row->id, $first_row->name, $first_row->typeId, $first_row->typeName, $coordinates);
+
+        //Add device if it's included in the query
         if (isset($first_row->deviceId)) {
           $room->add_device(new Device($first_row->deviceId,
                                        $first_row->deviceName,
@@ -142,7 +158,7 @@ SQL;
                                        $room->id,
                                        $room->name,
                                        $first_row->deviceStatus));
-
+          // Continue adding devices as long as the record has the same roomId
           while ($row = $result->fetch_object()) {
             if ($row->id != $room->id) {
               break;
@@ -163,6 +179,9 @@ SQL;
       }
     }
 
+    /*
+     * Parse the concatenated coordinates and splits them to an array
+     */
     private static function parse_coordinates($str) {
       $coordinates = array();
       foreach (explode(';', $str) as $pair) {
@@ -171,11 +190,18 @@ SQL;
       return $coordinates;
     }
 
+    /*
+     * Insert a new room in the database. Adds the room to the room table
+     * and all the coordinates separately in the coordinate table. Returns
+     * the newly inserted room.
+     */
     static function insert($arr) {
       $db = self::get_connection();
       $query = $db->prepare(static::SQL_INSERT);
       $query->bind_param('si', $arr['name'], $arr['typeId']);
       $query->execute();
+
+      // Return without inserting the coordinates if there was an error
       if ($db->errno) {
         return $db->error;
       }
@@ -188,6 +214,9 @@ SQL;
       return static::get_by_id($new_id);
     }
 
+    /*
+     * Updates a room in the database
+     */
     static function update($arr) {
       $db = self::get_connection();
       $query = $db->prepare(static::SQL_UPDATE);
@@ -199,6 +228,7 @@ SQL;
       $query->close();
 
       if (isset($arr['coordinates'])) {
+        // Delete the existing coordinates before inserting new ones
         $query = $db->prepare(static::SQL_DELETE_COORDS);
         $query->bind_param('i', $arr['id']);
         $query->execute();
@@ -208,6 +238,9 @@ SQL;
       return static::get_by_id($arr['id']);
     }
 
+    /*
+     * Insert the coordinates for a room in the database
+     */
     private static function set_coordinates($id, &$coordinates) {
       $query = self::get_connection()->prepare(static::SQL_SET_COORDS);
       $query->bind_param('iiii', $id, $x, $y, $i);
@@ -224,6 +257,10 @@ SQL;
     private $coordinates;
     private $devices;
 
+    /*
+     * Constructor for object respresenting a room. Checks if properties are set
+     * before the call to __construct to allow reflective instantiation
+     */
     function __construct($id, $name, $typeId, $typeName, $coordinates, $devices = null) {
       parent::__construct($id);
       $this->name = $name;
@@ -233,26 +270,44 @@ SQL;
       $this->devices = $devices;
     }
 
+    /*
+     * Gets the name of the room
+     */
     function get_name() {
       return $this->name;
     }
 
+    /*
+     * Gets the type of the room
+     */
     function get_type() {
       return $this->type;
     }
 
+    /*
+     * Gets the coordinates of the room
+     */
     function get_coordinates() {
       return $this->coordinates;
     }
 
+    /*
+     * Gets the devices belonging to the room
+     */
     function get_devices() {
       return $this->devices;
     }
 
+    /*
+     * Add a device object to the room
+     */
     function add_device($device) {
       $this->devices[] = $device;
     }
 
+    /*
+     * Convert to an associative array.
+     */
     function to_array() {
       $arr = array(
         'id' => $this->id,
