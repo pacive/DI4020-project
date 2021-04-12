@@ -28,9 +28,9 @@
     /*
      * Handler for POST requests. Only allowed if user is an admin
      */
-    static function do_post() {
-      self::verify_user(true) {
-      return parent::do_post();
+    static function do_post(&$body) {
+      self::verify_user(true);
+      return parent::do_post($body);
     }
 
     /*
@@ -80,7 +80,7 @@
      * Handler for DELETE requests. Only allowed if user is an admin
      */
     static function do_delete() {
-      self::verify_user(true) {
+      self::verify_user(true);
       return parent::do_delete();
     }
   }
