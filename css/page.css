@@ -56,9 +56,25 @@ body {
 }
 
 .roompopup {
+    visibility: hidden;
     position: absolute;
     width: fit-content;
     background-color: white;
     padding: 4px;
     box-shadow: 2px 2px 2px gray;
+}
+
+#roomname {
+    display: inline;
+}
+
+#closepopup {
+    position: absolute;
+    right: 0%;
+    padding-right: 4px;
+    cursor: pointer;
+}
+
+.status {
+    float: right;
 }

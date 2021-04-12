@@ -9,22 +9,6 @@ function closeBar() {
   document.getElementById("sideBar").style.width = "0";
 }
 
-function showRoomPopUp(room) {
-  let imageDiv = document.getElementById('image');
-
-  let existing = document.getElementById('roompopup');
-  existing !== null && imageDiv.removeChild(existing);
-
-  let roomElem = imageDiv.appendChild(createRoomElement(room));
-
-  let image = imageDiv.getElementsByTagName('img')[0];
-  let roomCenter = calculateCenter(room.coordinates);
-
-  roomElem.style.left = roomCenter[0] + (roomCenter[0] < (image.offsetWidth / 2) ? -roomElem.offsetWidth : 0) + 'px';
-  roomElem.style.top = roomCenter[1] + (roomCenter[1] < (image.offsetHeight / 2) ? -roomElem.offsetHeight : 0) + 'px';
-  roomElem.style.visibility = 'visible';
-}
-
 function createArea(room) {
   let area = document.createElement('area');
   area.shape = 'poly';
@@ -36,34 +20,45 @@ function createArea(room) {
   document.getElementById('blueprint').appendChild(area);
 }
 
-function createRoomElement(room) {
-  let div = document.createElement("div");
-  div.id = 'roompopup';
-  div.setAttribute('class', 'roompopup');
-  let close = div.appendChild(document.createElement("span"));
-  close.appendChild(document.createTextNode('X'));
-  close.addEventListener('click', () => {
-    document.body.removeChild(div);
-  });
-  let title = div.appendChild(document.createElement("h6"));
-  title.appendChild(document.createTextNode(room.name));
+function showRoomPopUp(room) {
+  let imageDiv = document.getElementById('image');
+
+  let roomPopup = document.getElementById('roompopup');
+  setRoomPopup(room);
+
+  let image = imageDiv.getElementsByTagName('img')[0];
+  let roomCenter = calculateCenter(room.coordinates);
+
+  roomPopup.style.left = roomCenter[0] + (roomCenter[0] < (image.offsetWidth / 2) ? -roomPopup.offsetWidth : 0) + 'px';
+  roomPopup.style.top = roomCenter[1] + (roomCenter[1] < (image.offsetHeight / 2) ? -roomPopup.offsetHeight : 0) + 'px';
+  roomPopup.style.visibility = 'visible';
+}
+
+function setRoomPopup(room) {
+  let title = document.getElementById('roomname');
+  title.textContent = room.name;
+
+  let div = document.getElementById('devicelist');
+  while (div.firstChild) {
+    div.removeChild(div.lastChild);
+  }
   room.devices.forEach(device => {
     div.appendChild(createDeviceElement(device));
   });
-  div.style.visibility ='hidden';
-  return div;
 }
 
 function createDeviceElement(device) {
   let p = document.createElement("p");
   p.id = "device-" + device.id;
   let nameElem = p.appendChild(document.createElement("span"));
-  nameElem.appendChild(document.createTextNode(device.name + ": "));
+  nameElem.textContent = device.name + ": ";
   if (device.typeName == 'Sensor') {
     let statusText = p.appendChild(document.createElement('span'));
-    statusText.appendChild(document.createTextNode(device.status));
+    statusText.classList.add('status')
+    statusText.textContent = device.status;
   } else {
     let toggle = p.appendChild(document.createElement("input"));
+    toggle.classList.add('status')
     toggle.type = 'checkbox';
     toggle.checked = getStatus(device.id) == 'ON';
     toggle.addEventListener('change', () => { setStatus(device.id, toggle.checked ? "ON" : "OFF"); });
@@ -188,13 +183,18 @@ function init() {
       startSse();
     }
   });
+
+  document.getElementById('closepopup')?.addEventListener('click', () => {
+    document.getElementById('roompopup').style.visibility = 'hidden';
+  });  
+
   let loginForm = document.getElementById("login");
   if (loginForm !== null) {
     loginForm.querySelector('#submit').addEventListener('click', login);
     document.addEventListener('keypress', function(ev) { ev.key == 'Enter' ? login() : null; });
   }
-  document.getElementById('open').addEventListener('click', openBar);
-  document.getElementById('close').addEventListener('click', closeBar);
+  document.getElementById('open')?.addEventListener('click', openBar);
+  document.getElementById('close')?.addEventListener('click', closeBar);
 }
 
 window.addEventListener('load', () => {
