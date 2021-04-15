@@ -67,7 +67,7 @@ function startSse() {
     console.log(event.data);
     let data = JSON.parse(event.data);
     sessionStorage.setItem('device-' + data.id, data.status);
-    let p = document.getElementById("device-" + data.id);
+    let p = document.getElementById("popup-device-" + data.id);
     if (p !== null) {
       p.querySelector('input').checked = data.status == 'ON';
     }
@@ -149,7 +149,9 @@ function populateRoomPopup(room) {
     div.removeChild(first);
   }
   room.devices.forEach(device => {
-    div.appendChild(createDeviceElement(device));
+    let deviceElem = createDeviceElement(device);
+    deviceElem.id = 'popup-device-' + device.id;
+    div.appendChild(deviceElem);
   });
 }
 
@@ -158,7 +160,6 @@ function populateRoomPopup(room) {
  */
 function createDeviceElement(device) {
   let p = document.createElement("p");
-  p.id = "device-" + device.id;
   let nameElem = p.appendChild(document.createElement("span"));
   nameElem.textContent = device.name + ": ";
   if (device.typeName == 'Sensor') {
