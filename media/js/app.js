@@ -2,45 +2,70 @@ const PROJECT_ROOT = "/~andalf20/project/";
 const API_BASE = PROJECT_ROOT + "api/";
 
 function openBar() {
-  document.getElementById("sideBar").style.width = "20%";
+  if (window.matchMedia('(orientation:portrait)').matches) {
+    document.getElementById("sideBar").style.width = "40%";
+  } else {
+    document.getElementById("sideBar").style.width = "20%";
+  }
 }
 
 function closeBar() {
-  document.getElementById("sideBar").style.width = "0";
+  document.getElementById("sideBar").style.width = "0%";
 }
 
 function createArea(room) {
   let area = document.createElement('area');
   area.shape = 'poly';
-  area.coords = room.coordinates.toString();
+  area.coords = scaleCoordinates(room.coordinates).toString();
   area.tabIndex = room.id;
-  area.addEventListener('click', () => {
-    showRoomPopUp(room);
+  area.addEventListener('click', (event) => {
+    showRoomPopUp(room, event.offsetX, event.offsetY);
   });
   document.getElementById('blueprint').appendChild(area);
 }
 
-function showRoomPopUp(room) {
-  let imageDiv = document.getElementById('image');
+function scaleCoordinates(array) {
+  var img = document.querySelector('.image img')
+  var scaleFactor = img.offsetWidth / img.naturalWidth;
+  var scaled = array.map(pair => {
+    return pair.map(c => {
+      return c * scaleFactor;
+    })
+  })
+  return scaled;
+}
 
+function showRoomPopUp(room, mouseX, mouseY) {
   let roomPopup = document.getElementById('roompopup');
-  setRoomPopup(room);
+  populateRoomPopup(room);
 
-  let image = imageDiv.getElementsByTagName('img')[0];
+  let image = document.querySelector('.image img');
   let roomCenter = calculateCenter(room.coordinates);
 
-  roomPopup.style.left = roomCenter[0] + (roomCenter[0] < (image.offsetWidth / 2) ? -roomPopup.offsetWidth : 0) + 'px';
-  roomPopup.style.top = roomCenter[1] + (roomCenter[1] < (image.offsetHeight / 2) ? -roomPopup.offsetHeight : 0) + 'px';
+  let offset = 0;
+  if (window.matchMedia('(orientation:portrait)').matches) {
+    offset = (roomPopup.offsetWidth - roomPopup.offsetHeight) / 2;
+  }
+  
+  let posX = roomCenter[0] < (image.offsetWidth / 2) ?
+              Math.max(0 - offset, mouseX + offset - roomPopup.offsetWidth) :
+              Math.min(mouseX - offset, image.offsetWidth - roomPopup.offsetWidth + offset);
+  let posY = roomCenter[1] < (image.offsetHeight / 2) ?
+              Math.max(0 + offset, mouseY - offset - roomPopup.offsetHeight) :
+              Math.min(mouseY + offset, image.offsetHeight - roomPopup.offsetHeight - offset);
+
+  roomPopup.style.left = posX + 'px';
+  roomPopup.style.top = posY + 'px';
   roomPopup.style.visibility = 'visible';
 }
 
-function setRoomPopup(room) {
+function populateRoomPopup(room) {
   let title = document.getElementById('roomname');
   title.textContent = room.name;
 
   let div = document.getElementById('devicelist');
-  while (div.firstChild) {
-    div.removeChild(div.lastChild);
+  while (first = div.firstChild) {
+    div.removeChild(first);
   }
   room.devices.forEach(device => {
     div.appendChild(createDeviceElement(device));
@@ -179,9 +204,20 @@ function init() {
       let rooms = JSON.parse(data);
       rooms.forEach(room => {
         createArea(room);
-      })
+      });
       startSse();
     }
+  });
+
+  window.addEventListener('resize', (e) => {
+    let mapElem = document.querySelector('.image map');
+    while (first = mapElem.firstChild) {
+      mapElem.removeChild(first);
+    }
+    let rooms = JSON.parse(sessionStorage.getItem('rooms'));
+    rooms.forEach(room => {
+      createArea(room);
+    });
   });
 
   document.getElementById('closepopup')?.addEventListener('click', () => {
