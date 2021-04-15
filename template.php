@@ -13,9 +13,19 @@
               <div class="menu"> 
                   <!-- <div>s and <p>s for the rooms will be added here -->
               </div>
-              <div class="admin">
-                   <!-- options for admin will be added here-->
               </div>
+              <!--add options if user is admin-->
+              <?php
+              if (is_admin()) { // antar att jag måste includa något här i början för att nå den funktionen
+                $admin = <<<EOA
+                <div class="admin">
+                <p>Edit users</p> // add functions 
+                <p>Edit devices</p> // add functions
+                </div>
+EOA;
+                echo ($admin)
+              }
+              ?>
               <p id="logout">Logout</p>
           </div>
           <p id="open">&#9776;</p>
