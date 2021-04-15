@@ -23,6 +23,7 @@ function init() {
       // Create an area for each room in the map
       rooms.forEach(room => {
         createArea(room);
+        createRoomMenu(room);
       });
       // Start listening for status updates
       startSse();
@@ -95,6 +96,20 @@ function openBar() {
 function closeBar() {
   document.getElementById("sideBar").style.width = "0%";
 }
+
+/* create the rooms and devices in the sidemenu */
+function createRoomMenu(room) {
+  let roomName = document.createElement('p');
+  roomName.innerHTML = room;
+  let menuDiv = document.getElementById('menu');
+  menuDiv.appendChild(roomName);
+  let devicesDiv = document.createElement('div');
+  room.devices.forEach(device => {
+    devicesDiv.appendChild(createDeviceElement(device));
+  });
+}
+
+
 
 /*
  * Create an area for the image map with the coordinates of a room
