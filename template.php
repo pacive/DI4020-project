@@ -23,8 +23,8 @@
                 <p>Edit devices</p> // add functions
                 </div>
 EOA;
-                echo ($admin)
-              }
+                echo ($admin);
+              };
               ?>
               <p id="logout">Logout</p>
           </div>
