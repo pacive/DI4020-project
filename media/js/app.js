@@ -20,9 +20,10 @@ function init() {
       // Save the rooms in the browser
       sessionStorage.setItem('rooms', data);
       let rooms = JSON.parse(data);
-      // Create an area for each room in the map
+      // Create an area for each room in the map 
       rooms.forEach(room => {
         createArea(room);
+        createRoomMenu(room);
       });
       // Start listening for status updates
       startSse();
@@ -88,13 +89,29 @@ function openBar() {
     document.getElementById("sideBar").style.width = "20%";
   }
 }
-
 /*
  * close the menu
  */
 function closeBar() {
   document.getElementById("sideBar").style.width = "0%";
 }
+
+/* create the rooms and devices in the sidemenu */
+function createRoomMenu(room) {
+  let roomDiv = document.createElement('div');
+  let roomName = document.createElement('p');
+  roomName.innerHTML = room.name;
+  let menuDiv = document.getElementById('menu');
+  let devicesDiv = document.createElement('div');
+  room.devices.forEach(device => {
+    devicesDiv.appendChild(createDeviceElement(device));
+  });
+  roomDiv.appendChild(roomName);
+  roomDiv.appendChild(devicesDiv);
+  menuDiv.appendChild(roomDiv);
+}
+
+
 
 /*
  * Create an area for the image map with the coordinates of a room

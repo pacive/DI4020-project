@@ -55,6 +55,23 @@ body {
     margin-left: 20px;
     margin: 30px;
 }
+
+.menu {
+    position: relative;
+    top: 60px;
+}
+.roombtn {
+    background-color: #474545;
+    cursor: pointer;
+}
+
+ /*.dropdown_content {
+    display: none;
+    position: absolute;
+    width: 100%;
+    background-color: #777373;
+} */ 
+
 #logout {
     position: absolute;
     bottom: 20px;
@@ -71,14 +88,6 @@ body {
     z-index: 2;
 }
 
-.sideBar .option {
-    position: absolute;
-    top: 50px;
-}
-.sideBar .admin {
-    position: absolute;
-    bottom: 100px;   
-}
 .image {
     position: relative;
 }
