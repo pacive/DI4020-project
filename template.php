@@ -1,3 +1,8 @@
+<?php
+require_once('util/autoload.php');
+use \Util\Session;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,21 +16,20 @@
           <div id="sideBar" class="sideBar">
               <p id="close">&times;</p>
               <div class="menu"> 
-                  <!-- <div>s and <p>s for the rooms will be added here -->
-              </div>
-              </div>
+                <!-- <div>s and <p>s for the rooms will be added here -->
               <!--add options if user is admin-->
               <?php
-              if (is_admin()) { // antar att jag måste includa något här i början för att nå den funktionen
+              if(Session::is_admin()) { 
                 $admin = <<<EOA
-                <div class="admin">
-                <p>Edit users</p> // add functions 
-                <p>Edit devices</p> // add functions
+                <div class="admin"> 
+                <p>Edit users</p> 
+                <p>Edit devices</p>
                 </div>
 EOA;
                 echo ($admin);
               };
               ?>
+              </div>
               <p id="logout">Logout</p>
           </div>
           <p id="open">&#9776;</p>
@@ -35,6 +39,6 @@ EOA;
             <map id="blueprint" name="blueprint">
             </map>
           </div>
-        </div>
+      </div>
   </body>
 </html>

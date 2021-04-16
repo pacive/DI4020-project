@@ -20,7 +20,7 @@ function init() {
       // Save the rooms in the browser
       sessionStorage.setItem('rooms', data);
       let rooms = JSON.parse(data);
-      // Create an area for each room in the map
+      // Create an area for each room in the map 
       rooms.forEach(room => {
         createArea(room);
         createRoomMenu(room);
@@ -89,7 +89,6 @@ function openBar() {
     document.getElementById("sideBar").style.width = "20%";
   }
 }
-
 /*
  * close the menu
  */
@@ -99,14 +98,17 @@ function closeBar() {
 
 /* create the rooms and devices in the sidemenu */
 function createRoomMenu(room) {
+  let roomDiv = document.createElement('div');
   let roomName = document.createElement('p');
-  roomName.innerHTML = room;
+  roomName.innerHTML = room.name;
   let menuDiv = document.getElementById('menu');
-  menuDiv.appendChild(roomName);
   let devicesDiv = document.createElement('div');
   room.devices.forEach(device => {
     devicesDiv.appendChild(createDeviceElement(device));
   });
+  roomDiv.appendChild(roomName);
+  roomDiv.appendChild(devicesDiv);
+  menuDiv.appendChild(roomDiv);
 }
 
 

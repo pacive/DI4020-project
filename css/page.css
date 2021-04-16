@@ -93,14 +93,6 @@ body {
     z-index: 2;
 }
 
-.sideBar .option {
-    position: absolute;
-    top: 50px;
-}
-.sideBar .admin {
-    position: absolute;
-    bottom: 100px;   
-}
 .image {
     position: relative;
 }
