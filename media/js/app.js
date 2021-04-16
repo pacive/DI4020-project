@@ -137,7 +137,7 @@ function showRoomPopUp(room, mouseX, mouseY) {
   populateRoomPopup(room);
 
   let image = document.querySelector('.image img');
-  let roomCenter = calculateCenter(room.coordinates);
+  let roomCenter = calculateCenter(scaleCoordinates(room.coordinates));
 
   // If the popup is rotated the coordinates need to be adjusted a bit
   let offset = window.matchMedia('(orientation:portrait)').matches ? (roomPopup.offsetWidth - roomPopup.offsetHeight) / 2 : 0;
