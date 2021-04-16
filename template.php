@@ -1,8 +1,25 @@
 <?php
 require_once('util/autoload.php');
 use \Util\Session;
-?>
 
+if (!Session::logged_in() && !strpos($_SERVER['PHP_SELF'], 'login.php')) {
+  http_response_code(302);
+  header('Location: login.php?redirectUri='.$_SERVER['REQUEST_URI']);
+  exit();
+}
+
+function print_page(&$buffer) {
+  return <<<EOF
+  $buffer
+      </div>
+    </div>
+  </body>
+</html>
+EOF;
+}
+
+ob_start('print_page');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -37,16 +54,3 @@ EOA;
         <h1 id="header">Smarthome/or name of the house?</h1>
       </div>
       <div class="content">
-        <div id="image" class ="image">
-          <img src="media/images/blueprint.png" alt="Layout sketch" usemap="#blueprint"/>
-          <map id="blueprint" name="blueprint">
-          </map>
-          <div id="roompopup" class="roompopup">
-            <h6 id="roomname">roomname</h6><span id="closepopup">X</span>
-            <div id="devicelist"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
-</html>
