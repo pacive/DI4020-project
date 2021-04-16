@@ -15,7 +15,7 @@ use \Util\Session;
         <h1 id="header">Smarthome/or name of the house?</h1>
           <div id="sideBar" class="sideBar">
               <p id="close">&times;</p>
-              <div class="menu"> 
+              <div class="menu" id="menu">  
                 <!-- <div>s and <p>s for the rooms will be added here -->
               <!--add options if user is admin-->
               <?php
