@@ -258,7 +258,12 @@ function login() {
   
   doPost(uri, JSON.stringify(json), (status) => {
     if (status == 204) {
-      window.location.assign(PROJECT_ROOT);
+      var redirectUri = new URLSearchParams(window.location.search).get('redirectUri');
+      if (redirectUri !== null && redirectUri !== '') {
+        window.location.assign(redirectUri);
+      } else {
+        window.location.assign(PROJECT_ROOT);
+      }
     } else {
       let p = document.getElementById("error");
       if (p === null || p === undefined) {
