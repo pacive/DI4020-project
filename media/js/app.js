@@ -100,17 +100,22 @@ function closeBar() {
 function createRoomMenu(room) {
   let roomDiv = document.createElement('div');
   let roomName = document.createElement('p');
+  roomName.classList.add('roombtn');
+  roomName.id = room.name;
   roomName.innerHTML = room.name;
   let menuDiv = document.getElementById('menu');
   let devicesDiv = document.createElement('div');
+  devicesDiv.classList.add('dropdown_content');
+  devicesDiv.id = room.name + "_dropdown";
+  roomName.addEventListener('click', () => {
+    open_closeDropdown(devicesDiv.id) });
   room.devices.forEach(device => {
     devicesDiv.appendChild(createDeviceElement(device));
   });
   roomDiv.appendChild(roomName);
   roomDiv.appendChild(devicesDiv);
-  menuDiv.appendChild(roomDiv);
+  menuDiv.prepend(roomDiv);
 }
-
 
 
 /*
@@ -191,6 +196,19 @@ function createDeviceElement(device) {
     toggle.addEventListener('change', () => { setStatus(device.id, toggle.checked ? "ON" : "OFF"); });
   }
   return p;
+}
+
+
+/* function for bringing out the devices when clicking on a room in menu */
+
+
+function open_closeDropdown(id) {
+  let dropdownDiv = document.getElementById(id);
+  if (dropdownDiv.style.diplay == "none") {
+    dropdownDiv.style.display = "block";
+  } else if (dropdownDiv.style.display == "block") {
+    dropdownDiv.style.display = "none";
+  };
 }
 
   /*
