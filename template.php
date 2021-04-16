@@ -35,7 +35,7 @@ EOA;
           <p id="open">&#9776;</p>
 
           <div id="image" class ="image">
-            <img src="https://media.discordapp.net/attachments/801081934410678302/826815048143208468/notstolen.png?width=604&height=415" alt="Layout sketch" usemap="#blueprint"/>
+            <img src="media/images/blueprint.png" alt="Layout sketch" usemap="#blueprint"/>
             <map id="blueprint" name="blueprint">
             </map>
           </div>
