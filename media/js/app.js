@@ -106,7 +106,7 @@ function createRoomMenu(room) {
   let menuDiv = document.getElementById('menu');
   let devicesDiv = document.createElement('div');
   devicesDiv.classList.add('dropdown_content');
-  devicesDiv.id = "dropdown" + room.id;
+  devicesDiv.id = "dropdown-" + room.id;
   roomName.addEventListener('click', () => {
     open_closeDropdown(devicesDiv.id) });
   room.devices.forEach(device => {
@@ -204,28 +204,30 @@ function createDeviceElement(device) {
 
 function open_closeDropdown(id) {
   let dropdownDiv = document.getElementById(id);
-  if (dropdownDiv.style.diplay == "none") {
+  if (dropdownDiv.style.display == "none" || dropdownDiv.style.display == "") {
     dropdownDiv.style.display = "block";
   } else if (dropdownDiv.style.display == "block") {
     dropdownDiv.style.display = "none";
   };
 }
 
-/* getting all users, to edit them 
+/* getting all users, to edit them  */
 
-function getUsers() {
+function getUsernames() {
   getAll('users', '', (status, data) => {
     if (status === 200) {
       var users = JSON.parse(data);
       // users är nu en array av user-objekt
+      let selectElement = document.getElementById('selectUsernames');
       users.forEach(user => {
-        // kan använda user.id, user.name, user.admin, 
-        // eller ge user till en funktion som använder det
+        let option = document.createElement('option');
+        option.text = user.name;
+        selectElement.add(option)
+        ;
       });
     }
   });
-
-} */
+} 
 
   /*
    * Math calculations
