@@ -1,7 +1,3 @@
-const PROJECT_ROOT = "/~andalf20/project/";
-const API_BASE = PROJECT_ROOT + "api/";
-
-
 /*
  * Call init() function after page has finished loading
  */
@@ -63,7 +59,7 @@ function init() {
  * Start subscribing to events from server and updates element
  */
 function startSse() {
-  var events = new EventSource(API_BASE + "events.php");
+  var events = new EventSource("api/events.php");
   events.onmessage = (event) => {
     console.log(event.data);
     let data = JSON.parse(event.data);
@@ -263,7 +259,7 @@ function calculateCenter(coordinates) {
  */
 function setStatus(deviceId, status) {
   let data = { "id": deviceId, "status": status };
-  let uri = API_BASE + "status.php"
+  let uri = "api/status.php"
   doPost(uri, JSON.stringify(data), () => { return; });
 }
 
@@ -272,7 +268,7 @@ function setStatus(deviceId, status) {
  */
 function login() {
   let json = { username: document.getElementById("username").value, password: document.getElementById("password").value };
-  let uri = PROJECT_ROOT + "/api/auth.php";
+  let uri = "api/auth.php";
   
   doPost(uri, JSON.stringify(json), (status) => {
     if (status == 204) {
@@ -280,7 +276,7 @@ function login() {
       if (redirectUri !== null && redirectUri !== '') {
         window.location.assign(redirectUri);
       } else {
-        window.location.assign(PROJECT_ROOT);
+        window.location.assign('index.php');
       }
     } else {
       let p = document.getElementById("error");
@@ -303,7 +299,7 @@ function login() {
  * Get all rooms/devices/roomtypes/devicetypes/users
  */
 function getAll(endpoint, params = "", callback) {
-  let uri = API_BASE + endpoint + ".php" + params;
+  let uri = 'api/' + endpoint + '.php' + params;
   doGet(uri, callback);
 }
 
