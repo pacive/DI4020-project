@@ -40,7 +40,7 @@ ob_start('print_page');
           if(Session::is_admin()) { 
             $admin = <<<EOA
             <div class="admin"> 
-            <p>Edit users</p> 
+            <p onclick="getUsernames()">Edit users</p> 
             <p>Edit devices</p>
             </div>
 EOA;
