@@ -101,12 +101,12 @@ function createRoomMenu(room) {
   let roomDiv = document.createElement('div');
   let roomName = document.createElement('p');
   roomName.classList.add('roombtn');
-  roomName.id = room.name;
+  roomName.id = room.id;
   roomName.innerHTML = room.name;
   let menuDiv = document.getElementById('menu');
   let devicesDiv = document.createElement('div');
   devicesDiv.classList.add('dropdown_content');
-  devicesDiv.id = room.name + "_dropdown";
+  devicesDiv.id = "dropdown" + room.id;
   roomName.addEventListener('click', () => {
     open_closeDropdown(devicesDiv.id) });
   room.devices.forEach(device => {
@@ -210,6 +210,22 @@ function open_closeDropdown(id) {
     dropdownDiv.style.display = "none";
   };
 }
+
+/* getting all users, to edit them 
+
+function getUsers() {
+  getAll('users', '', (status, data) => {
+    if (status === 200) {
+      var users = JSON.parse(data);
+      // users är nu en array av user-objekt
+      users.forEach(user => {
+        // kan använda user.id, user.name, user.admin, 
+        // eller ge user till en funktion som använder det
+      });
+    }
+  });
+
+} */
 
   /*
    * Math calculations
