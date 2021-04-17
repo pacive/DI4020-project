@@ -69,31 +69,12 @@ body {
 
 
 
-#Livingroom_dropdown {
+.dropdown_content {
     display: none;
-    position: absolute;
     background-color: #3b3838;
 }
-#Bathroom_dropdown {
-    display: none;
-    position: absolute;
-    background-color: #3b3838;
-}
-#Kitchen_dropdown {
-    display: none;
-    position: absolute;
-    background-color: #3b3838;
-}
-#Workarea_dropdown {
-    display: none;
-    position: absolute;
-    background-color: #3b3838;
-}
-#Bedroom_dropdown {
-    display: none;
-    position: absolute;
-    background-color: #3b3838;
-}
+
+
 
 #logout {
     position: absolute;
