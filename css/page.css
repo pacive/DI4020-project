@@ -61,20 +61,47 @@ body {
     top: 60px;
 }
 .roombtn {
+    position:relative;
     background-color: #474545;
     cursor: pointer;
 }
 
- /*.dropdown_content {
+
+
+#Livingroom_dropdown {
     display: none;
     position: absolute;
-    width: 100%;
-    background-color: #777373;
-} */ 
+    background-color: #3b3838;
+}
+#Bathroom_dropdown {
+    display: none;
+    position: absolute;
+    background-color: #3b3838;
+}
+#Kitchen_dropdown {
+    display: none;
+    position: absolute;
+    background-color: #3b3838;
+}
+#Workarea_dropdown {
+    display: none;
+    position: absolute;
+    background-color: #3b3838;
+}
+#Bedroom_dropdown {
+    display: none;
+    position: absolute;
+    background-color: #3b3838;
+}
 
 #logout {
     position: absolute;
-    bottom: 20px;
+    top: 695px;
+}
+
+.admin {
+    position: absolute;
+    top: 485px;
 }
 .sideBar p:hover {
     color: #726f6f;

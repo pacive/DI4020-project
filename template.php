@@ -47,8 +47,8 @@ EOA;
             echo ($admin);
           };
           ?>
-          </div>
           <p id="logout">Logout</p>
+          </div>
         </div>
         <p id="open">&#9776;</p>
         <h1 id="header">Smarthome/or name of the house?</h1>
