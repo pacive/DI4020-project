@@ -6,20 +6,19 @@
    */
   class Logger {
 
+const SQL_LOG_ACCESS = <<<SQL
+INSERT INTO AccessLog (Page, RequestType, ResponseCode, UserId)
+VALUES (?, ?, ?, ?);
+SQL;
+
     /*
-     * TODO
-     * 
      * Log the request method, uri, response code and user to the database
      */
     static function log_access() {
-      return;
-      echo '<br />'.$_SERVER['REQUEST_METHOD'];
-      echo '<br />'.$_SERVER['REQUEST_URI'];
-      echo '<br />'.http_response_code();
-      if (isset($_SESSION['UserId'])) {
-        echo '<br />'.$_SESSION['UserName'];
-      } else {
-        echo '<br />'.-1;
-      }
+      $query = DB::get_connection()->prepare(self::SQL_LOG_ACCESS);
+      $response_code = http_response_code();
+      $user_id = Session::user_id();
+      $query->bind_param('ssii', $_SERVER['PHP_SELF'], $_SERVER['REQUEST_METHOD'], $response_code, $user_id);
+      $query->execute();
     }
   }

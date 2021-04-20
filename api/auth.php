@@ -2,6 +2,7 @@
   namespace Api;
   require_once('../util/autoload.php');
   use \Util\Session;
+  use \Util\Logger;
 
   /*
    * Endpoint for handling authenticatin of users
@@ -15,6 +16,7 @@
     static function handle_request() {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
+        Logger::log_access();
         die();
       }
 
@@ -25,6 +27,7 @@
       } else {
         http_response_code(401);
       }
+      Logger::log_access();
     }
   }
 

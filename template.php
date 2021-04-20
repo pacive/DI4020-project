@@ -1,14 +1,17 @@
 <?php
 require_once('util/autoload.php');
 use \Util\Session;
+use \Util\Logger;
 
 if (!Session::logged_in() && !strpos($_SERVER['PHP_SELF'], 'login.php')) {
   http_response_code(302);
   header('Location: login.php?redirectUri='.$_SERVER['REQUEST_URI']);
+  Logger::log_access();
   exit();
 }
 
 function print_page(&$buffer) {
+  Logger::log_access();
   return <<<EOF
   $buffer
       </div>

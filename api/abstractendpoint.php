@@ -19,6 +19,7 @@
         return;
       }
       http_response_code(403);
+      Logger::log_access();
       die('Unauthorized');
     }
 
