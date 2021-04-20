@@ -1,5 +1,5 @@
 <?php 
-  $page = 'login';
+  $init = 'login';
   require_once('template.php'); 
 ?>
 <form id="login" name="login">

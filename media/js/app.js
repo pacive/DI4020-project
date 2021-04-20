@@ -61,9 +61,13 @@ INIT = {
  * Call inititalization functions on page load
  */
 window.addEventListener('load', () => {
-  var page = document.body.dataset['page'];
   INIT.common();
-  INIT[page]();
+  var initFunctions = document.body.dataset.init?.split(' ');
+  initFunctions?.forEach(func => {
+    if (INIT[func] !== undefined) {
+      INIT[func]();
+    }
+  })  
 });
 
 /*

@@ -1,5 +1,5 @@
 <?php 
-  $page = 'index';
+  $init = 'index';
   require_once('template.php');
 ?>
 <div id="image" class ="image">

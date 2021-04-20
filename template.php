@@ -31,7 +31,7 @@ ob_start('print_page');
     <link rel="stylesheet" href="css/page.css">
     <script defer src="media/js/app.js"></script>
   </head>
-  <body <?php if (isset($page)) { echo "data-page=\"$page\""; } ?>>
+  <body <?php if (isset($init)) { echo "data-init=\"$init\""; } ?>>
     <div class="container">
       <div class="head">
         <div id="sideBar" class="sideBar closed">
