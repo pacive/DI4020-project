@@ -5,13 +5,8 @@ INIT = {
   common: function() {
     // Add event listeners to menu open and close buttons
     document.getElementById('open')?.addEventListener('click', openBar);
-    document.getElementById('close')?.addEventListener('click', closeBar);    
-  },
+    document.getElementById('close')?.addEventListener('click', closeBar);
 
-  /*
-   * index
-   */
-  index: function() {
     // Get all rooms from the api
     getAll("rooms", "?includeDevices=true", (status, data) => {
       if (status == 200) {
@@ -20,13 +15,28 @@ INIT = {
         let rooms = JSON.parse(data);
         // Create an area for each room in the map 
         rooms.forEach(room => {
-          createArea(room);
           createRoomMenu(room);
         });
         // Start listening for status updates
         startSse();
       }
     });
+  },
+
+  /*
+   * index
+   */
+  index: function() {
+    var initializeAreas = () => {
+      let rooms = sessionStorage.getItem('rooms');
+      if (rooms === null) {
+        setTimeout(initializeAreas, 2000);
+      } else {
+        JSON.parse(rooms).forEach(room => { createArea(room); })
+      }      
+    };
+ 
+    initializeAreas();
 
     // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
     window.addEventListener('resize', () => {
@@ -35,7 +45,7 @@ INIT = {
         mapElem.removeChild(first);
       }
       let rooms = JSON.parse(sessionStorage.getItem('rooms'));
-      rooms.forEach(room => {
+      rooms?.forEach(room => {
         createArea(room);
       });
     });
