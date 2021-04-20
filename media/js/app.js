@@ -1,64 +1,70 @@
-/*
- * Call init() function after page has finished loading
- */
-window.addEventListener('load', () => {
-  init();
-});
+INIT = {
+  /*
+   * Common functions that should be executed on every page
+   */
+  common: function() {
+    // Add event listeners to menu open and close buttons
+    document.getElementById('open')?.addEventListener('click', openBar);
+    document.getElementById('close')?.addEventListener('click', closeBar);    
+  },
 
-/*
- * Initialize the page by downloading data, adding event listeners,
- * and creating elements
- */
-function init() {
-  // Get all rooms from the api
-  getAll("rooms", "?includeDevices=true", (status, data) => {
-    if (status == 200) {
-      // Save the rooms in the browser
-      sessionStorage.setItem('rooms', data);
-      let rooms = JSON.parse(data);
-      // Create an area for each room in the map 
+  /*
+   * index
+   */
+  index: function() {
+    // Get all rooms from the api
+    getAll("rooms", "?includeDevices=true", (status, data) => {
+      if (status == 200) {
+        // Save the rooms in the browser
+        sessionStorage.setItem('rooms', data);
+        let rooms = JSON.parse(data);
+        // Create an area for each room in the map 
+        rooms.forEach(room => {
+          createArea(room);
+          createRoomMenu(room);
+        });
+        // Start listening for status updates
+        startSse();
+      }
+    });
+
+    // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
+    window.addEventListener('resize', () => {
+      let mapElem = document.querySelector('.image map');
+      while (first = mapElem.firstChild) {
+        mapElem.removeChild(first);
+      }
+      let rooms = JSON.parse(sessionStorage.getItem('rooms'));
       rooms.forEach(room => {
         createArea(room);
-        createRoomMenu(room);
       });
-      // Start listening for status updates
-      startSse();
-    }
-  });
-
-  // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
-  window.addEventListener('resize', (e) => {
-    let mapElem = document.querySelector('.image map');
-    while (first = mapElem.firstChild) {
-      mapElem.removeChild(first);
-    }
-    let rooms = JSON.parse(sessionStorage.getItem('rooms'));
-    rooms.forEach(room => {
-      createArea(room);
     });
-  });
 
-  // Add event listener to popup close button
-  document.getElementById('closepopup')?.addEventListener('click', () => {
-    document.getElementById('roompopup').style.visibility = 'hidden';
-  });  
+    // Add event listener to popup close button
+    document.getElementById('closepopup')?.addEventListener('click', () => {
+      document.getElementById('roompopup').style.visibility = 'hidden';
+    });  
+  },
 
-  // Add event listeners to login form if at the login page
-  let loginForm = document.getElementById("login");
-  if (loginForm !== null) {
+  /*
+   * login
+   */
+  login: function() {      
+    // Add event listeners to login form if at the login page
+    let loginForm = document.getElementById("login");
     loginForm.querySelector('#submit').addEventListener('click', login);
     document.addEventListener('keypress', function(ev) { ev.key == 'Enter' ? login() : null; });
   }
-
-  // Add event listeners to menu open and close buttons
-  document.getElementById('open')?.addEventListener('click', openBar);
-  document.getElementById('close')?.addEventListener('click', closeBar);
-
-  // add usernames in select element for editing users
-  if (document.getElementById("selectUsernames") !== null) {
-    getUsernames();
-  }
 }
+
+/*
+ * Call inititalization functions on page load
+ */
+window.addEventListener('load', () => {
+  var page = document.body.dataset['page'];
+  INIT.common();
+  INIT[page]();
+});
 
 /*
  * Start subscribing to events from server and updates element
