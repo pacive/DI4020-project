@@ -24,16 +24,9 @@ INIT = {
    * index
    */
   index: function() {
-    var initializeAreas = () => {
-      let rooms = sessionStorage.getItem('rooms');
-      if (rooms === null) {
-        setTimeout(initializeAreas, 2000);
-      } else {
-        JSON.parse(rooms).forEach(room => { createArea(room); })
-      }      
-    };
- 
-    initializeAreas();
+    waitForRoomData().then(rooms => {
+      rooms.forEach(room => { createArea(room); })
+    });
 
     // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
     window.addEventListener('resize', () => {
@@ -93,6 +86,20 @@ function startSse() {
       p.querySelector('input').checked = data.status == 'ON';
     }
   }
+}
+
+/*
+ * Wait until the room data is stored in sessionStorage
+ */
+async function waitForRoomData() {
+  return new Promise(resolve => {
+    let rooms = sessionStorage.getItem('rooms');
+    if (rooms !== null) {
+     resolve(JSON.parse(rooms));
+    } else {
+      setTimeout(() => { resolve(waitForRoomData()); }, 500);
+    }
+  })
 }
 
   /*
