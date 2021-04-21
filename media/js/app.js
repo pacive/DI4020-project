@@ -387,13 +387,10 @@ function getStatus(deviceId) {
 }
 
 
-/* delete user from form 
+/* delete user from form */
 
 function deleteUser() {
   let theForm = document.getElementById('selectUsernames');
-  let username = theForm.options[theForm.selectedIndex].text;
-  doDelete()
+  let deleteUserId = theForm.value;
+  doDelete('users.php?id=' + deleteUserId, (status));
 }
-
-var e = document.getElementById("ddlViewBy");
-var strUser = e.options[e.selectedIndex].text; */
