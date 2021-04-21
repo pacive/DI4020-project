@@ -52,6 +52,10 @@ INIT = {
       event.preventDefault();
       login();
     });
+  },
+
+  editUsers: function() {
+    getUsernames();
   }
 }
 
@@ -236,18 +240,22 @@ function open_closeDropdown(id) {
 /* getting all users, to edit them  */
 
 function getUsernames() {
-  getAll('users', '', (status, data) => {
-    if (status === 200) {
-      var users = JSON.parse(data);
-      // users är nu en array av user-objekt
-      let selectElement = document.getElementById('selectUsernames');
-      users.forEach(user => {
-        let option = document.createElement('option');
-        option.text = user.name;
-        option.value = user.id;
-        selectElement.add(option);
+  getAll('users').then(users => {
+    let selectElement = document.getElementById('selectUsernames');
+    selectElement.addEventListener('change', () => {
+      let nameElement = document.getElementById('username');
+      let adminElem = document.getElementById('isAdmin');
+      getById('users', selectElement.value).then(user => {
+        nameElement.value = user.name;
+        adminElem.checked = user.admin;
       });
-    }
+    });
+    users.forEach(user => {
+      let option = document.createElement('option');
+      option.text = user.name;
+      option.value = user.id;
+      selectElement.add(option);
+    });
   });
 } 
 
