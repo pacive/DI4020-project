@@ -53,6 +53,11 @@ function init() {
   // Add event listeners to menu open and close buttons
   document.getElementById('open')?.addEventListener('click', openBar);
   document.getElementById('close')?.addEventListener('click', closeBar);
+
+  // add usernames in select element for editing users
+  if (document.getElementById("selectUsernames") !== null) {
+    getUsernames();
+  }
 }
 
 /*
@@ -95,7 +100,7 @@ function createRoomMenu(room) {
   let roomDiv = document.createElement('div');
   let roomName = document.createElement('p');
   roomName.classList.add('roombtn');
-  roomName.id = room.id;
+  roomName.id = 'menu-room-' + room.id;
   roomName.innerHTML = room.name;
   let menuDiv = document.getElementById('menu');
   let devicesDiv = document.createElement('div');
@@ -216,8 +221,8 @@ function getUsernames() {
       users.forEach(user => {
         let option = document.createElement('option');
         option.text = user.name;
-        selectElement.add(option)
-        ;
+        option.value = user.id;
+        selectElement.add(option);
       });
     }
   });
@@ -379,4 +384,13 @@ function doRequest(xhr, callback, body = null) {
  */
 function getStatus(deviceId) {
   return sessionStorage.getItem('device-' + deviceId);
+}
+
+
+/* delete user from form */
+
+function deleteUser() {
+  let theForm = document.getElementById('selectUsernames');
+  let deleteUserId = theForm.value;
+  doDelete('users.php?id=' + deleteUserId);
 }
