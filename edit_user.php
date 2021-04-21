@@ -6,8 +6,6 @@ require_once('template.php');
 
     button for add user-->
 
-
-
     <form>
         <label>Select user:</label>
         <select name="selectUsername" id="selectUsernames">
@@ -22,3 +20,6 @@ require_once('template.php');
         <input type="button" value="Delete user" onclick="deleteUser()">
     </form>
 
+</div>
+</body>
+</html>

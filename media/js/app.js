@@ -392,5 +392,5 @@ function getStatus(deviceId) {
 function deleteUser() {
   let theForm = document.getElementById('selectUsernames');
   let deleteUserId = theForm.value;
-  doDelete('users.php?id=' + deleteUserId, (status));
+  doDelete('users.php?id=' + deleteUserId);
 }
