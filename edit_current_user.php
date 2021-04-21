@@ -1,6 +1,6 @@
 <?php
 $admin = true;
-$init = getUsers;
+// $init = editUsers;
 require_once('template.php');
 ?>
 
