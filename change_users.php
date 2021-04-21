@@ -1,4 +1,5 @@
 <?php
+$admin = true;
 require_once('template.php');
 ?>
 
