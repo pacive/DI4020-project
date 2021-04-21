@@ -85,6 +85,10 @@ function startSse() {
     if (p !== null) {
       p.querySelector('input').checked = data.status == 'ON';
     }
+    let p = document.getElementById("menu-device-" + data.id);
+    if (p !== null) {
+      p.querySelector('input').checked = data.status == 'ON';
+    }
   }
 }
 
@@ -135,7 +139,9 @@ function createRoomMenu(room) {
   roomName.addEventListener('click', () => {
     open_closeDropdown(devicesDiv.id) });
   room.devices.forEach(device => {
-    devicesDiv.appendChild(createDeviceElement(device));
+    let deviceElem = createDeviceElement(device);
+    deviceElem.id = 'menu-device-' + device.id;
+    devicesDiv.appendChild(deviceElem);
   });
   roomDiv.appendChild(roomName);
   roomDiv.appendChild(devicesDiv);
@@ -324,7 +330,11 @@ async function submitForm(formId) {
   let data = {};
 
   inputs.forEach(input => {
-    data[input.name] = input.value;
+    if (input.type = 'checkbox') {
+      data[input.name] = input.checked;
+    } else {
+      data[input.name] = input.value;
+    }
   });
 
   switch (form.method) {
