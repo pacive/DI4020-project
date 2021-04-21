@@ -11,7 +11,7 @@ INIT = {
     getAll("rooms", {includeDevices: true}).then(rooms => {
       // Save the rooms in the browser
       sessionStorage.setItem('rooms', JSON.stringify(rooms));
-      // Create an area for each room in the map 
+      // Create the rooms in the menu 
       rooms.forEach(room => {
         createRoomMenu(room);
       });  
@@ -25,18 +25,15 @@ INIT = {
    */
   index: function() {
     waitForRoomData().then(rooms => {
-      rooms.forEach(room => { createArea(room); })
+      rooms.forEach(room => { createArea(room) })
     });
 
     // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
     window.addEventListener('resize', () => {
-      let mapElem = document.querySelector('.image map');
-      while (first = mapElem.firstChild) {
-        mapElem.removeChild(first);
-      }
       let rooms = JSON.parse(sessionStorage.getItem('rooms'));
       rooms?.forEach(room => {
-        createArea(room);
+        let area = document.getElementById('room-area-' + room.id);
+        area.coords = scaleCoordinates(room.coordinates);
       });
     });
 
@@ -50,12 +47,11 @@ INIT = {
    * login
    */
   login: function() {      
-    // Add event listeners to login form
-    document.getElementById("login").addEventListener('submit', event => {
+    // Override default submit behaviour
+    document.getElementById('login').addEventListener('submit', event => {
       event.preventDefault();
       login();
     });
-    document.addEventListener('keypress', function(ev) { ev.key == 'Enter' ? login() : null; });
   }
 }
 
@@ -152,7 +148,8 @@ function createArea(room) {
   area.shape = 'poly';
   area.coords = scaleCoordinates(room.coordinates).toString();
   area.tabIndex = room.id;
-  area.addEventListener('click', (event) => {
+  area.id = 'room-area-' + room.id;
+  area.addEventListener('click', event => {
     showRoomPopUp(room, event.offsetX, event.offsetY);
   });
   document.getElementById('blueprint').appendChild(area);
