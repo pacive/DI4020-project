@@ -1,64 +1,76 @@
-/*
- * Call init() function after page has finished loading
- */
-window.addEventListener('load', () => {
-  init();
-});
+INIT = {
+  /*
+   * Common functions that should be executed on every page
+   */
+  common: function() {
+    // Add event listeners to menu open and close buttons
+    document.getElementById('open')?.addEventListener('click', openBar);
+    document.getElementById('close')?.addEventListener('click', closeBar);
 
-/*
- * Initialize the page by downloading data, adding event listeners,
- * and creating elements
- */
-function init() {
-  // Get all rooms from the api
-  getAll("rooms", "?includeDevices=true", (status, data) => {
-    if (status == 200) {
+    // Get all rooms from the api
+    getAll("rooms", {includeDevices: true}).then(rooms => {
       // Save the rooms in the browser
-      sessionStorage.setItem('rooms', data);
-      let rooms = JSON.parse(data);
-      // Create an area for each room in the map 
+      sessionStorage.setItem('rooms', JSON.stringify(rooms));
+      // Create the rooms in the menu 
       rooms.forEach(room => {
-        createArea(room);
         createRoomMenu(room);
-      });
+      });  
       // Start listening for status updates
-      startSse();
-    }
-  });
+    }).then(startSse)
+    .catch(error => console.log(error.statusText));
+  },
 
-  // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
-  window.addEventListener('resize', (e) => {
-    let mapElem = document.querySelector('.image map');
-    while (first = mapElem.firstChild) {
-      mapElem.removeChild(first);
-    }
-    let rooms = JSON.parse(sessionStorage.getItem('rooms'));
-    rooms.forEach(room => {
-      createArea(room);
+  /*
+   * index
+   */
+  index: function() {
+    waitForRoomData().then(rooms => {
+      rooms.forEach(room => { createArea(room) })
     });
-  });
 
-  // Add event listener to popup close button
-  document.getElementById('closepopup')?.addEventListener('click', () => {
-    document.getElementById('roompopup').style.visibility = 'hidden';
-  });  
+    // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
+    window.addEventListener('resize', () => {
+      let rooms = JSON.parse(sessionStorage.getItem('rooms'));
+      rooms?.forEach(room => {
+        let area = document.getElementById('room-area-' + room.id);
+        area.coords = scaleCoordinates(room.coordinates);
+      });
+    });
 
-  // Add event listeners to login form if at the login page
-  let loginForm = document.getElementById("login");
-  if (loginForm !== null) {
-    loginForm.querySelector('#submit').addEventListener('click', login);
-    document.addEventListener('keypress', function(ev) { ev.key == 'Enter' ? login() : null; });
-  }
+    // Add event listener to popup close button
+    document.getElementById('closepopup')?.addEventListener('click', () => {
+      document.getElementById('roompopup').style.visibility = 'hidden';
+    });  
+  },
 
-  // Add event listeners to menu open and close buttons
-  document.getElementById('open')?.addEventListener('click', openBar);
-  document.getElementById('close')?.addEventListener('click', closeBar);
+  /*
+   * login
+   */
+  login: function() {      
+    // Override default submit behaviour
+    document.getElementById('login').addEventListener('submit', event => {
+      event.preventDefault();
+      login();
+    });
+  },
 
-  // add usernames in select element for editing users
-  if (document.getElementById("selectUsernames") !== null) {
+  editUsers: function() {
     getUsernames();
   }
 }
+
+/*
+ * Call inititalization functions on page load
+ */
+window.addEventListener('load', () => {
+  INIT.common();
+  var initFunctions = document.body.dataset.init?.split(' ');
+  initFunctions?.forEach(func => {
+    if (INIT[func] !== undefined) {
+      INIT[func]();
+    }
+  })  
+});
 
 /*
  * Start subscribing to events from server and updates element
@@ -74,6 +86,20 @@ function startSse() {
       p.querySelector('input').checked = data.status == 'ON';
     }
   }
+}
+
+/*
+ * Wait until the room data is stored in sessionStorage
+ */
+async function waitForRoomData() {
+  return new Promise(resolve => {
+    let rooms = sessionStorage.getItem('rooms');
+    if (rooms !== null) {
+     resolve(JSON.parse(rooms));
+    } else {
+      setTimeout(() => { resolve(waitForRoomData()); }, 500);
+    }
+  })
 }
 
   /*
@@ -126,7 +152,8 @@ function createArea(room) {
   area.shape = 'poly';
   area.coords = scaleCoordinates(room.coordinates).toString();
   area.tabIndex = room.id;
-  area.addEventListener('click', (event) => {
+  area.id = 'room-area-' + room.id;
+  area.addEventListener('click', event => {
     showRoomPopUp(room, event.offsetX, event.offsetY);
   });
   document.getElementById('blueprint').appendChild(area);
@@ -213,18 +240,22 @@ function open_closeDropdown(id) {
 /* getting all users, to edit them  */
 
 function getUsernames() {
-  getAll('users', '', (status, data) => {
-    if (status === 200) {
-      var users = JSON.parse(data);
-      // users är nu en array av user-objekt
-      let selectElement = document.getElementById('selectUsernames');
-      users.forEach(user => {
-        let option = document.createElement('option');
-        option.text = user.name;
-        option.value = user.id;
-        selectElement.add(option);
+  getAll('users').then(users => {
+    let selectElement = document.getElementById('selectUsernames');
+    selectElement.addEventListener('change', () => {
+      let nameElement = document.getElementById('username');
+      let adminElem = document.getElementById('isAdmin');
+      getById('users', selectElement.value).then(user => {
+        nameElement.value = user.name;
+        adminElem.checked = user.admin;
       });
-    }
+    });
+    users.forEach(user => {
+      let option = document.createElement('option');
+      option.text = user.name;
+      option.value = user.id;
+      selectElement.add(option);
+    });
   });
 } 
 
@@ -279,36 +310,54 @@ function calculateCenter(coordinates) {
  * Send device update to server
  */
 function setStatus(deviceId, status) {
-  let data = { "id": deviceId, "status": status };
+  let data = { id: deviceId, status: status };
   let uri = "api/status.php"
-  doPost(uri, JSON.stringify(data), () => { return; });
+  doPost(uri, data);
+}
+
+/*
+ * Sends a form to the server as json
+ */
+async function submitForm(formId) {
+  let form = document.getElementById(formId);
+  let inputs = form.querySelectorAll('input, select, textarea');
+  let data = {};
+
+  inputs.forEach(input => {
+    data[input.name] = input.value;
+  });
+
+  switch (form.method) {
+    case 'post':
+      return doPost(form.action, data);
+    case 'put':
+      return doPut(form.action, data);
+    default:
+      return doGet(form.action, data);
+  }
 }
 
 /*
  * Format the values from the login form as JSON and send to the auth endpoint
  */
 function login() {
-  let json = { username: document.getElementById("username").value, password: document.getElementById("password").value };
-  let uri = "api/auth.php";
-  
-  doPost(uri, JSON.stringify(json), (status) => {
-    if (status == 204) {
-      var redirectUri = new URLSearchParams(window.location.search).get('redirectUri');
-      if (redirectUri !== null && redirectUri !== '') {
-        window.location.assign(redirectUri);
-      } else {
-        window.location.assign('index.php');
-      }
+  submitForm('login').then(() => {
+    var redirectUri = new URLSearchParams(window.location.search).get('redirectUri');
+    if (redirectUri !== null && redirectUri !== '') {
+      window.location.assign(redirectUri);
     } else {
-      let p = document.getElementById("error");
-      if (p === null || p === undefined) {
-        p = document.createElement("p");
-        p.id = "error";
-        p.class = "error";
-        p.appendChild(document.createTextNode("Invalid username or password"));
-        document.getElementById("login").appendChild(p);
-      }
+      window.location.assign('index.php');
     }
+  })
+  .catch(() => {
+    let p = document.getElementById("error");
+    if (p === null || p === undefined) {
+      p = document.createElement("p");
+      p.id = "error";
+      p.class = "error";
+      document.getElementById("login").appendChild(p);
+   }
+   p.textContent = "Invalid username or password";
   });
 }
 
@@ -317,62 +366,81 @@ function login() {
    */
 
 /*
+ * Get an entity from rooms/devices/roomtypes/devicetypes/users by its id
+ */
+async function getById(endpoint, id, params = {}) {
+  let uri = 'api/' + endpoint + '.php';
+  params.id = id;
+  return doGet(uri, params).then(response => response.json());
+}
+
+/*
  * Get all rooms/devices/roomtypes/devicetypes/users
  */
-function getAll(endpoint, params = "", callback) {
-  let uri = 'api/' + endpoint + '.php' + params;
-  doGet(uri, callback);
+async function getAll(endpoint, params = {}) {
+  let uri = 'api/' + endpoint + '.php';
+  return doGet(uri, params).then(response => response.json());
 }
 
 /*
  * Make a GET request
  */
-function doGet(uri, callback) {
-  let xhr = new XMLHttpRequest();
-  xhr.open("GET", uri, true);
-  doRequest(xhr, callback);
+async function doGet(uri, params = {}) {
+  var req = { method: 'GET',
+              headers: {'Accept': 'application/json'} }
+
+  return doRequest(uri, req, params);
 }
 
 /*
  * Make a POST request
  */
-function doPost(uri, body, callback) {
-  let xhr = new XMLHttpRequest();
-  xhr.open("POST", uri, true);
-  xhr.setRequestHeader("Content-Type", "application/json");
-  doRequest(xhr, callback, body);
+async function doPost(uri, body, params = {}) {
+  var req = { method: 'POST',
+              headers: {'Content-Type': 'application/json',
+                        'Accept': 'application/json'},
+              body: JSON.stringify(body) }
+  return doRequest(uri, req, params);
 }
 
 /*
  * Make a PUT request
  */
-function doPut(uri, body, callback) {
-  let xhr = new XMLHttpRequest();
-  xhr.open("PUT", uri, true);
-  xhr.setRequestHeader("Content-Type", "application/json");
-  doRequest(xhr, callback, body);
+async function doPut(uri, body, params = {}) {
+  var req = { method: 'PUT',
+              headers: {'Content-Type': 'application/json',
+                        'Accept': 'application/json'},
+              body: JSON.stringify(body) }
+  return doRequest(uri, req, params);
 }
 
 /*
  * Make a DELETE request
  */
-function doDelete(uri, callback) {
-  let xhr = new XMLHttpRequest();
-  xhr.open("DELETE", uri, true);
-  doRequest(xhr, callback);
+async function doDelete(uri, params = {}) {
+  var req = { method: 'DELETE' }
+  return doRequest(uri, req, params);
 }
 
 /*
- * Send request and execute callback function after response
+ * Make a request to the server
  */
-function doRequest(xhr, callback, body = null) {
-  xhr.setRequestHeader("Accept", "application/json");
-  xhr.send(body);
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      callback(this.status, this.response);
-    }
+async function doRequest(uri, req, params = {}) {
+  if (Object.keys(params).length > 0) {
+    let query = new URLSearchParams();
+    Object.entries(params).forEach(entry => {
+      query.append(entry[0], entry[1]);
+    });
+    uri += '?' + query.toString();
   }
+
+  return fetch(uri, req).then(response => {
+    if (response.ok) {
+      return response;
+    } else {
+      throw response;
+    }
+  });
 }
 
   /*
