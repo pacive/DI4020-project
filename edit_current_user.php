@@ -1,5 +1,5 @@
 <?php
-$init = getUsers();
+// $init = editUsers;
 require_once('template.php');
 ?>
 
