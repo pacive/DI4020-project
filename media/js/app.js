@@ -330,7 +330,11 @@ async function submitForm(formId) {
   let data = {};
 
   inputs.forEach(input => {
-    data[input.name] = input.value;
+    if (input.type = 'checkbox') {
+      data[input.name] = input.checked;
+    } else {
+      data[input.name] = input.value;
+    }
   });
 
   switch (form.method) {
