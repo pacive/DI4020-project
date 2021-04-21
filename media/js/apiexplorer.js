@@ -6,7 +6,8 @@ function apiExplorer() {
   let query = document.getElementById("query").value;
   let req = {
     method: document.getElementById("method").value,
-    headers: {"Accept": "application/json"},
+    headers: {"Accept": "application/json",
+              "Content-Type": "application/json" }
   };
   
   if (req.method == 'POST' || req.method == 'PUT') {
