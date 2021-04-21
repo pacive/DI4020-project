@@ -88,17 +88,15 @@ function startSse() {
  * Open the menu
  */
 function openBar() {
-  if (window.matchMedia('(orientation:portrait)').matches) {
-    document.getElementById("sideBar").style.width = "40%";
-  } else {
-    document.getElementById("sideBar").style.width = "20%";
-  }
+  document.getElementById("sideBar").classList.remove('closed');
+  document.getElementById("sideBar").classList.add('open');
 }
 /*
  * close the menu
  */
 function closeBar() {
-  document.getElementById("sideBar").style.width = "0%";
+  document.getElementById("sideBar").classList.remove('open');
+  document.getElementById("sideBar").classList.add('closed');
 }
 
 /* create the rooms and devices in the sidemenu */
