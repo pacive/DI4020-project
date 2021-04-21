@@ -34,11 +34,12 @@ ob_start('print_page');
   <body>
     <div class="container">
       <div class="head">
-        <div id="sideBar" class="sideBar">
+        <div id="sideBar" class="sideBar closed">
           <p id="close">&times;</p>
           <div class="menu" id="menu">  
             <!-- <div>s and <p>s for the rooms will be added here -->
             <!--add options if user is admin-->
+          </div>
           <?php
           if(Session::is_admin()) { 
             $admin = <<<EOA
@@ -51,8 +52,7 @@ EOA;
           };
           ?>
           <p id="logout">Logout</p>
-          </div>
-        </div>
+       </div>
         <p id="open">&#9776;</p>
         <h1 id="header">Smarthome/or name of the house?</h1>
       </div>

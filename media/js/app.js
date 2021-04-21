@@ -79,17 +79,15 @@ function startSse() {
  * Open the menu
  */
 function openBar() {
-  if (window.matchMedia('(orientation:portrait)').matches) {
-    document.getElementById("sideBar").style.width = "40%";
-  } else {
-    document.getElementById("sideBar").style.width = "20%";
-  }
+  document.getElementById("sideBar").classList.remove('closed');
+  document.getElementById("sideBar").classList.add('open');
 }
 /*
  * close the menu
  */
 function closeBar() {
-  document.getElementById("sideBar").style.width = "0%";
+  document.getElementById("sideBar").classList.remove('open');
+  document.getElementById("sideBar").classList.add('closed');
 }
 
 /* create the rooms and devices in the sidemenu */
@@ -97,12 +95,12 @@ function createRoomMenu(room) {
   let roomDiv = document.createElement('div');
   let roomName = document.createElement('p');
   roomName.classList.add('roombtn');
-  roomName.id = room.name;
+  roomName.id = room.id;
   roomName.innerHTML = room.name;
   let menuDiv = document.getElementById('menu');
   let devicesDiv = document.createElement('div');
   devicesDiv.classList.add('dropdown_content');
-  devicesDiv.id = room.name + "_dropdown";
+  devicesDiv.id = "dropdown-" + room.id;
   roomName.addEventListener('click', () => {
     open_closeDropdown(devicesDiv.id) });
   room.devices.forEach(device => {
@@ -200,12 +198,30 @@ function createDeviceElement(device) {
 
 function open_closeDropdown(id) {
   let dropdownDiv = document.getElementById(id);
-  if (dropdownDiv.style.diplay == "none") {
+  if (dropdownDiv.style.display == "none" || dropdownDiv.style.display == "") {
     dropdownDiv.style.display = "block";
   } else if (dropdownDiv.style.display == "block") {
     dropdownDiv.style.display = "none";
   };
 }
+
+/* getting all users, to edit them  */
+
+function getUsernames() {
+  getAll('users', '', (status, data) => {
+    if (status === 200) {
+      var users = JSON.parse(data);
+      // users är nu en array av user-objekt
+      let selectElement = document.getElementById('selectUsernames');
+      users.forEach(user => {
+        let option = document.createElement('option');
+        option.text = user.name;
+        selectElement.add(option)
+        ;
+      });
+    }
+  });
+} 
 
   /*
    * Math calculations
