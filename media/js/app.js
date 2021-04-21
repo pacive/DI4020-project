@@ -54,8 +54,15 @@ INIT = {
     });
   },
 
+  /*
+   * edit_users
+   */
   editUsers: function() {
     getUsernames();
+    document.getElementById('edit_user').addEventListener('submit', event => {
+      event.preventDefault();
+      submitForm('edit_user', 'put');
+    });
   }
 }
 
@@ -81,14 +88,13 @@ function startSse() {
     console.log(event.data);
     let data = JSON.parse(event.data);
     sessionStorage.setItem('device-' + data.id, data.status);
-    let p = document.getElementById("popup-device-" + data.id);
-    if (p !== null) {
-      p.querySelector('input').checked = data.status == 'ON';
-    }
-    let p = document.getElementById("menu-device-" + data.id);
-    if (p !== null) {
-      p.querySelector('input').checked = data.status == 'ON';
-    }
+    let popupDevice = document.getElementById("popup-device-" + data.id);
+    let menuDevice = document.getElementById("menu-device-" + data.id);
+    [popupDevice, menuDevice].forEach(deviceElem => {
+      if (deviceElem !== null) {
+        deviceElem.querySelector('input').checked = data.status == 'ON';
+      }  
+    });
   }
 }
 
@@ -324,20 +330,24 @@ function setStatus(deviceId, status) {
 /*
  * Sends a form to the server as json
  */
-async function submitForm(formId) {
+async function submitForm(formId, method = null) {
   let form = document.getElementById(formId);
   let inputs = form.querySelectorAll('input, select, textarea');
   let data = {};
 
   inputs.forEach(input => {
-    if (input.type = 'checkbox') {
+    if (input.type == 'checkbox') {
       data[input.name] = input.checked;
-    } else {
+    } else if (input.value != '' && input.name != '') {
       data[input.name] = input.value;
     }
   });
 
-  switch (form.method) {
+  if (method == null) {
+    method = form.method;
+  }
+
+  switch (method) {
     case 'post':
       return doPost(form.action, data);
     case 'put':

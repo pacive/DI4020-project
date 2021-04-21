@@ -61,7 +61,7 @@ SQL;
      * Updates the password for the specified user
      */
     static function set_password($id, $password) {
-      $hashed_password = password_hash($arr['password'], PASSWORD_BCRYPT);
+      $hashed_password = password_hash($password, PASSWORD_BCRYPT);
       $db = self::get_connection();
       $query = $db->prepare(static::SQL_CHPWD);
       $query->bind_param('si', $hashed_password, $id);

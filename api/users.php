@@ -68,12 +68,8 @@
           http_response_code(500);
           return 'Error updating password';
         }
-      } else {
-        http_response_code(400);
-        return 'Bad request';
       }
       return $return;
-
     }
     
     /*
