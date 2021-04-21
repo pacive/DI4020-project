@@ -1,4 +1,5 @@
 <?php
+$admin = true;
 $init = 'editUsers';
 require_once('template.php');
 ?>

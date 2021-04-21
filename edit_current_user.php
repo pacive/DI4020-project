@@ -1,5 +1,6 @@
 <?php
-$init = getUsers();
+$admin = true;
+$init = getUsers;
 require_once('template.php');
 ?>
 

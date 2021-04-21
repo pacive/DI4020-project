@@ -3,11 +3,25 @@ require_once('util/autoload.php');
 use \Util\Session;
 use \Util\Logger;
 
+if ($_SERVER['SCRIPT_FILENAME'] == __FILE__) {
+  http_response_code(404);
+  Logger::log_access();
+  exit();
+}
+
 if (!Session::logged_in() && !strpos($_SERVER['PHP_SELF'], 'login.php')) {
   http_response_code(302);
   header('Location: login.php?redirectUri='.$_SERVER['REQUEST_URI']);
   Logger::log_access();
   exit();
+}
+
+if (isset($admin) && $admin) {
+  if (!Session::is_admin()) {
+    http_response_code(403);
+    Logger::log_access();
+    exit();  
+  }
 }
 
 function print_page(&$buffer) {
