@@ -1,13 +1,13 @@
 <?php
 $admin = true;
-$init = 'editUsers updateUser';
+$init = 'updateUser';
 require_once('template.php');
 ?>
 
     <form id="updateUser" action="api/users.php">
         <label>Select user:</label>
         <select name="id" id="selectUsernames">
-        </select>
+        </select><br>
         <label for="text">Edit username:</label>
         <input type="text" id="username" name="name"><br>
         <label for="text">Edit password:</label>
@@ -17,6 +17,8 @@ require_once('template.php');
         <input type="submit" value="save">
         <input type="button" value="Delete user" onclick="deleteUser()">
     </form>
+
+    <p id="userUpdated"></p>
 
 </div>
 </body>
