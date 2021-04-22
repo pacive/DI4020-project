@@ -1,5 +1,6 @@
 <?php
   namespace Model;
+  require_once('../util/preventaccess.php');
 
   /*
    * Abstract base class for types
