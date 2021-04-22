@@ -6,7 +6,7 @@ require_once('template.php');
 ?> 
 
 
-<form id="new_user" action="api/users.php" method="POST">
+<form id="addUser" action="api/users.php" method="POST">
     <label for="text">Username:</label>
     <input type="text" id="username" name="name"><br>
     <label for="text">Password:</label>
@@ -15,6 +15,8 @@ require_once('template.php');
     <input type="checkbox" id="isAdmin" name="admin" value="isAdmin"><br>
     <input type="submit" value="Save">
 </form>
+
+<p id="userAdded"></p>
 
 </div>
 </body>

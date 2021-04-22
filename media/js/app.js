@@ -54,12 +54,7 @@ INIT = {
     });
   },
 
-  /*
-  * edit users 
-  */
-  editUsers: function() {
-    getUsernames();
-  },
+
 
   /*
   * add users
@@ -67,16 +62,66 @@ INIT = {
   addUser: function() {
     document.getElementById('addUser').addEventListener('submit', event => {
       event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
-      submitForm('addUser');
+      submitForm('addUser').then(response => response.json())
+      .then(newUser => {
+        console.log(newUser);
+        let para = document.getElementById('userAdded');
+       para.innerHTML = newUser.name + " is added";
     });
+  });
     },
 
+    /*
+  * edit users 
+  */
     updateUser: function() {
+      getUsernames();
       document.getElementById('updateUser').addEventListener('submit', event => {
         event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
-        submitForm('updateUser', 'put');
+        submitForm('updateUser', 'put').then(response => response.json())
+        .then(user => {
+          console.log(user);
+          let para = document.getElementById('userUpdated');
+          para.innerHTML = user.name + " is updated";
+        });
       });
-      }
+      },
+
+      /* add device */ 
+    addDevice: function() {
+      getRooms();
+      getDeviceTypes();
+      document.getElementById('addDevice').addEventListener('submit', event => {
+        event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
+        submitForm('addDevice').then(response => response.json())
+        .then(newDevice => {
+          console.log(addDevice);
+          let para = document.getElementById('deviceAdded');
+          para.innerHTML = newDevice.name + " is added";
+        });
+      });
+
+    },
+
+       /*
+  * edit devices 
+  */
+
+  updateDevice: function() {
+    getDevices();
+    getDeviceTypes();
+    getRooms();
+    document.getElementById('updateDevice').addEventListener('submit', event => {
+      event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
+      submitForm('updateDevice', 'put').then(response => response.json())
+      .then(device => {
+        console.log(device);
+        let para = document.getElementById('deviceUpdated');
+        para.innerHTML = device.name + " is updated";
+      });
+    });
+    }
+  
 }
 
 /*
@@ -284,6 +329,45 @@ function getUsernames() {
   });
 } 
 
+/* getting all devices, to edit them  */
+
+function getDevices() {
+  getAll('devices').then(devices => {
+    let selectElement = document.getElementById('selectDevices');
+    devices.forEach(device => {
+      let option = document.createElement('option');
+      option.text = device.name + ' (' + device.roomName + ')';
+      option.value = device.id;
+      selectElement.add(option);
+    });
+  });
+}
+
+
+function getDeviceTypes() {
+  getAll('devicetypes').then(types => {
+    let selectElement = document.getElementById('getTypeIds');
+    types.forEach(type => {
+      let option = document.createElement('option');
+      option.text = type.name;
+      option.value = type.typeId;
+      selectElement.add(option);
+    });
+  });
+}
+
+
+function getRooms() {
+  getAll('rooms').then(rooms => {
+    let selectElement = document.getElementById('getRooms');
+    rooms.forEach(room => {
+      let option = document.createElement('option');
+      option.text = room.name;
+      option.value = room.roomId;
+      selectElement.add(option);
+    });
+  });
+}
   /*
    * Math calculations
    */
@@ -491,7 +575,15 @@ function getStatus(deviceId) {
 /* delete user from form */
 
 function deleteUser() {
-  let theForm = document.getElementById('selectUsernames');
-  let deleteUserId = theForm.value;
+  let selectedUser = document.getElementById('selectUsernames');
+  let deleteUserId = selectedUser.value;
   doDelete('users.php?id=' + deleteUserId);
+}
+
+/* delete device from form */
+
+function deleteDevice() {
+  let selectedDevice = document.getElementById('selectDevices');
+  let deleteDeviceId = selectedDevice.value;
+  doDelete('devices.php?id=' + deleteDeviceId);
 }
