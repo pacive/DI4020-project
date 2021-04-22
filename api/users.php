@@ -43,33 +43,22 @@
       // Updates a user (excluding password)
       if (Utils::validate_input($arr, User::$required_fields_update)) {
         // Immediately return a 403 response unless user is an admin
-        if (!Session::is_admin()) {
+        // or if user tries to update fields other than own password
+        if (!Session::is_admin() && 
+           (!Session::is_user($arr['id']) ||
+            isset($arr['name']) ||
+            isset($arr['admin']))) {
           http_response_code(403);
           return 'Forbidden';
         }
         $new = User::update($arr);
         if ($new instanceof User) {
-          $return = json_encode($new);
+          return json_encode($new);
         } else {
           http_response_code(500);
           return $new;
         }
       }
-
-      // Update password for user
-      if (isset($arr['id']) && isset($arr['password'])) {
-        if (!(Session::is_admin() || Session::is_user($arr['id']))) {
-          http_response_code(403);
-          return 'Forbidden';
-        }
-        if (User::set_password($arr['id'], $arr['password'])) {
-          http_response_code(isset($return) ? 200 : 204);
-        } else {
-          http_response_code(500);
-          return 'Error updating password';
-        }
-      }
-      return $return;
     }
     
     /*

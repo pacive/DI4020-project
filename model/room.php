@@ -1,6 +1,7 @@
 <?php
   namespace Model;
   require_once('../util/preventaccess.php');
+  use \Util\Utils;
 
   /*
    * Class for representing and handling rooms
@@ -95,7 +96,7 @@ SQL;
 
 const SQL_UPDATE = <<<SQL
 UPDATE Room
-SET RoomName = ?, TypeId = ?
+SET RoomName = IFNULL(?, RoomName), TypeId = IFNULL(?, TypeID)
 WHERE RoomId = ?;
 SQL;
 
@@ -110,7 +111,7 @@ WHERE RoomId = ?;
 SQL;
     
     public static $required_fields_insert = array('name', 'typeId');
-    public static $required_fields_update = array('id', 'name', 'typeId');
+    public static $required_fields_update = array('id');
 
     /*
      * Gets all rooms from the db and returns them as an array of the corresponding objects.
@@ -219,11 +220,15 @@ SQL;
      * Updates a room in the database
      */
     static function update($arr) {
+      $name = Utils::get_or_default($arr, 'name');
+      $typeId = Utils::get_or_default($arr, 'typeId');
       $db = self::get_connection();
+      $db->begin_transaction();
       $query = $db->prepare(static::SQL_UPDATE);
-      $query->bind_param('sii', $arr['name'], $arr['typeId'], $arr['id']);
+      $query->bind_param('sii', $name, $typeId, $arr['id']);
       $query->execute();
       if ($db->errno) {
+        $db->rollback();
         return $db->error;
       }
       $query->close();
@@ -234,8 +239,12 @@ SQL;
         $query->bind_param('i', $arr['id']);
         $query->execute();
         $query->close();
-        static::set_coordinates($arr['id'], $arr['coordinates']);
+        if ($db->errno || !static::set_coordinates($arr['id'], $arr['coordinates'])) {
+          $db->rollback();
+          return $db->error;
+        }
       }
+      $db->commit();
       return static::get_by_id($arr['id']);
     }
 
@@ -249,7 +258,11 @@ SQL;
         $x = $coordinates[$i][0];
         $y = $coordinates[$i][1];
         $query->execute();
+        if ($query->errno) {
+          return false;
+        }
       }
+      return true;
     }
 
     private $name;
