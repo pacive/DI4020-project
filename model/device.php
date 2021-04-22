@@ -1,6 +1,7 @@
 <?php
   namespace Model;
   require_once('../util/preventaccess.php');
+  use \Util\Utils;
   
   /*
    * Class for representing and handling devices
@@ -49,7 +50,7 @@ SQL;
 
 const SQL_UPDATE = <<<SQL
 UPDATE Devices
-SET DeviceName = ?, TypeId = ?, RoomId = ?
+SET DeviceName = IFNULL(? DeviceName), TypeId = IFNULL(?, TypeId), RoomId = IFNULL(?, RoomId)
 WHERE DeviceId = ?;
 SQL;
 
@@ -71,7 +72,7 @@ WHERE DeviceId = ?;
 SQL;
 
     public static $required_fields_insert = array('name', 'typeId', 'roomId');
-    public static $required_fields_update = array('id', 'name', 'typeId', 'roomId');
+    public static $required_fields_update = array('id');
 
     /*
      * Gets the status for the specified device
@@ -114,7 +115,10 @@ SQL;
      * self::SQL_UPDATE
      */
     protected static function bind_params_update(&$query, $arr) {
-      $query->bind_param('siii', $arr['name'], $arr['typeId'], $arr['roomId'], $arr['id']);
+      $name = Utils::get_or_default($arr, 'name');
+      $typeId = Utils::get_or_default($arr, 'typeId');
+      $roomId = Utils::get_or_default($arr, 'roomId');
+      $query->bind_param('siii', $name, $typeId, $roomId, $arr['id']);
     }
 
     private $name;

@@ -1,6 +1,7 @@
 <?php
   namespace Model;
   require_once('../util/preventaccess.php');
+  use \Util\Utils;
 
   /*
    * Class for representing and handling users
@@ -23,13 +24,7 @@ SQL;
 
 const SQL_UPDATE = <<<SQL
 UPDATE Users
-SET UserName = ?, IsAdmin = ?
-WHERE UserId = ?;
-SQL;
-
-const SQL_CHPWD = <<<SQL
-UPDATE Users
-SET Password = ?
+SET UserName = IFNULL(?, UserName), Password = IFNULL(?, Password), IsAdmin = IFNULL(?, IsAdmin)
 WHERE UserId = ?;
 SQL;
 
@@ -39,7 +34,7 @@ WHERE UserId = ?;
 SQL;
 
     public static $required_fields_insert = array('name', 'password', 'admin');
-    public static $required_fields_update = array('id', 'name', 'admin');
+    public static $required_fields_update = array('id');
 
     /*
      * Binds the correct parameters to a supplied mysqli::statement prepared with
@@ -55,19 +50,10 @@ SQL;
      * self::SQL_UPDATE
      */
     protected static function bind_params_update(&$query, $arr) {
-      $query->bind_param('sii', $arr['name'], $arr['admin'], $arr['id']);
-    }
-
-    /*
-     * Updates the password for the specified user
-     */
-    static function set_password($id, $password) {
-      $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-      $db = self::get_connection();
-      $query = $db->prepare(static::SQL_CHPWD);
-      $query->bind_param('si', $hashed_password, $id);
-      $query->execute();
-      return $query->errno ? false : true;
+      $name = Utils::get_or_default($arr, 'name');
+      $password = isset($arr['password']) ? password_hash($arr['password'], PASSWORD_BCRYPT) : null;
+      $admin = Utils::get_or_default($arr, 'admin');
+      $query->bind_param('ssii', $name, $password, $admin, $arr['id']);
     }
 
     private $name;
