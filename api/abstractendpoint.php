@@ -1,6 +1,6 @@
 <?php
   namespace Api;
-  require_once('../util/autoload.php');
+  require_once('../util/preventaccess.php');
   use \Util\Logger;
   use \Util\Utils;
   use \Util\Session;

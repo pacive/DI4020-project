@@ -1,5 +1,7 @@
 <?php
   namespace Util;
+  require_once('preventaccess.php');
+
   /*
    * Enable autoloading of classes
    */

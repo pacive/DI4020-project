@@ -1,5 +1,6 @@
 <?php
   namespace Util;
+  require_once('preventaccess.php');
 
   /*
    * Handles connections to the MySQL database

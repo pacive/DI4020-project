@@ -1,5 +1,6 @@
 <?php
   namespace Model;
+  require_once('../util/preventaccess.php');
 
   /*
    * Class for representing and handling rooms
