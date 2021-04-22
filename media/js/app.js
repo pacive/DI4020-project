@@ -54,9 +54,29 @@ INIT = {
     });
   },
 
+  /*
+  * edit users 
+  */
   editUsers: function() {
     getUsernames();
-  }
+  },
+
+  /*
+  * add users
+  */
+  addUser: function() {
+    document.getElementById('addUser').addEventListener('submit', event => {
+      event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
+      submitForm('addUser');
+    });
+    },
+
+    updateUser: function() {
+      document.getElementById('updateUser').addEventListener('submit', event => {
+        event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
+        submitForm('updateUser', 'put');
+      });
+      }
 }
 
 /*
