@@ -55,15 +55,28 @@ INIT = {
   },
 
   /*
-   * edit_users
-   */
+  * edit users 
+  */
   editUsers: function() {
     getUsernames();
-    document.getElementById('edit_user').addEventListener('submit', event => {
-      event.preventDefault();
-      submitForm('edit_user', 'put');
+  },
+
+  /*
+  * add users
+  */
+  addUser: function() {
+    document.getElementById('addUser').addEventListener('submit', event => {
+      event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
+      submitForm('addUser');
     });
-  }
+    },
+
+    updateUser: function() {
+      document.getElementById('updateUser').addEventListener('submit', event => {
+        event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
+        submitForm('updateUser', 'put');
+      });
+      }
 }
 
 /*
