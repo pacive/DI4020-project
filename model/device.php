@@ -50,7 +50,7 @@ SQL;
 
 const SQL_UPDATE = <<<SQL
 UPDATE Devices
-SET DeviceName = IFNULL(? DeviceName), TypeId = IFNULL(?, TypeId), RoomId = IFNULL(?, RoomId)
+SET DeviceName = IFNULL(?, DeviceName), TypeId = IFNULL(?, TypeId), RoomId = IFNULL(?, RoomId)
 WHERE DeviceId = ?;
 SQL;
 
