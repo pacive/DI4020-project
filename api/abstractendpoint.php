@@ -30,30 +30,36 @@
     static function handle_request() {
       self::verify_user();
       $response;
-      switch ($_SERVER['REQUEST_METHOD']) {
-        case 'GET':
-          $response = static::do_get();
-          break;
-        case 'POST':
-          $body = self::get_body();
-          $response = static::do_post($body);
-          break;
-        case 'PUT':
-          $body = self::get_body();
-          $response = static::do_put($body);
-          break;
-        case 'DELETE':
-          $response = static::do_delete();
-          break;
-        default:
-          http_response_code(405);
-          $response = 'Method not supported';
-          break;
+      try {
+        switch ($_SERVER['REQUEST_METHOD']) {
+          case 'GET':
+            $response = static::do_get();
+            break;
+          case 'POST':
+            $body = self::get_body();
+            $response = static::do_post($body);
+            break;
+          case 'PUT':
+            $body = self::get_body();
+            $response = static::do_put($body);
+            break;
+          case 'DELETE':
+            $response = static::do_delete();
+            break;
+          default:
+            http_response_code(405);
+            $response = 'Method not supported';
+            break;
+        }
+      } catch (Exception $e) {
+        http_response_code(500);
+        $response = $e->message;
+      } finally {
+        $content_type = http_response_code() == 200 ? 'application/json' : 'text/plain';
+        header("Content-Type: $content_type");
+        Logger::log_access();
+        echo $response;  
       }
-      $content_type = http_response_code() == 200 ? 'application/json' : 'text/plain';
-      header("Content-Type: $content_type");
-      Logger::log_access();
-      echo $response;
     }
 
     /*

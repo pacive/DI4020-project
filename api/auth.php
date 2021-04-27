@@ -19,15 +19,19 @@
         Logger::log_access();
         die();
       }
-
-      $body = json_decode(self::get_body());
+      try {
+        $body = json_decode(self::get_body());
       
-      if ($body && Session::login($body->username, $body->password)) {
-        http_response_code(204);
-      } else {
-        http_response_code(401);
+        if ($body && Session::login($body->username, $body->password)) {
+          http_response_code(204);
+        } else {
+          http_response_code(401);
+        }
+      } catch (Exception $e) {
+        http_response_code(500);
+      } finally {
+        Logger::log_access();
       }
-      Logger::log_access();
     }
   }
 
