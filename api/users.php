@@ -26,14 +26,6 @@
     }
 
     /*
-     * Handler for POST requests. Only allowed if user is an admin
-     */
-    static function do_post(&$body) {
-      self::verify_user(true);
-      return parent::do_post($body);
-    }
-
-    /*
      * Handler for PUT requests. Only allows setting information if the user is an admin.
      * Regular users may only update their own password.
      */
@@ -53,20 +45,14 @@
         }
         $new = User::update($arr);
         if ($new instanceof User) {
-          return json_encode($new);
+          $newArr = $new->to_array();
+          $newArr['event'] = 'updated';
+          return json_encode($newArr);
         } else {
           http_response_code(500);
           return $new;
         }
       }
-    }
-    
-    /*
-     * Handler for DELETE requests. Only allowed if user is an admin
-     */
-    static function do_delete() {
-      self::verify_user(true);
-      return parent::do_delete();
     }
   }
 

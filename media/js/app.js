@@ -1,140 +1,185 @@
-INIT = {
-  /*
-   * Common functions that should be executed on every page
-   */
-  common: function() {
-    // Add event listeners to menu open and close buttons
-    document.getElementById('open')?.addEventListener('click', openBar);
-    document.getElementById('close')?.addEventListener('click', closeBar);
-
-    // Get all rooms from the api
-    getAll("rooms", {includeDevices: true}).then(rooms => {
-      // Save the rooms in the browser
-      sessionStorage.setItem('rooms', JSON.stringify(rooms));
-      // Create the rooms in the menu 
-      rooms.forEach(room => {
-        createRoomMenu(room);
-      });  
-      // Start listening for status updates
-    }).then(startSse)
-    .catch(error => console.log(error.statusText));
-  },
-
-  /*
-   * index
-   */
-  index: function() {
-    waitForRoomData().then(rooms => {
-      rooms.forEach(room => { createArea(room) })
-    });
-
-    // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
-    window.addEventListener('resize', () => {
-      let rooms = JSON.parse(sessionStorage.getItem('rooms'));
-      rooms?.forEach(room => {
-        let area = document.getElementById('room-area-' + room.id);
-        area.coords = scaleCoordinates(room.coordinates);
-      });
-    });
-
-    // Add event listener to popup close button
-    document.getElementById('closepopup')?.addEventListener('click', () => {
-      document.getElementById('roompopup').style.visibility = 'hidden';
-    });  
-  },
-
-  /*
-   * login
-   */
-  login: function() {      
-    // Override default submit behaviour
-    document.getElementById('login').addEventListener('submit', event => {
-      event.preventDefault();
-      login();
-    });
-  },
-
-
-
-  /*
-  * add users
-  */
-  addUser: function() {
-    document.getElementById('addUser').addEventListener('submit', event => {
-      event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
-      submitForm('addUser').then(response => response.json())
-      .then(newUser => {
-        console.log(newUser);
-        let para = document.getElementById('userAdded');
-       para.innerHTML = newUser.name + " is added";
-    });
-  });
+var SmartHome = {
+  INIT: {
+    /*
+    * Common functions that should be executed on every page
+    */
+    common: {
+      initialize: function() {
+        // Add event listeners to menu open and close buttons
+        document.getElementById('open')?.addEventListener('click', openBar);
+        document.getElementById('close')?.addEventListener('click', closeBar);
+        let forms = document.getElementsByTagName('form');
+        for (let i = 0; i < forms.length; i++) {
+          forms[i].addEventListener('submit', e => e.preventDefault())
+        }
+      },
+      start: function() {
+        // Get all rooms from the api
+        getAll("rooms", {includeDevices: true}).then(rooms => {
+          // Save the rooms in the browser
+          sessionStorage.setItem('rooms', JSON.stringify(rooms));
+          // Create the rooms in the menu
+          rooms.forEach(createRoomMenu);
+          // Start listening for status updates
+        }).then(startSse)
+        .catch(error => console.log(error));
+      }
     },
 
     /*
-  * edit users 
-  */
+    * index
+    */
+    index: function() {
+      SmartHome.apiListeners.add(['rooms'], 'createArea', createArea);
+
+      // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
+      window.addEventListener('resize', () => {
+        let rooms = JSON.parse(sessionStorage.getItem('rooms'));
+        rooms?.forEach(room => {
+          let area = document.getElementById('room-area-' + room.id);
+          area.coords = scaleCoordinates(room.coordinates);
+        });
+      });
+
+      // Add event listener to popup close button
+      document.getElementById('closepopup')?.addEventListener('click', () => {
+        document.getElementById('roompopup').style.visibility = 'hidden';
+      });
+    },
+
+    /*
+    * login
+    */
+    login: function() {
+      // Override default submit behaviour
+      document.getElementById('login').addEventListener('submit', login);
+    },
+
+    /*
+    * add users
+    */
+    addUser: function() {
+      document.getElementById('addUser').addEventListener('submit', () => {
+        submitForm('addUser').then(newUser => {
+          console.log(newUser);
+          let para = document.getElementById('userAdded');
+          para.innerHTML = newUser.name + " is added";
+        });
+      });
+    },
+
+    /*
+    * edit users
+    */
     updateUser: function() {
       getUsernames();
-      document.getElementById('updateUser').addEventListener('submit', event => {
-        event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
-        submitForm('updateUser', 'put').then(response => response.json())
-        .then(user => {
+      document.getElementById('updateUser').addEventListener('submit', () => {
+        submitForm('updateUser', 'put').then(user => {
           console.log(user);
           let para = document.getElementById('userUpdated');
           para.innerHTML = user.name + " is updated";
         });
       });
-      },
+    },
 
-      /* add device */ 
+      /* add device */
     addDevice: function() {
       getRooms();
       getDeviceTypes();
-      document.getElementById('addDevice').addEventListener('submit', event => {
-        event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
-        submitForm('addDevice').then(response => response.json())
-        .then(newDevice => {
-          console.log(addDevice);
+      document.getElementById('addDevice').addEventListener('submit', () => {
+        submitForm('addDevice').then(newDevice => {
+          console.log(newDevice);
           let para = document.getElementById('deviceAdded');
           para.innerHTML = newDevice.name + " is added";
         });
       });
-
     },
 
-       /*
-  * edit devices 
-  */
-
-  updateDevice: function() {
-    getDevices();
-    getDeviceTypes();
-    getRooms();
-    document.getElementById('updateDevice').addEventListener('submit', event => {
-      event.preventDefault(); //Förhindrar att det skickas på vanligt sätt
-      submitForm('updateDevice', 'put').then(response => response.json())
-      .then(device => {
-        console.log(device);
-        let para = document.getElementById('deviceUpdated');
-        para.innerHTML = device.name + " is updated";
+   /*
+    * edit devices
+    */
+    updateDevice: function() {
+      getDevices();
+      getDeviceTypes();
+      getRooms();
+      document.getElementById('updateDevice').addEventListener('submit', () => {
+        submitForm('updateDevice', 'put').then(device => {
+          console.log(device);
+          let para = document.getElementById('deviceUpdated');
+          para.innerHTML = device.name + " is updated";
+        });
       });
-    });
     }
-  
+  },
+
+  apiListeners: {
+    listeners: new Map(),
+    add: function(namespace, key, callback) {
+      let ns = this.listeners;
+      namespace.forEach(key => {
+        ns.has(key) || ns.set(key, new Map());
+        ns = ns.get(key);
+      });
+      ns.has('_listeners') || ns.set('_listeners', new Map());
+      ns.get('_listeners').set(key, callback);
+    },
+    remove: function(key, ns = this.listeners) {
+      ns.forEach((v, k) => {
+        if (k == '_listeners') {
+          v.delete(key);
+        } else {
+          this.remove(key, v);
+        }
+      });
+    },
+    notify: function(namespace, data) {
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          this.notify(namespace, item);
+        });
+        return;
+      }
+
+      ['id', 'event'].forEach(key => {
+        if (data.hasOwnProperty(key)) {
+          namespace.push(data[key]);
+        }
+      });
+
+      this.dig(namespace, listeners => {
+        listeners.forEach(fn => {
+          fn(data);
+        });
+      });
+    },
+    dig: function(namespace, fn = null) {
+      let ns = this.listeners;
+      for (let key of namespace) {
+        if (!ns.has(key)) {
+          return undefined;
+        }
+        ns = ns.get(key);
+        if (fn && ns.has('_listeners')) {
+          fn(ns.get('_listeners'));
+        }
+      }
+      return ns.get('_listeners');
+    }
+  }
 }
 
 /*
  * Call inititalization functions on page load
  */
 window.addEventListener('load', () => {
-  INIT.common();
+  SmartHome.INIT.common.initialize();
   var initFunctions = document.body.dataset.init?.split(' ');
   initFunctions?.forEach(func => {
-    if (INIT[func] !== undefined) {
-      INIT[func]();
+    if (SmartHome.INIT[func] !== undefined) {
+      SmartHome.INIT[func]();
     }
-  })  
+  });
+  SmartHome.INIT.common.start();
 });
 
 /*
@@ -146,28 +191,8 @@ function startSse() {
     console.log(event.data);
     let data = JSON.parse(event.data);
     sessionStorage.setItem('device-' + data.id, data.status);
-    let popupDevice = document.getElementById("popup-device-" + data.id);
-    let menuDevice = document.getElementById("menu-device-" + data.id);
-    [popupDevice, menuDevice].forEach(deviceElem => {
-      if (deviceElem !== null) {
-        deviceElem.querySelector('input').checked = data.status == 'ON';
-      }  
-    });
+    SmartHome.apiListeners.notify(['status'], data);
   }
-}
-
-/*
- * Wait until the room data is stored in sessionStorage
- */
-async function waitForRoomData() {
-  return new Promise(resolve => {
-    let rooms = sessionStorage.getItem('rooms');
-    if (rooms !== null) {
-     resolve(JSON.parse(rooms));
-    } else {
-      setTimeout(() => { resolve(waitForRoomData()); }, 500);
-    }
-  })
 }
 
   /*
@@ -191,25 +216,27 @@ function closeBar() {
 
 /* create the rooms and devices in the sidemenu */
 function createRoomMenu(room) {
-  let roomDiv = document.createElement('div');
-  let roomName = document.createElement('p');
+  let menuDiv = document.getElementById('menu');
+  let roomDiv = menuDiv.appendChild(document.createElement('div'));
+  let roomName = roomDiv.appendChild(document.createElement('p'));
+  let devicesDiv = roomDiv.appendChild(document.createElement('div'));
   roomName.classList.add('roombtn');
   roomName.id = 'menu-room-' + room.id;
-  roomName.innerHTML = room.name;
-  let menuDiv = document.getElementById('menu');
-  let devicesDiv = document.createElement('div');
+  roomName.textContent = room.name;
   devicesDiv.classList.add('dropdown_content');
   devicesDiv.id = "dropdown-" + room.id;
   roomName.addEventListener('click', () => {
-    open_closeDropdown(devicesDiv.id) });
+    open_closeDropdown(devicesDiv) });
   room.devices.forEach(device => {
-    let deviceElem = createDeviceElement(device);
+    let deviceElem = devicesDiv.appendChild(createDeviceElement(device));
     deviceElem.id = 'menu-device-' + device.id;
-    devicesDiv.appendChild(deviceElem);
+    SmartHome.apiListeners.add(['devices', device.id, 'updated'], deviceElem, data => {
+      let newDiv = document.getElementById("dropdown-" + data.roomId);
+      if (newDiv != deviceElem.parentElement) {
+        newDiv.appendChild(deviceElem);
+      }
+    });
   });
-  roomDiv.appendChild(roomName);
-  roomDiv.appendChild(devicesDiv);
-  menuDiv.prepend(roomDiv);
 }
 
 
@@ -218,15 +245,18 @@ function createRoomMenu(room) {
  * and add a click event listener to display the room popup
  */
 function createArea(room) {
-  let area = document.createElement('area');
-  area.shape = 'poly';
+  let area = document.getElementById('room-area-' + room.id);
+  if (area == null) {
+    area = document.createElement('area');
+    area.shape = 'poly';
+    area.tabIndex = room.id;
+    area.id = 'room-area-' + room.id;
+    area.addEventListener('click', event => {
+      showRoomPopUp(room, event.offsetX, event.offsetY);
+    });
+    document.getElementById('blueprint').appendChild(area);
+  }
   area.coords = scaleCoordinates(room.coordinates).toString();
-  area.tabIndex = room.id;
-  area.id = 'room-area-' + room.id;
-  area.addEventListener('click', event => {
-    showRoomPopUp(room, event.offsetX, event.offsetY);
-  });
-  document.getElementById('blueprint').appendChild(area);
 }
 
 /*
@@ -242,7 +272,7 @@ function showRoomPopUp(room, mouseX, mouseY) {
 
   // If the popup is rotated the coordinates need to be adjusted a bit
   let offset = window.matchMedia('(orientation:portrait)').matches ? (roomPopup.offsetWidth - roomPopup.offsetHeight) / 2 : 0;
-  
+
   let posX = roomCenter[0] < (image.offsetWidth / 2) ?
               Math.max(0 - offset, mouseX + offset - roomPopup.offsetWidth) :
               Math.min(mouseX - offset, image.offsetWidth - roomPopup.offsetWidth + offset);
@@ -264,12 +294,12 @@ function populateRoomPopup(room) {
 
   let div = document.getElementById('devicelist');
   while (first = div.firstChild) {
+    SmartHome.apiListeners.remove(first);
     div.removeChild(first);
   }
   room.devices.forEach(device => {
-    let deviceElem = createDeviceElement(device);
+    let deviceElem = div.appendChild(createDeviceElement(device));
     deviceElem.id = 'popup-device-' + device.id;
-    div.appendChild(deviceElem);
   });
 }
 
@@ -279,27 +309,46 @@ function populateRoomPopup(room) {
 function createDeviceElement(device) {
   let p = document.createElement("p");
   let nameElem = p.appendChild(document.createElement("span"));
+  let statusDisplay = p.appendChild(createStatusDisplayElement(device, device.typeName == 'Sensor'));
+  
   nameElem.textContent = device.name + ": ";
-  if (device.typeName == 'Sensor') {
-    let statusText = p.appendChild(document.createElement('span'));
-    statusText.classList.add('status')
-    statusText.textContent = device.status;
-  } else {
-    let toggle = p.appendChild(document.createElement("input"));
-    toggle.classList.add('status')
-    toggle.type = 'checkbox';
-    toggle.checked = getStatus(device.id) == 'ON';
-    toggle.addEventListener('change', () => { setStatus(device.id, toggle.checked ? "ON" : "OFF"); });
-  }
+  SmartHome.apiListeners.add(['devices', device.id, 'deleted'], p, () => {
+    SmartHome.apiListeners.remove(nameElem);
+    SmartHome.apiListeners.remove(statusDisplay);
+    SmartHome.apiListeners.remove(p);
+    p.remove();
+  });
+  SmartHome.apiListeners.add(['devices', device.id, 'updated'], nameElem, data => {
+    nameElem.textContent = data.name + ": ";
+  });
   return p;
 }
 
+function createStatusDisplayElement(device, readOnly = false) {
+  let elem;
+  if (readOnly) {
+    elem = document.createElement('span');
+    elem.textContent = device.status;
+    SmartHome.apiListeners.add(['status', device.id], elem, status => {
+      elem.textContent = status.status;
+    });
+  } else {
+    elem = document.createElement("input");
+    elem.type = 'checkbox';
+    elem.checked = getStatus(device.id) == 'ON';
+    elem.addEventListener('change', () => { setStatus(device.id, elem.checked ? "ON" : "OFF"); });
+    SmartHome.apiListeners.add(['status', device.id], elem, status => {
+      elem.checked = status.status == 'ON';
+    });
+  }
+  elem.classList.add('status')
+  return elem;
+}
 
 /* function for bringing out the devices when clicking on a room in menu */
 
 
-function open_closeDropdown(id) {
-  let dropdownDiv = document.getElementById(id);
+function open_closeDropdown(dropdownDiv) {
   if (dropdownDiv.style.display == "none" || dropdownDiv.style.display == "") {
     dropdownDiv.style.display = "block";
   } else if (dropdownDiv.style.display == "block") {
@@ -325,24 +374,47 @@ function getUsernames() {
       option.text = user.name;
       option.value = user.id;
       selectElement.add(option);
+      SmartHome.apiListeners.add(['users', user.id, 'updated'], option, data => {
+        option.text = data.name;
+      });
+      SmartHome.apiListeners.add(['users', user.id, 'deleted'], option, () => {
+        SmartHome.apiListeners.remove(option);
+        option.remove();
+      });
     });
   });
-} 
+}
 
 /* getting all devices, to edit them  */
 
 function getDevices() {
   getAll('devices').then(devices => {
     let selectElement = document.getElementById('selectDevices');
+    selectElement.addEventListener('change', () => {
+      let nameElement = document.getElementById('username');
+      let typeElem = document.getElementById('getTypeIds');
+      let roomElem = document.getElementById('getRooms');
+      getById('devices', selectElement.value).then(device => {
+        nameElement.value = device.name;
+        typeElem.value = device.typeId;
+        roomElem.value = device.roomId;
+      });
+    });
     devices.forEach(device => {
       let option = document.createElement('option');
       option.text = device.name + ' (' + device.roomName + ')';
       option.value = device.id;
       selectElement.add(option);
+      SmartHome.apiListeners.add(['devices', device.id, 'updated'], option, data => {
+        option.text = data.name + ' (' + data.roomName + ')';
+      });
+      SmartHome.apiListeners.add(['devices', device.id, 'deleted'], option, () => {
+        SmartHome.apiListeners.remove(option);
+        option.remove();
+      });
     });
   });
 }
-
 
 function getDeviceTypes() {
   getAll('devicetypes').then(types => {
@@ -350,12 +422,11 @@ function getDeviceTypes() {
     types.forEach(type => {
       let option = document.createElement('option');
       option.text = type.name;
-      option.value = type.typeId;
+      option.value = type.id;
       selectElement.add(option);
     });
   });
 }
-
 
 function getRooms() {
   getAll('rooms').then(rooms => {
@@ -363,11 +434,12 @@ function getRooms() {
     rooms.forEach(room => {
       let option = document.createElement('option');
       option.text = room.name;
-      option.value = room.roomId;
+      option.value = room.id;
       selectElement.add(option);
     });
   });
 }
+
   /*
    * Math calculations
    */
@@ -440,11 +512,7 @@ async function submitForm(formId, method = null) {
     }
   });
 
-  if (method == null) {
-    method = form.method;
-  }
-
-  switch (method) {
+  switch (method || form.getAttribute('method').toLowerCase()) {
     case 'post':
       return doPost(form.action, data);
     case 'put':
@@ -460,19 +528,14 @@ async function submitForm(formId, method = null) {
 function login() {
   submitForm('login').then(() => {
     var redirectUri = new URLSearchParams(window.location.search).get('redirectUri');
-    if (redirectUri !== null && redirectUri !== '') {
-      window.location.assign(redirectUri);
-    } else {
-      window.location.assign('index.php');
-    }
+    window.location.assign(redirectUri || '/index.php');
   })
   .catch(() => {
     let p = document.getElementById("error");
-    if (p === null || p === undefined) {
-      p = document.createElement("p");
+    if (!p) {
+      p = document.getElementById("login").appendChild(document.createElement("p"));
       p.id = "error";
       p.class = "error";
-      document.getElementById("login").appendChild(p);
    }
    p.textContent = "Invalid username or password";
   });
@@ -488,7 +551,7 @@ function login() {
 async function getById(endpoint, id, params = {}) {
   let uri = 'api/' + endpoint + '.php';
   params.id = id;
-  return doGet(uri, params).then(response => response.json());
+  return doGet(uri, params);
 }
 
 /*
@@ -496,15 +559,14 @@ async function getById(endpoint, id, params = {}) {
  */
 async function getAll(endpoint, params = {}) {
   let uri = 'api/' + endpoint + '.php';
-  return doGet(uri, params).then(response => response.json());
+  return doGet(uri, params)
 }
 
 /*
  * Make a GET request
  */
 async function doGet(uri, params = {}) {
-  var req = { method: 'GET',
-              headers: {'Accept': 'application/json'} }
+  var req = { method: 'GET' }
 
   return doRequest(uri, req, params);
 }
@@ -514,8 +576,7 @@ async function doGet(uri, params = {}) {
  */
 async function doPost(uri, body, params = {}) {
   var req = { method: 'POST',
-              headers: {'Content-Type': 'application/json',
-                        'Accept': 'application/json'},
+              headers: {'Content-Type': 'application/json'},
               body: JSON.stringify(body) }
   return doRequest(uri, req, params);
 }
@@ -525,8 +586,7 @@ async function doPost(uri, body, params = {}) {
  */
 async function doPut(uri, body, params = {}) {
   var req = { method: 'PUT',
-              headers: {'Content-Type': 'application/json',
-                        'Accept': 'application/json'},
+              headers: {'Content-Type': 'application/json'},
               body: JSON.stringify(body) }
   return doRequest(uri, req, params);
 }
@@ -543,6 +603,10 @@ async function doDelete(uri, params = {}) {
  * Make a request to the server
  */
 async function doRequest(uri, req, params = {}) {
+  let endpoint;
+  if (match = uri.match(/api\/(.*)\.php/)) {
+    endpoint = match[1];
+  }
   if (Object.keys(params).length > 0) {
     let query = new URLSearchParams();
     Object.entries(params).forEach(entry => {
@@ -550,12 +614,20 @@ async function doRequest(uri, req, params = {}) {
     });
     uri += '?' + query.toString();
   }
+  req.headers ||= {};
+  req.headers['Accept'] = 'application/json';
 
   return fetch(uri, req).then(response => {
-    if (response.ok) {
-      return response;
+    return response.ok ? Promise.resolve(response) : Promise.reject(response);
+  }).then(async response => {
+    if (response.headers.get('Content-Type').includes('application/json')) {
+      data = await response.json();
+      if (endpoint) {
+        SmartHome.apiListeners.notify([endpoint], data);
+      }
+      return data;
     } else {
-      throw response;
+      return response.text();
     }
   });
 }
