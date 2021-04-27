@@ -29,29 +29,31 @@
      */
     static function handle_request() {
       self::verify_user();
+      $response;
       switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
-          echo static::do_get();
+          $response = static::do_get();
           break;
         case 'POST':
           $body = self::get_body();
-          echo static::do_post($body);
+          $response = static::do_post($body);
           break;
         case 'PUT':
           $body = self::get_body();
-          echo static::do_put($body);
+          $response = static::do_put($body);
           break;
         case 'DELETE':
-          echo static::do_delete();
+          $response = static::do_delete();
           break;
         default:
           http_response_code(405);
-          echo 'Method not supported';
+          $response = 'Method not supported';
           break;
       }
       $content_type = http_response_code() == 200 ? 'application/json' : 'text/plain';
       header("Content-Type: $content_type");
       Logger::log_access();
+      echo $response;
     }
 
     /*
@@ -90,7 +92,9 @@
       if (Utils::validate_input($arr, $entity_class::$required_fields_insert)) {
         $new = $entity_class::insert($arr);
         if ($new instanceof $entity_class) {
-          return json_encode($new);
+          $newArr = $new->to_array();
+          $newArr['event'] = 'created';
+          return json_encode($newArr);
         } else {
           http_response_code(500);
           return $new;
@@ -112,7 +116,9 @@
       if (Utils::validate_input($arr, $entity_class::$required_fields_update)) {
         $new = $entity_class::update($arr);
         if ($new instanceof $entity_class) {
-          return json_encode($new);
+          $newArr = $new->to_array();
+          $newArr['event'] = 'updated';
+          return json_encode($newArr);
         } else {
           http_response_code(500);
           return $new;
@@ -132,8 +138,7 @@
       $entity_class = static::ENTITY;
       if (isset($_GET['id'])) {
         if ($entity_class::delete($_GET['id'])) {
-          http_response_code(204);
-          return;
+          return json_encode(array('id' => $_GET['id'], 'event' => 'deleted'));
         } else {
           http_response_code(500);
           return 'Error';
