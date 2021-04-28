@@ -528,7 +528,7 @@ async function submitForm(formId, method = null) {
 function login() {
   submitForm('login').then(() => {
     var redirectUri = new URLSearchParams(window.location.search).get('redirectUri');
-    window.location.assign(redirectUri || '/index.php');
+    window.location.assign(redirectUri || 'index.php');
   })
   .catch(() => {
     let p = document.getElementById("error");
