@@ -7,6 +7,7 @@ require_once('template.php');
     <form id="updateUser" action="api/users.php">
         <label>Select user:</label>
         <select name="id" id="selectUsernames">
+        <option value="0">Select user</option>
         </select><br>
         <label for="text">Edit username:</label>
         <input type="text" id="username" name="name"><br>
