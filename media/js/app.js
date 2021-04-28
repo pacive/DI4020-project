@@ -80,6 +80,20 @@ var SmartHome = {
           para.innerHTML = user.name + " is updated";
         });
       });
+      document.getElementById('selectUsernames').addEventListener('change', event => {
+        let id = event.target.value;
+        let nameElement = document.getElementById('username');
+        let adminElem = document.getElementById('isAdmin');
+        if (id == 0) {
+          nameElement.value = '';
+          adminElem.checked = false;
+        } else {
+          getById('users', selectElement.value).then(user => {
+            nameElement.value = user.name;
+            adminElem.checked = user.admin;
+          });
+        }
+      });  
     },
 
       /* add device */
@@ -108,6 +122,23 @@ var SmartHome = {
           let para = document.getElementById('deviceUpdated');
           para.innerHTML = device.name + " is updated";
         });
+      });
+      document.getElementById('selectDevices').addEventListener('change', event => {
+        let id = event.target.value;
+        let nameElement = document.getElementById('username');
+        let typeElem = document.getElementById('getTypeIds');
+        let roomElem = document.getElementById('getRooms');
+        if (id == 0) {
+          nameElement.value = '';
+          typeElem.value = 0;
+          roomElem.value = 0;
+        } else {
+          getById('devices', selectElement.value).then(device => {
+            nameElement.value = device.name;
+            typeElem.value = device.typeId;
+            roomElem.value = device.roomId;
+          });
+        }
       });
     }
   },
@@ -361,14 +392,6 @@ function open_closeDropdown(dropdownDiv) {
 function getUsernames() {
   getAll('users').then(users => {
     let selectElement = document.getElementById('selectUsernames');
-    selectElement.addEventListener('change', () => {
-      let nameElement = document.getElementById('username');
-      let adminElem = document.getElementById('isAdmin');
-      getById('users', selectElement.value).then(user => {
-        nameElement.value = user.name;
-        adminElem.checked = user.admin;
-      });
-    });
     users.forEach(user => {
       let option = document.createElement('option');
       option.text = user.name;
@@ -390,16 +413,6 @@ function getUsernames() {
 function getDevices() {
   getAll('devices').then(devices => {
     let selectElement = document.getElementById('selectDevices');
-    selectElement.addEventListener('change', () => {
-      let nameElement = document.getElementById('username');
-      let typeElem = document.getElementById('getTypeIds');
-      let roomElem = document.getElementById('getRooms');
-      getById('devices', selectElement.value).then(device => {
-        nameElement.value = device.name;
-        typeElem.value = device.typeId;
-        roomElem.value = device.roomId;
-      });
-    });
     devices.forEach(device => {
       let option = document.createElement('option');
       option.text = device.name + ' (' + device.roomName + ')';
