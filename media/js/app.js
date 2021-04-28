@@ -88,7 +88,7 @@ var SmartHome = {
           nameElement.value = '';
           adminElem.checked = false;
         } else {
-          getById('users', selectElement.value).then(user => {
+          getById('users', id).then(user => {
             nameElement.value = user.name;
             adminElem.checked = user.admin;
           });
@@ -133,7 +133,7 @@ var SmartHome = {
           typeElem.value = 0;
           roomElem.value = 0;
         } else {
-          getById('devices', selectElement.value).then(device => {
+          getById('devices', id).then(device => {
             nameElement.value = device.name;
             typeElem.value = device.typeId;
             roomElem.value = device.roomId;
