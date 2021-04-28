@@ -47,7 +47,7 @@ SQL;
         }
         $last_id = self::push_latest($last_id);
         self::loop($last_id);
-      } catch (Exception $e) {
+      } catch (\Exception $e) {
         exit();
       }
     }
