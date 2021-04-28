@@ -11,9 +11,12 @@ require_once('template.php');
     <input type="text" id="username" name="name"><br>
     <label for="text">Select device type:</label>
     <select name="typeId" id="getTypeIds">
+    <option value="0">Select device type</option>
     </select> <br>
     <label for="text">Select room:</label>
     <select name="roomId" id="getRooms">
+    <option value="0">Select room</option>
+
     </select> <br>
     <input type="submit" value="Save">
 </form>
