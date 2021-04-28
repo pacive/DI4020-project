@@ -36,16 +36,20 @@ SQL;
     static function handle_request() {
       self::verify_user();
       session_write_close();
-      $headers = apache_request_headers();
-      header('Content-Type: text/event-stream');
-      header('Cache-Control: no-cache');
-      header("Connection: keep-alive");
-      $last_id = 0;
-      if (isset($headers['Last-Event-ID'])) {
-        $last_id = (int) $headers['Last-Event-ID'];
+      try {
+        $headers = apache_request_headers();
+        header('Content-Type: text/event-stream');
+        header('Cache-Control: no-cache');
+        header("Connection: keep-alive");
+        $last_id = 0;
+        if (isset($headers['Last-Event-ID'])) {
+          $last_id = (int) $headers['Last-Event-ID'];
+        }
+        $last_id = self::push_latest($last_id);
+        self::loop($last_id);
+      } catch (Exception $e) {
+        exit();
       }
-      $last_id = self::push_latest($last_id);
-      self::loop($last_id);
     }
 
     /*
