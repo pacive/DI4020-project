@@ -51,9 +51,9 @@
             $response = 'Method not supported';
             break;
         }
-      } catch (Exception $e) {
+      } catch (\Exception $e) {
         http_response_code(500);
-        $response = $e->message;
+        $response = $e->getMessage();
       } finally {
         $content_type = http_response_code() == 200 ? 'application/json' : 'text/plain';
         header("Content-Type: $content_type");
