@@ -21,7 +21,7 @@ jobs:
 
       - name: W3C Validator
         run: ./.github/scripts/w3c-validate-all.sh
-      - shell: bash
+        shell: bash
         env:
           PROXY_AUTH: ${{ secrets.PROXY_AUTH }}
           PAGE_AUTH: ${{ secrets.PAGE_AUTH }}
