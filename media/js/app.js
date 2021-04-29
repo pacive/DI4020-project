@@ -1,4 +1,5 @@
 var SmartHome = {
+  config: {},
   INIT: {
     /*
     * Common functions that should be executed on every page
@@ -21,8 +22,14 @@ var SmartHome = {
           // Create the rooms in the menu
           rooms.forEach(createRoomMenu);
           // Start listening for status updates
-        }).then(startSse)
-        .catch(error => console.log(error));
+        }).then(() => {
+          startSse('api/events.php', event => {
+            console.log(event.data);
+            let data = JSON.parse(event.data);
+            sessionStorage.setItem('device-' + data.id, data.status);
+            SmartHome.apiListeners.notify(['status'], data);        
+          })
+        }).catch(error => console.log(error));
       }
     },
 
@@ -53,6 +60,7 @@ var SmartHome = {
     login: function() {
       // Override default submit behaviour
       document.getElementById('login').addEventListener('submit', login);
+      return { preventStart: true }
     },
 
     /*
@@ -195,12 +203,11 @@ var SmartHome = {
     },
     log: function() {
       let logWindow = document.getElementById('log');
-      var logEvents = new EventSource('api/accesslog.php?initialSize=50');
-      logEvents.onmessage = (event) => {  
+      startSse('api/accesslog.php?initialSize=50', event => {  
         let data = JSON.parse(event.data);      
         let line = logWindow.insertBefore(document.createElement('p'), logWindow.firstChild);
         line.textContent = `${data.time} ${data.requestType} ${data.page} (${data.responseCode}), user: ${data.user}`;
-      }
+      });
     }
   },
 
@@ -268,22 +275,27 @@ window.addEventListener('load', () => {
   var initFunctions = document.body.dataset.init?.split(' ');
   initFunctions?.forEach(func => {
     if (SmartHome.INIT[func] !== undefined) {
-      SmartHome.INIT[func]();
+      let config = SmartHome.INIT[func]();
+      Object.assign(SmartHome.config, config);
     }
   });
-  SmartHome.INIT.common.start();
+  if (!SmartHome.config.preventStart) {
+    SmartHome.INIT.common.start();
+  }
 });
 
 /*
  * Start subscribing to events from server and updates element
  */
-function startSse() {
-  var events = new EventSource("api/events.php");
-  events.onmessage = (event) => {
-    console.log(event.data);
-    let data = JSON.parse(event.data);
-    sessionStorage.setItem('device-' + data.id, data.status);
-    SmartHome.apiListeners.notify(['status'], data);
+function startSse(uri, callback) {
+  var events = new EventSource(uri);
+  events.onmessage = callback
+  events.onerror = () => {
+    testConnection.then(status => {
+      if (status == 403) {
+        window.location.assign('login.php');
+      }
+    });
   }
 }
 
@@ -613,6 +625,10 @@ function login() {
    }
    p.textContent = "Invalid username or password";
   });
+}
+
+async function testConnection() {
+  return fetch('api/devices.php').then(response => response.status);
 }
 
   /*
