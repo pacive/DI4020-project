@@ -43,6 +43,7 @@ ob_start('print_page');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartHome.net</title>
     <link rel="stylesheet" href="css/page.css">
+    <?php if (isset($head)) { echo $head; } ?>
     <script defer src="media/js/app.js"></script>
   </head>
   <body <?php if (isset($init)) { echo "data-init=\"$init\""; } ?>>
