@@ -192,6 +192,15 @@ var SmartHome = {
          });
         chart = new Chart(canvas, broserChartConfig);
       });
+    },
+    log: function() {
+      let logWindow = document.getElementById('log');
+      var logEvents = new EventSource('api/accesslog.php?initialSize=50');
+      logEvents.onmessage = (event) => {  
+        let data = JSON.parse(event.data);      
+        let line = logWindow.insertBefore(document.createElement('p'), logWindow.firstChild);
+        line.textContent = `${data.time} ${data.requestType} ${data.page} (${data.responseCode}), user: ${data.user}`;
+      }
     }
   },
 
