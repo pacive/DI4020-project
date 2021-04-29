@@ -1,6 +1,7 @@
 <?php
 $admin = true;
 $init = 'statistics';
+$title = 'Statistics';
 $head = <<<HTML
 <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 HTML;

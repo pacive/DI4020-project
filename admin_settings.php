@@ -1,18 +1,26 @@
 <?php
 $admin = true;
+$title = 'Settings';
 require_once('template.php');
 ?>
 
-<!-- maybe we could have these in two columns? -->
+<!-- maybe we could have these in three columns? -->
 
 <h3>Users</h3>
-<button> <a href="edit_current_user.php"> Edit current user </a></button> <br>
-<button> <a href="new_user.php"> Add new user </a> </button>
+<button> <a href="edit_user.php"> Edit a user </a></button> 
+<button> <a href="add_user.php"> Add new user </a> </button>
 
-<h3>devices</h3>
-<button> <a href="edit_current_device.php"> Edit current device </a></button> <br>
-<button> <a href="new_device.php"> Add new device </a> </button> <br>
+<h3>Devices</h3>
+<button> <a href="edit_device.php"> Edit a device </a></button> 
+<button> <a href="add_device.php"> Add new device </a> </button>
+
+<h3>Rooms</h3>
+<button> <a href="edit_room.php"> Edit a room </a> </button>
+<button> <a href="add_room.php"> Add new room </a> </button>
 
 <button> <a href="index.php"> Home </a> </button>
 
 
+</div>
+</body>
+</html>

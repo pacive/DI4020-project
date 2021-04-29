@@ -1,6 +1,7 @@
 <?php
 $admin = true;
 $init = 'updateUser';
+$title = 'Edit users';
 require_once('template.php');
 ?>
 
@@ -20,8 +21,6 @@ require_once('template.php');
     </form>
 
     <p id="userUpdated"></p> 
-
-<button> <a href="index.php"> Home </a> </button>
 
 
 </div>

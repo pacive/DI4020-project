@@ -2,18 +2,19 @@
 <?php
 $admin = true;
 $init = 'addDevice'; //anger vilken funktion i INIT-objektet i app.js ska köras när sidan laddas
+$title = 'Add new device';
 require_once('template.php');
 ?> 
 
 
 <form id="addDevice" action="api/devices.php" method="POST">
-    <label for="text">Device name:</label>
+    <label for="username">Device name:</label>
     <input type="text" id="username" name="name"><br>
-    <label for="text">Select device type:</label>
+    <label for="getTypeIds">Select device type:</label>
     <select name="typeId" id="getTypeIds">
     <option value="0">Select device type</option>
     </select> <br>
-    <label for="text">Select room:</label>
+    <label for="getRooms">Select room:</label>
     <select name="roomId" id="getRooms">
     <option value="0">Select room</option>
 
@@ -23,7 +24,6 @@ require_once('template.php');
 
 <p id="deviceAdded"></p>
 
-<button> <a href="index.php"> Home </a> </button>
 
 
 </div>

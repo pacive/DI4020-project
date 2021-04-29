@@ -117,6 +117,7 @@ var SmartHome = {
       });
     },
 
+  
    /*
     * edit devices
     */
@@ -149,6 +150,62 @@ var SmartHome = {
         }
       });
     },
+
+
+ /* add room */
+    
+ addRoom: function() {
+  getRoomTypes();
+  document.getElementById('addRoom').addEventListener('submit', () => {
+    submitForm('addRoom').then(newRoom => {
+      console.log(newRoom);
+      let para = document.getElementById('roomAdded');
+      para.innerHTML = newRoom.name + " is added";
+    });
+  });
+  document.getElementById('roomTypes').addEventListener('change', () => {
+    let roomTypeValue = document.getElementById('roomTypes').value;
+    console.log(roomTypeValue);
+    if (roomTypeValue == 0) {
+      document.getElementById('newRoomTypeForm').style.display = 'block';
+    } else {
+      document.getElementById('newRoomTypeForm').style.display = 'none';
+
+    }
+  });
+  document.getElementById('newRoomTypeForm').addEventListener('submit', () => {
+    submitForm('newRoomTypeForm').then(newRoomType => {
+      console.log(newRoomType);
+      let para = document.getElementById('roomTypeAdded');
+      para.innerHTML = newRoomType.name + " is added";
+
+      let selectElement = document.getElementById('roomTypes');
+      let option = document.createElement('option');
+      option.text = newRoomType.name;
+      option.value = newRoomType.id;
+      selectElement.add(option);
+
+
+    });
+  });
+},
+
+ /* edit room */
+  updateRoom: function() {
+  getRooms();
+  getRoomTypes();
+  getRooms(); 
+  document.getElementById('updateRoom').addEventListener('submit', () => {
+    submitForm('updateRoom', 'put').then(room => {
+      console.log(room);
+      let para = document.getElementById('updateRoom');
+      para.innerHTML = room.name + " is updated";
+    });
+  });
+},
+
+
+
     statistics: function() {
       let canvas = document.getElementById('browser-chart');
       let ipTable = document.getElementById('ip-addresses')
@@ -514,6 +571,8 @@ function getDeviceTypes() {
   });
 }
 
+/* get all rooms, for editing or adding devices */
+
 function getRooms() {
   getAll('rooms').then(rooms => {
     let selectElement = document.getElementById('getRooms');
@@ -521,6 +580,20 @@ function getRooms() {
       let option = document.createElement('option');
       option.text = room.name;
       option.value = room.id;
+      selectElement.add(option);
+    });
+  });
+}
+
+/* get roomTypes, for adding new rooms */
+
+function getRoomTypes() {
+  getAll('roomtypes').then(types => {
+    let selectElement = document.getElementById('roomTypes');
+    types.forEach(type => {
+      let option = document.createElement('option');
+      option.text = type.name;
+      option.value = type.id;
       selectElement.add(option);
     });
   });
@@ -748,4 +821,11 @@ function deleteDevice() {
   let selectedDevice = document.getElementById('selectDevices');
   let deleteDeviceId = selectedDevice.value;
   doDelete('devices.php?id=' + deleteDeviceId);
+}
+
+/* delete room */
+function deleteRoom() {
+  let selectedRoom = document.getElementById('getRooms');
+  let deleteRoomId = selectedRoom.value;
+  doDelete('rooms.php?id=' + deleteRoomId);
 }
