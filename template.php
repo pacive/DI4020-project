@@ -58,9 +58,7 @@ ob_start('print_page');
           if(Session::is_admin()) { 
             $admin = <<<EOA
             <div class="admin"> 
-            <p> <a href="change_users.php">Edit users</a></p> 
-            <p> <a href="change_devices.php">Edit devices</a></p> 
-
+            <p> <a href="admin_settings.php">Admin settings</a></p> 
             </div>
 EOA;
             echo ($admin);

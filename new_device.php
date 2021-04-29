@@ -23,6 +23,9 @@ require_once('template.php');
 
 <p id="deviceAdded"></p>
 
+<button> <a href="index.php"> Home </a> </button>
+
+
 </div>
 </body>
 </html>

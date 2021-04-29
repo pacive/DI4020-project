@@ -18,6 +18,9 @@ require_once('template.php');
 
 <p id="userAdded"></p>
 
+<button> <a href="index.php"> Home </a> </button>
+
+
 </div>
 </body>
 </html>
