@@ -140,6 +140,58 @@ var SmartHome = {
           });
         }
       });
+    },
+    statistics: function() {
+      let canvas = document.getElementById('browser-chart');
+      let ipTable = document.getElementById('ip-addresses')
+      let chart;
+      let broserChartConfig = {
+        type: 'doughnut',
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'Browsers'
+            }
+          }
+        },
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Browsers',
+            data: [],
+            backgroundColor: [
+              'rgb(255, 99, 132)',
+              'rgb(255, 159, 64)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(54, 162, 235)',
+              'rgb(153, 102, 255)',
+              'rgb(201, 203, 207)'
+            ]
+          }]
+        }
+      }
+      doGet('api/statistics.php').then(data => {
+        data.browsers.forEach(entry => {
+          broserChartConfig.data.labels.push(entry.userAgent);
+          broserChartConfig.data.datasets[0].data.push(parseInt(entry.visits));
+        });
+        data.ipAddresses.forEach(entry => {
+          let tr = ipTable.appendChild(document.createElement('tr'));
+          let ipCell = tr.appendChild(document.createElement('td'));
+          let visitsCell = tr.appendChild(document.createElement('td'));
+          let dateCell = tr.appendChild(document.createElement('td'));
+          ipCell.textContent = entry.ipAddress;
+          visitsCell.textContent = entry.visits;
+          dateCell.textContent = entry.lastVisit;
+         });
+        chart = new Chart(canvas, broserChartConfig);
+      });
     }
   },
 
