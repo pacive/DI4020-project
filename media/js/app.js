@@ -291,7 +291,7 @@ function startSse(uri, callback) {
   var events = new EventSource(uri);
   events.onmessage = callback
   events.onerror = () => {
-    testConnection.then(status => {
+    testConnection().then(status => {
       if (status == 403) {
         window.location.assign('login.php');
       }
