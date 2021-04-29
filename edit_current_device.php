@@ -24,6 +24,9 @@ require_once('template.php');
     </form>
 
     <p id="deviceUpdated"></p>
+
+<button> <a href="index.php"> Home </a> </button>
+
 </div>
 </body>
 </html>

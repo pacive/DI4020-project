@@ -19,7 +19,10 @@ require_once('template.php');
         <input type="button" value="Delete user" onclick="deleteUser()">
     </form>
 
-    <p id="userUpdated"></p>
+    <p id="userUpdated"></p> 
+
+<button> <a href="index.php"> Home </a> </button>
+
 
 </div>
 </body>
