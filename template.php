@@ -41,7 +41,7 @@ ob_start('print_page');
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartHome.net</title>
+    <title><?= isset($title) ? $title : 'SmartHome';  ?></title>
     <link rel="stylesheet" href="css/page.css">
     <?php if (isset($head)) { echo $head; } ?>
     <script defer src="media/js/app.js"></script>
@@ -70,6 +70,6 @@ EOA;
           <p id="logout">Logout</p>
        </div>
         <p id="open">&#9776;</p>
-        <h1 id="header">Smarthome/or name of the house?</h1>
+        <h1 id="header"><?= isset($title) ? $title : 'SmartHome';  ?></h1>
       </div>
       <div class="content">
