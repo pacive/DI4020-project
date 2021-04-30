@@ -40,8 +40,8 @@ do
   if [ "$file" == "template.php" ]; then
     continue
   fi
-  curl -s --cookie ../tmp/cookies.txt ${PROJECT_URI}$file > page.html
-  result=$(curl -s -H "Content-type: text/html; charset=utf-8" --data-binary @page.html $VALIDATOR_URI)
+  curl -s --cookie ../tmp/cookies.txt ${PROJECT_URI}$file > ../tmp/page.html
+  result=$(curl -s -H "Content-type: text/html; charset=utf-8" --data-binary @../tmp/page.html $VALIDATOR_URI)
   if [ "$result" == "" ]; then
     echo valid!
   else
