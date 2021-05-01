@@ -149,7 +149,12 @@ SQL;
     static function create_room(&$result) {
       if ($first_row = $result->fetch_object()) {
         $coordinates = isset($first_row->coordinates) ? self::parse_coordinates($first_row->coordinates) : array();
-        $room = new Room($first_row->id, $first_row->name, $first_row->typeId, $first_row->typeName, $coordinates);
+        $room = new Room($first_row->id,
+                         $first_row->name,
+                         $first_row->typeId,
+                         $first_row->typeName,
+                         $coordinates,
+                         property_exists($first_row, 'deviceId') ? [] : null);
 
         //Add device if it's included in the query
         if (isset($first_row->deviceId)) {
@@ -330,7 +335,7 @@ SQL;
         'typeName' => $this->typeName,
         'coordinates' => $this->coordinates
       );
-      $this->devices && $arr['devices'] = $this->devices;
+      isset($this->devices) && $arr['devices'] = $this->devices;
       return $arr;
     }
   }
