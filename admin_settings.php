@@ -5,18 +5,30 @@ require_once('template.php');
 ?>
 
 <!-- maybe we could have these in three columns? -->
-
+<div class="admin-menu">
+<div>
+<div>
 <h3>Users</h3>
-<button> <a href="edit_user.php"> Edit a user </a></button> 
-<button> <a href="add_user.php"> Add new user </a> </button>
-
+<p><a href="edit_user.php">Edit a user</a></p>
+<p><a href="add_user.php">Add new user</a></p>
+</div>
+<div>
 <h3>Devices</h3>
-<button> <a href="edit_device.php"> Edit a device </a></button> 
-<button> <a href="add_device.php"> Add new device </a> </button>
-
+<p><a href="edit_device.php">Edit a device</a></p>
+<p><a href="add_device.php">Add new device</a></p>
+</div>
+</div>
+<div>
+<div>
 <h3>Rooms</h3>
-<button> <a href="edit_room.php"> Edit a room </a> </button>
-<button> <a href="add_room.php"> Add new room </a> </button>
-
-<button> <a href="index.php"> Home </a> </button>
+<p><a href="edit_room.php">Edit a room</a></p>
+<p><a href="add_room.php">Add new room</a></p>
+</div>
+<div>
+<h3>Other</h3>
+<p><a href="statistics.php">Statistics</a></p>
+<p><a href="log.php">Log</a></p>
+</div>
+</div>
+</div>
 

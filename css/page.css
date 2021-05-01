@@ -169,6 +169,29 @@ body {
     overflow-y: scroll;
 }
 
+.canvas-background {
+    background-image: url('../media/images/blueprint.png');
+}
+
+#drawRoomLink {
+    display: none;
+}
+
+.admin-menu {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    align-items: baseline;
+    align-content: space-around;
+    width: 100%;
+}
+
+.admin-menu div {
+    min-width: 5rem;
+    padding: 1rem;
+    text-align: center;
+}
+
 ::-webkit-scrollbar {
     width: 0px;
     height: 0px;
