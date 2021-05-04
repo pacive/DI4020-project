@@ -189,8 +189,7 @@ var SmartHome = {
  /* edit room */
   updateRoom: function() {
   getRooms();
-  getRoomTypes();
-  getRooms(); 
+  getRoomTypes(); 
   document.getElementById('updateRoom').addEventListener('submit', () => {
     submitForm('updateRoom', 'put').then(room => {
       console.log(room);
