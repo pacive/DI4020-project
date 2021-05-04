@@ -180,11 +180,7 @@ var SmartHome = {
       para.innerHTML = newRoomType.name + " is added";
 
       let selectElement = document.getElementById('roomTypes');
-      let option = document.createElement('option');
-      option.text = newRoomType.name;
-      option.value = newRoomType.id;
-      selectElement.add(option);
-
+      selectElement.add(createOptionElement(newRoomType.id, newRoomType.name));
 
     });
   });
@@ -400,6 +396,13 @@ function createRoomMenu(room) {
   });
 }
 
+/* create option elements */
+function createOptionElement(value, text) {
+  let option = document.createElement('option');
+  option.value = value;
+  option.text = text;
+  return option;
+}
 
 /*
  * Create an area for the image map with the coordinates of a room
@@ -523,9 +526,7 @@ function getUsernames() {
   getAll('users').then(users => {
     let selectElement = document.getElementById('selectUsernames');
     users.forEach(user => {
-      let option = document.createElement('option');
-      option.text = user.name;
-      option.value = user.id;
+      var option = createOptionElement(user.id, user.name);
       selectElement.add(option);
       SmartHome.apiListeners.add(['users', user.id, 'updated'], option, data => {
         option.text = data.name;
@@ -563,10 +564,7 @@ function getDeviceTypes() {
   getAll('devicetypes').then(types => {
     let selectElement = document.getElementById('getTypeIds');
     types.forEach(type => {
-      let option = document.createElement('option');
-      option.text = type.name;
-      option.value = type.id;
-      selectElement.add(option);
+      selectElement.add(createOptionElement(type.id, type.name));
     });
   });
 }
@@ -577,10 +575,7 @@ function getRooms() {
   getAll('rooms').then(rooms => {
     let selectElement = document.getElementById('getRooms');
     rooms.forEach(room => {
-      let option = document.createElement('option');
-      option.text = room.name;
-      option.value = room.id;
-      selectElement.add(option);
+      selectElement.add(createOptionElement(room.id, room.name));
     });
   });
 }
@@ -591,10 +586,7 @@ function getRoomTypes() {
   getAll('roomtypes').then(types => {
     let selectElement = document.getElementById('roomTypes');
     types.forEach(type => {
-      let option = document.createElement('option');
-      option.text = type.name;
-      option.value = type.id;
-      selectElement.add(option);
+      selectElement.add(createOptionElement(type.id, type.name));
     });
   });
 }
@@ -813,6 +805,8 @@ function deleteUser() {
   let selectedUser = document.getElementById('selectUsernames');
   let deleteUserId = selectedUser.value;
   doDelete('users.php?id=' + deleteUserId);
+  let para = document.getElementById('userUpdated');
+  para.innerHTML =  "the user is deleted";
 }
 
 /* delete device from form */

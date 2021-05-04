@@ -20,7 +20,3 @@ require_once('template.php');
 <p id="userAdded"></p>
 
 
-
-</div>
-</body>
-</html>

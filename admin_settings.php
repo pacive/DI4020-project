@@ -20,7 +20,3 @@ require_once('template.php');
 
 <button> <a href="index.php"> Home </a> </button>
 
-
-</div>
-</body>
-</html>

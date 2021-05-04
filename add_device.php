@@ -25,7 +25,3 @@ require_once('template.php');
 <p id="deviceAdded"></p>
 
 
-
-</div>
-</body>
-</html>

@@ -21,8 +21,3 @@ require_once('template.php');
     </form>
 
     <p id="RoomUpdated"></p>
-
-
-</div>
-</body>
-</html>

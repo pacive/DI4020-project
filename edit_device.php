@@ -24,8 +24,3 @@ require_once('template.php');
     </form>
 
     <p id="deviceUpdated"></p>
-
-
-</div>
-</body>
-</html>

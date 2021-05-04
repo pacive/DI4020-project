@@ -28,7 +28,3 @@ require_once('template.php');
 
 <p id="roomAdded"></p>
 
-
-</div>
-</body>
-</html>
