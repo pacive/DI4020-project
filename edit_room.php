@@ -18,7 +18,7 @@ require_once('template.php');
         </select> <br>
         <a id="drawRoomLink" href="#">Edit room coordinates</a><br />
         <input type="submit" value="save">
-        <input type="button" value="Delete room" onclick="deleteRoom()"> <br>
+        <input type="button" value="Delete room" id="delete"> <br>
         <br>
         <label> Edit a room type here: </label>
         <input type="button" value="Edit a room type" onclick="document.location='edit_room_type.php'">

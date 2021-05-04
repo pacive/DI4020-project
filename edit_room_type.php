@@ -13,7 +13,7 @@ require_once('template.php');
         <label for="roomTypeName">Edit room type name:</label>
         <input type="text" id="roomTypeName" name="name"><br>
         <input type="submit" value="save">
-        <input type="button" value="Delete room type" onclick="deleteRoomType()"> 
+        <input type="button" value="Delete room type" id="delete"> 
     </form>
 
     <p id="roomTypeUpdated"></p>

@@ -12,7 +12,7 @@ const TIMEOUT = 600;
 const INTERVAL = 2;
 
 const SQL_GET_LATEST = <<<SQL
-SELECT DH.DeviceId as id, DH.Status as status, DH.DeviceHistoryId as eventId FROM DeviceHistory DH
+SELECT DH.DeviceId as id, DH.Status as status, DH.Time as time, DH.DeviceHistoryId as eventId FROM DeviceHistory DH
 LEFT JOIN DeviceHistory DH2 ON DH2.DeviceID = DH.DeviceId AND DH.DeviceHistoryID < DH2.DeviceHistoryId
 WHERE DH2.DeviceHistoryID IS NULL
 AND DH.DeviceHistoryId > ?
@@ -20,7 +20,7 @@ ORDER BY DH.DeviceHistoryID
 SQL;
 
 const SQL_GET_UPDATES = <<<SQL
-SELECT DeviceId as id, Status as status, DeviceHistoryId as eventId FROM DeviceHistory
+SELECT DeviceId as id, Status as status, Time as time, DeviceHistoryId as eventId FROM DeviceHistory
 WHERE DeviceHistoryId > ?
 ORDER BY DeviceHistoryId
 SQL;
