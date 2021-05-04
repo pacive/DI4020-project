@@ -451,13 +451,14 @@ function createStatusDisplayElement(device, readOnly = false) {
 
 /* function for bringing out the devices when clicking on a room in menu */
 
-
 function open_closeDropdown(dropdownDiv) {
-  if (dropdownDiv.style.display == "none" || dropdownDiv.style.display == "") {
-    dropdownDiv.style.display = "block";
-  } else if (dropdownDiv.style.display == "block") {
-    dropdownDiv.style.display = "none";
-  };
+  let isOpen = dropdownDiv.offsetHeight > 0;
+  for (openRoom of document.querySelectorAll('.dropdown_content')) {
+    openRoom.style.height = '0px';
+  }
+  if (!isOpen) {
+    dropdownDiv.style.height = dropdownDiv.scrollHeight + 'px';
+  }
 }
 
 /* getting all users, to edit them  */
