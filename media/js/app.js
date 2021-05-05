@@ -87,7 +87,7 @@ var SmartHome = {
           para.innerHTML = user.name + " is updated";
         });
       });
-      document.getElementById('selectUsernames').addEventListener('change', event => {
+      document.getElementById('selectUsername').addEventListener('change', event => {
         let id = event.target.value;
         let nameElement = document.getElementById('username');
         let adminElem = document.getElementById('isAdmin');
@@ -133,7 +133,7 @@ var SmartHome = {
       });
       document.getElementById('selectDevices').addEventListener('change', event => {
         let id = event.target.value;
-        let nameElement = document.getElementById('username');
+        let nameElement = document.getElementById('name');
         let typeElem = document.getElementById('getTypeIds');
         let roomElem = document.getElementById('getRooms');
         if (id == 0) {
@@ -198,7 +198,7 @@ var SmartHome = {
         para.innerHTML = room.name + " is updated";
       });
     });
-    document.getElementById('getRooms').addEventListener('change', event => {
+    document.getElementById('selectRoom').addEventListener('change', event => {
       let id = event.target.value;
       let nameElement = document.getElementById('roomName');
       let typeElem = document.getElementById('roomTypes');

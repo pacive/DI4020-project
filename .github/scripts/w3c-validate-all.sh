@@ -36,10 +36,10 @@ done
 curl -s --cookie-jar ../tmp/cookies.txt -X POST -d "$PAGE_AUTH" ${PROJECT_URI}api/auth.php
 for file in $php_files
 do
-  echo $file
   if [ "$file" == "template.php" ]; then
     continue
   fi
+  echo $file
   curl -s --cookie ../tmp/cookies.txt ${PROJECT_URI}$file > ../tmp/page.html
   result=$(curl -s -H "Content-type: text/html; charset=utf-8" --data-binary @../tmp/page.html $VALIDATOR_URI)
   if [ "$result" == "" ]; then
