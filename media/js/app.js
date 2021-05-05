@@ -960,6 +960,9 @@ function deleteDevice() {
   let selectedDevice = document.getElementById('selectDevice');
   let deleteDeviceId = selectedDevice.value;
   doDelete('api/devices.php?id=' + deleteDeviceId);
+  let para = document.getElementById('deviceUpdated');
+  para.innerHTML =  "the device is deleted";
+  
 }
 
 /* delete room */
@@ -967,4 +970,6 @@ function deleteRoom() {
   let selectedRoom = document.getElementById('selectRoom');
   let deleteRoomId = selectedRoom.value;
   doDelete('api/rooms.php?id=' + deleteRoomId);
+  let para = document.getElementById('roomUpdated');
+  para.innerHTML =  "the room is deleted";
 }
