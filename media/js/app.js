@@ -131,11 +131,11 @@ var SmartHome = {
           para.innerHTML = device.name + " is updated";
         });
       });
-      document.getElementById('selectDevices').addEventListener('change', event => {
+      document.getElementById('selectDevice').addEventListener('change', event => {
         let id = event.target.value;
         let nameElement = document.getElementById('name');
         let typeElem = document.getElementById('getTypeIds');
-        let roomElem = document.getElementById('getRooms');
+        let roomElem = document.getElementById('selectRoom');
         if (id == 0) {
           nameElement.value = '';
           typeElem.value = 0;
@@ -669,7 +669,7 @@ function open_closeDropdown(dropdownDiv) {
 
 function getUsernames() {
   getAll('users').then(users => {
-    let selectElement = document.getElementById('selectUsernames');
+    let selectElement = document.getElementById('selectUsername');
     users.forEach(user => {
       var option = createOptionElement(user.id, user.name);
       selectElement.add(option);
@@ -688,7 +688,7 @@ function getUsernames() {
 
 function getDevices() {
   getAll('devices').then(devices => {
-    let selectElement = document.getElementById('selectDevices');
+    let selectElement = document.getElementById('selectDevice');
     devices.forEach(device => {
       let option = document.createElement('option');
       option.text = device.name + ' (' + device.roomName + ')';
@@ -718,7 +718,7 @@ function getDeviceTypes() {
 
 function getRooms() {
   getAll('rooms').then(rooms => {
-    let selectElement = document.getElementById('getRooms');
+    let selectElement = document.getElementById('selectRoom');
     rooms.forEach(room => {
       selectElement.add(createOptionElement(room.id, room.name));
     });
