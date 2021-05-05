@@ -14,7 +14,7 @@ require_once('template.php');
     <select name="typeId" id="getTypeIds">
     <option value="0">Select device type</option>
     </select> <br>
-    <label for="getRooms">Select room:</label>
+    <label for="selectRoom">Select room:</label>
     <select name="roomId" id="selectRoom">
     <option value="0">Select room</option>
 
