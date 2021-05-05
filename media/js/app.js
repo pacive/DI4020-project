@@ -947,7 +947,7 @@ function getStatus(deviceId) {
 /* delete user from form */
 
 function deleteUser() {
-  let selectedUser = document.getElementById('selectUsernames');
+  let selectedUser = document.getElementById('selectUsername');
   let deleteUserId = selectedUser.value;
   doDelete('users.php?id=' + deleteUserId);
   let para = document.getElementById('userUpdated');
@@ -957,14 +957,14 @@ function deleteUser() {
 /* delete device from form */
 
 function deleteDevice() {
-  let selectedDevice = document.getElementById('selectDevices');
+  let selectedDevice = document.getElementById('selectDevice');
   let deleteDeviceId = selectedDevice.value;
   doDelete('devices.php?id=' + deleteDeviceId);
 }
 
 /* delete room */
 function deleteRoom() {
-  let selectedRoom = document.getElementById('getRooms');
+  let selectedRoom = document.getElementById('selectRoom');
   let deleteRoomId = selectedRoom.value;
   doDelete('rooms.php?id=' + deleteRoomId);
 }
