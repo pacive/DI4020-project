@@ -66,7 +66,7 @@ EOA;
             echo ($admin);
           };
           ?>
-          <p id="logout">Logout</p>
+          <p id="logout"><a href="logout.php">Logout</a></p>
        </div>
         <p id="open">&#9776;</p>
         <h1 id="header"><?= isset($title) ? $title : 'SmartHome';  ?></h1>

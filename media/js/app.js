@@ -489,7 +489,7 @@ function startSse(uri, callback) {
   events.onerror = () => {
     testConnection().then(status => {
       if (status == 403) {
-        window.location.assign('login.php');
+        window.location.assign('login.php?redirectUri=' + window.location.pathname);
       }
     });
   }

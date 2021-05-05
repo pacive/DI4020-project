@@ -36,7 +36,7 @@ done
 curl -s --cookie-jar ../tmp/cookies.txt -X POST -d "$PAGE_AUTH" ${PROJECT_URI}api/auth.php
 for file in $php_files
 do
-  if [ "$file" == "template.php" ]; then
+  if [[ "$file" == "template.php" || "$file" == "logout.php" ]]; then
     continue
   fi
   echo $file

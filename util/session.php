@@ -86,8 +86,8 @@ SQL;
      */
     private static function refresh_session() {
       if (self::timestamp() < time() - self::REFRESH_INTERVAL) {
-        $_SESSION['Timestamp'] = time();
         session_regenerate_id();
+        $_SESSION['Timestamp'] = time();
       }
     }
 
