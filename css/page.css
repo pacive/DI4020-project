@@ -196,3 +196,13 @@ body {
     width: 0px;
     height: 0px;
 }
+
+
+a:visited {
+    text-decoration: none;
+    color: rgb(102, 98, 98)
+}
+
+a {
+    color: rgb(102, 98, 98);
+}
