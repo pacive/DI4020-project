@@ -949,7 +949,7 @@ function getStatus(deviceId) {
 function deleteUser() {
   let selectedUser = document.getElementById('selectUsername');
   let deleteUserId = selectedUser.value;
-  doDelete('users.php?id=' + deleteUserId);
+  doDelete('api/users.php?id=' + deleteUserId);
   let para = document.getElementById('userUpdated');
   para.innerHTML =  "the user is deleted";
 }
@@ -959,12 +959,12 @@ function deleteUser() {
 function deleteDevice() {
   let selectedDevice = document.getElementById('selectDevice');
   let deleteDeviceId = selectedDevice.value;
-  doDelete('devices.php?id=' + deleteDeviceId);
+  doDelete('api/devices.php?id=' + deleteDeviceId);
 }
 
 /* delete room */
 function deleteRoom() {
   let selectedRoom = document.getElementById('selectRoom');
   let deleteRoomId = selectedRoom.value;
-  doDelete('rooms.php?id=' + deleteRoomId);
+  doDelete('api/rooms.php?id=' + deleteRoomId);
 }
