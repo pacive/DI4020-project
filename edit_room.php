@@ -15,7 +15,7 @@ require_once('template.php');
         <label for="getTypeIds">Edit room type:</label>
         <select name="typeId" id="roomTypes">
         </select> <br>
-        
+        <a id="drawRoomLink" href="#">Edit room coordinates</a><br />
         <input type="submit" value="save">
         <input type="button" value="Delete room" onclick="deleteRoom()"> 
     </form>

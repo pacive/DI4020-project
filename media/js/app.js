@@ -11,7 +11,7 @@ var SmartHome = {
         document.getElementById('close')?.addEventListener('click', closeBar);
         let forms = document.getElementsByTagName('form');
         for (let i = 0; i < forms.length; i++) {
-          forms[i].addEventListener('submit', e => e.preventDefault())
+          forms[i].addEventListener('submit', e => e.preventDefault(), true);
         }
       },
       start: function() {
@@ -58,7 +58,6 @@ var SmartHome = {
     * login
     */
     login: function() {
-      // Override default submit behaviour
       document.getElementById('login').addEventListener('submit', login);
       return { preventStart: true }
     },
@@ -161,6 +160,9 @@ var SmartHome = {
       console.log(newRoom);
       let para = document.getElementById('roomAdded');
       para.innerHTML = newRoom.name + " is added";
+      let setCoordinatesLink = para.parentNode.appendChild(document.createElement('a'));
+      setCoordinatesLink.href = 'draw_room.php?id=' + newRoom.id;
+      setCoordinatesLink.textContent = 'Add room to floorplan';
     });
   });
   document.getElementById('roomTypes').addEventListener('change', () => {
@@ -181,23 +183,41 @@ var SmartHome = {
 
       let selectElement = document.getElementById('roomTypes');
       selectElement.add(createOptionElement(newRoomType.id, newRoomType.name));
-
     });
   });
 },
 
  /* edit room */
   updateRoom: function() {
-  getRooms();
-  getRoomTypes(); 
-  document.getElementById('updateRoom').addEventListener('submit', () => {
-    submitForm('updateRoom', 'put').then(room => {
-      console.log(room);
-      let para = document.getElementById('updateRoom');
-      para.innerHTML = room.name + " is updated";
+    getRooms();
+    getRoomTypes(); 
+    document.getElementById('updateRoom').addEventListener('submit', () => {
+      submitForm('updateRoom', 'put').then(room => {
+        console.log(room);
+        let para = document.getElementById('updateRoom');
+        para.innerHTML = room.name + " is updated";
+      });
     });
-  });
-},
+    document.getElementById('getRooms').addEventListener('change', event => {
+      let id = event.target.value;
+      let nameElement = document.getElementById('roomName');
+      let typeElem = document.getElementById('roomTypes');
+      let drawRoomLink = document.getElementById('drawRoomLink');
+      if (id == 0) {
+        nameElement.value = '';
+        typeElem.value = 0;
+        drawRoomLink.href = '#';
+        drawRoomLink.style.display = 'none';
+      } else {
+        getById('rooms', id).then(room => {
+          nameElement.value = room.name;
+          typeElem.value = room.typeId;
+          drawRoomLink.href = 'draw_room.php?id=' + id;
+          drawRoomLink.style.display = 'inline';
+        });
+      }
+    });
+  },
 
 
 
@@ -260,6 +280,24 @@ var SmartHome = {
         let line = logWindow.insertBefore(document.createElement('p'), logWindow.firstChild);
         line.textContent = `${data.time} ${data.requestType} ${data.page} (${data.responseCode}), user: ${data.user}`;
       });
+    },
+    drawRoom: function() {
+      let roomId = new URLSearchParams(window.location.search).get('id');
+      getById('rooms', roomId).then(room => {
+        SmartHome.drawRoom.initialize(room.coordinates);
+      });
+      document.getElementById('save').addEventListener('click', () => {
+        let data = { id: roomId, coordinates: SmartHome.drawRoom.corners };
+        doPut('api/rooms.php', data).then(room => {
+          document.getElementById('roomUpdated').textContent = room.name + ' updated!';
+        });
+      });
+      document.getElementById('reset').addEventListener('click', () => {
+        SmartHome.drawRoom.reset();
+      });
+      document.getElementById('undo').addEventListener('click', () => {
+        SmartHome.drawRoom.undo();
+      });
     }
   },
 
@@ -315,6 +353,112 @@ var SmartHome = {
         }
       }
       return ns.get('_listeners');
+    }
+  },
+
+  drawRoom: {
+
+    corners: [],
+    cornerHandles: [],
+    canvas: null,
+    ctx: null,
+    draggedElement: null,
+
+    initialize: function(corners = []) {
+      this.corners = corners;
+      this.canvas = document.getElementById('draw-room');
+      this.ctx = this.canvas.getContext('2d');
+      let background = new Image();
+
+      background.addEventListener('load', () => {
+        this.canvas.width = background.width;
+        this.canvas.height = background.height;
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        this.draw();
+      });
+      background.src = 'media/images/blueprint.png';
+
+      this.canvas.addEventListener('mousedown', event => {
+        this.draggedElement = this.getTargetCorner(event.offsetX, event.offsetY);
+        if (!this.draggedElement) {
+          this.addCorner(event.offsetX, event.offsetY);
+          this.draggedElement = this.corners.length - 1;
+        }
+        window.requestAnimationFrame(() => this.draw());
+      });
+
+      this.canvas.addEventListener('mousemove', event => {
+        if (this.draggedElement != null) {
+          this.corners[this.draggedElement] = this.snapCorner(event.offsetX, event.offsetY, this.draggedElement);
+        }
+      });
+
+      this.canvas.addEventListener('mouseup', () => {
+        this.draggedElement = null;
+      });
+    },
+
+    addCorner: function(x, y) {
+      this.corners.push(this.snapCorner(x, y));
+    },
+
+    snapCorner: function(x, y, excludeCorner = null) {
+      let coords = [x, y];
+      for (let i = 0; i < this.corners.length; i++) {
+        if (i == excludeCorner) {
+          continue;
+        }
+        for (let d = 0; d < 2; d++) {
+          if (Math.abs(coords[d] - this.corners[i][d]) < 10) {
+            coords[d] = this.corners[i][d];
+          }  
+        }
+      }
+      return coords;
+    },
+
+    draw: function() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      if (this.corners.length > 0) {
+        let roomPath = new Path2D();
+        this.cornerHandles = [];
+        roomPath.moveTo(...this.corners[0]);
+        this.cornerHandles[0] = new Path2D();
+        this.cornerHandles[0].arc(...this.corners[0], 5, 0, Math.PI * 2);
+        this.ctx.stroke(this.cornerHandles[0]);
+        for (let i = 1; i < this.corners.length; i++) {
+          roomPath.lineTo(...this.corners[i]);
+          this.cornerHandles[i] = new Path2D();
+          this.cornerHandles[i].arc(...this.corners[i], 5, 0, Math.PI * 2);
+          this.ctx.stroke(this.cornerHandles[i]);
+          }
+        roomPath.closePath();
+        this.ctx.stroke(roomPath);
+        this.ctx.fill(roomPath);
+        if (this.draggedElement != null) {
+          window.requestAnimationFrame(() => this.draw());
+        }
+      }
+    },
+
+    reset: function() {
+      this.corners = [];
+      this.cornerHandles = [];
+      this.draw();
+    },
+
+    undo: function() {
+      this.corners.pop();
+      this.draw();
+    },
+
+    getTargetCorner(x, y) {
+      for (let i = 0; i < this.cornerHandles.length; i++) {
+        if (this.ctx.isPointInPath(this.cornerHandles[i], x, y)) {
+          return i;
+        }
+      }
+      return null;
     }
   }
 }
@@ -383,7 +527,7 @@ function createRoomMenu(room) {
   devicesDiv.id = "dropdown-" + room.id;
   roomName.addEventListener('click', () => {
     open_closeDropdown(devicesDiv) });
-  room.devices.forEach(device => {
+  room.devices?.forEach(device => {
     let deviceElem = devicesDiv.appendChild(createDeviceElement(device));
     deviceElem.id = 'menu-device-' + device.id;
     SmartHome.apiListeners.add(['devices', device.id, 'updated'], deviceElem, data => {
@@ -410,6 +554,7 @@ function createOptionElement(value, text) {
 function createArea(room) {
   let area = document.getElementById('room-area-' + room.id);
   if (area == null) {
+    if (room.coordinates.length == 0) { return; }
     area = document.createElement('area');
     area.shape = 'poly';
     area.tabIndex = room.id;
