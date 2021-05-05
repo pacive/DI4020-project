@@ -20,4 +20,4 @@ require_once('template.php');
         <input type="button" value="Delete room" onclick="deleteRoom()"> 
     </form>
 
-    <p id="RoomUpdated"></p>
+    <p id="roomUpdated"></p>
