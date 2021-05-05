@@ -1,12 +1,12 @@
 # This is a basic workflow to help you get started with Actions
 
-name: W3C validator
+name: W3C validator - incl php pages
 
 # Controls when the action will run. 
 on:
   # Triggers the workflow on pull request events but only for the main branch
-  #pull_request:
-  #  branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,15 +16,29 @@ jobs:
   # This workflow contains a single job called "build"
   w3c-validate:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: W3C Validator
-        run: ./.github/scripts/w3c-validate.sh
+      - name: Setup
+        run: ./.github/scripts/deploy.sh
         shell: bash
-          
-          
+        env:
+          SSHPASS: ${{ secrets.SCP_AUTH }}
+
+      - name: W3C Validator
+        run: |
+          ./.github/scripts/w3c-validate-all.sh
+        shell: bash
+        env:
+          PAGE_AUTH: ${{ secrets.PAGE_AUTH }}
+
+      - name: Cleanup
+        run: ./.github/scripts/cleanup.sh
+        shell: bash
+        if: ${{ always() }}
+        env:
+          SSHPASS: ${{ secrets.SCP_AUTH }}

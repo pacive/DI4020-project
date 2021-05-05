@@ -6,17 +6,17 @@ require_once('template.php');
 ?>
 
     <form id="updateDevice" action="api/devices.php">
-        <label for="selectDevices">Select device:</label>
-        <select name="id" id="selectDevices">
+        <label for="selectDevice">Select device:</label>
+        <select name="id" id="selectDevice">
         <option value="0">Select device</option>
         </select> <br>
-        <label for="username">Edit device name:</label>
-        <input type="text" id="username" name="name"><br>
+        <label for="name">Edit device name:</label>
+        <input type="text" id="name" name="name"><br>
         <label for="getTypeIds">Device type:</label>
         <select name="typeId" id="getTypeIds">
         </select> <br>
-        <label for="text">Change room the device belongs to:</label>
-        <select name="roomId" id="getRooms">
+        <label for="selectRoom">Change room the device belongs to:</label>
+        <select name="roomId" id="selectRoom">
         <option value="0">Select room</option>
         </select> <br>
         <input type="submit" value="save">

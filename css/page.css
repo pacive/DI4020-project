@@ -70,8 +70,7 @@ body {
 .sideBar p {
     color:white;
     font-family:Arial, Helvetica, sans-serif;
-    margin-left: 20px;
-    margin: 30px;
+    margin: 20px;
     cursor: pointer;
     white-space: nowrap;
 }
@@ -80,20 +79,22 @@ body {
     flex-grow: 1;
 }
 
-.roombtn {
-    position:relative;
+.sideBar p.roombtn {
     background-color: #474545;
-    cursor: pointer;
+    margin-bottom: 10px;
 }
 
 .dropdown_content {
-    display: none;
+    transition: height 0.7s ease-in-out;
+    height: 0px;
     background-color: #3b3838;
+    overflow-y: hidden;
 }
 
 .sideBar p:hover {
     color: #726f6f;
 }
+
 .sideBar #close {
     position: fixed;
     margin: 10px;
@@ -166,6 +167,29 @@ body {
 .log {
     height: 100%;
     overflow-y: scroll;
+}
+
+.canvas-background {
+    background-image: url('../media/images/blueprint.png');
+}
+
+#drawRoomLink {
+    display: none;
+}
+
+.admin-menu {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    align-items: baseline;
+    align-content: space-around;
+    width: 100%;
+}
+
+.admin-menu div {
+    min-width: 5rem;
+    padding: 1rem;
+    text-align: center;
 }
 
 ::-webkit-scrollbar {

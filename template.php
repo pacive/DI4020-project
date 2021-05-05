@@ -51,6 +51,7 @@ ob_start('print_page');
       <div class="head">
         <div id="sideBar" class="sideBar closed">
           <p id="close">&times;</p>
+          <p> <a href="index.php">Home</a></p>
           <div class="menu" id="menu">  
             <!-- <div>s and <p>s for the rooms will be added here -->
             <!--add options if user is admin-->
@@ -65,7 +66,7 @@ EOA;
             echo ($admin);
           };
           ?>
-          <p id="logout">Logout</p>
+          <p id="logout"><a href="logout.php">Logout</a></p>
        </div>
         <p id="open">&#9776;</p>
         <h1 id="header"><?= isset($title) ? $title : 'SmartHome';  ?></h1>
