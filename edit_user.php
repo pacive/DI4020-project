@@ -6,14 +6,14 @@ require_once('template.php');
 ?>
 
     <form id="updateUser" action="api/users.php">
-        <label>Select user:</label>
-        <select name="id" id="selectUsernames">
+        <label for="selectUsername">Select user:</label>
+        <select name="id" id="selectUsername">
         <option value="0">Select user</option>
         </select><br>
-        <label for="text">Edit username:</label>
+        <label for="username">Edit username:</label>
         <input type="text" id="username" name="name"><br>
-        <label for="text">Edit password:</label>
-        <input type="text" id="password" name="password"><br>
+        <label for="password">Edit password:</label>
+        <input type="password" id="password" name="password"><br>
         <label for="isAdmin">Is admin:</label>
         <input type="checkbox" id="isAdmin" name="admin" value="isAdmin"><br>
         <input type="submit" value="save">

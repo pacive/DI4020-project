@@ -10,8 +10,8 @@ require_once('template.php');
         <select name="id" id="selectDevices">
         <option value="0">Select device</option>
         </select> <br>
-        <label for="username">Edit device name:</label>
-        <input type="text" id="username" name="name"><br>
+        <label for="name">Edit device name:</label>
+        <input type="text" id="name" name="name"><br>
         <label for="getTypeIds">Device type:</label>
         <select name="typeId" id="getTypeIds">
         </select> <br>
