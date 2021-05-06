@@ -32,3 +32,5 @@ require_once('template.php');
 </div>
 </div>
 
+<button onclick="document.location='index.php'">Home</button> 
+

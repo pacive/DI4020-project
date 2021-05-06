@@ -24,3 +24,7 @@ require_once('template.php');
     </form>
 
     <p id="deviceUpdated"></p>
+    <div>
+    <button onclick="document.location='index.php'">Home</button> 
+    <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+    </div>

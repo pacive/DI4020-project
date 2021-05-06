@@ -19,3 +19,8 @@ require_once('template.php');
     </tr>
   </table>
 </div>
+
+<div>
+<button onclick="document.location='index.php'">Home</button> 
+<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+</div>

@@ -165,26 +165,14 @@ var SmartHome = {
       setCoordinatesLink.textContent = 'Add room to floorplan';
     });
   });
-  document.getElementById('roomTypes').addEventListener('change', () => {
-    let roomTypeValue = document.getElementById('roomTypes').value;
-    console.log(roomTypeValue);
-    if (roomTypeValue == 0) {
-      document.getElementById('newRoomTypeForm').style.display = 'block';
-    } else {
-      document.getElementById('newRoomTypeForm').style.display = 'none';
+},
 
-    }
-  });
-  document.getElementById('newRoomTypeForm').addEventListener('submit', () => {
-    submitForm('newRoomTypeForm').then(newRoomType => {
-      console.log(newRoomType);
-      let para = document.getElementById('roomTypeAdded');
-      para.innerHTML = newRoomType.name + " is added";
-
-      let selectElement = document.getElementById('roomTypes');
-      selectElement.add(createOptionElement(newRoomType.id, newRoomType.name));
+/* add room type */
+  addRoomType: function() {
+    document.getElementById('newRoomTypeForm').addEventListener('submit', () => {
+      submitForm('newRoomTypeForm');
+      document.location="add_room.php"
     });
-  });
 },
 
  /* edit room */
@@ -218,6 +206,29 @@ var SmartHome = {
       }
     });
   },
+
+   /* edit room type*/
+   updateRoomType: function() {
+    getRoomTypes(); 
+    document.getElementById('updateRoomType').addEventListener('submit', () => {
+      submitForm('updateRoomType', 'put').then(roomType => {
+        console.log(roomType);
+        let para = document.getElementById('updateRoomType');
+        para.innerHTML = roomType.name + " is updated";
+      });
+    });
+    document.getElementById('roomTypes').addEventListener('change', event => {
+      let id = event.target.value;
+      let nameElement = document.getElementById('roomTypeName');
+      if (id == 0) {
+        nameElement.value = '';
+      } else {
+        getById('roomtypes', id).then(roomtype => {
+          nameElement.value = roomtype.name;
+        });
+    }
+  });
+},
 
 
 
@@ -949,9 +960,12 @@ function getStatus(deviceId) {
 function deleteUser() {
   let selectedUser = document.getElementById('selectUsername');
   let deleteUserId = selectedUser.value;
+  let deleteUserName = selectedUser.options[selectedUser.selectedIndex].text;
+  if (confirm('Are you sure you want to delete ' + deleteUserName + '?')) {
   doDelete('api/users.php?id=' + deleteUserId);
   let para = document.getElementById('userUpdated');
-  para.innerHTML =  "the user is deleted";
+  para.innerHTML =  deleteUserName+ " is deleted";
+  };
 }
 
 /* delete device from form */
@@ -959,17 +973,35 @@ function deleteUser() {
 function deleteDevice() {
   let selectedDevice = document.getElementById('selectDevice');
   let deleteDeviceId = selectedDevice.value;
+  let deleteDeviceName = selectedDevice.options[selectedDevice.selectedIndex].text;
+  if (confirm('Are you sure you want to delete ' + deleteDeviceName + '?')) {
   doDelete('api/devices.php?id=' + deleteDeviceId);
   let para = document.getElementById('deviceUpdated');
-  para.innerHTML =  "the device is deleted";
-  
+  para.innerHTML =  deleteDeviceName + " is deleted";
+  };
 }
 
 /* delete room */
 function deleteRoom() {
   let selectedRoom = document.getElementById('selectRoom');
   let deleteRoomId = selectedRoom.value;
-  doDelete('api/rooms.php?id=' + deleteRoomId);
-  let para = document.getElementById('roomUpdated');
-  para.innerHTML =  "the room is deleted";
+  let deleteRoomName = selectedRoom.options[selectedRoom.selectedIndex].text;
+  if (confirm('Are you sure you want to delete ' + deleteRoomName + '?')) {
+    doDelete('api/rooms.php?id=' + deleteRoomId);
+    let para = document.getElementById('roomUpdated');
+    para.innerHTML =  deleteRoomName + " is deleted";
+  };
+}
+
+/* delete room types */
+function deleteRoomType() {
+  let selectedRoomType = document.getElementById('roomTypes');
+  let deleteRoomTypeId = selectedRoomType.value;
+  let deleteRoomTypeName = selectedRoomType.options[selectedRoomType.selectedIndex].text;
+  if (confirm('Are you sure you want to delete ' + deleteRoomTypeName + '?')) {
+    doDelete('api/roomtypes.php?id=' + deleteRoomTypeId);
+    let para = document.getElementById('roomTypeUpdated');
+  let deleteRoomTypeName = selectedRoomType.options[selectedRoomType.selectedIndex].text;
+    para.innerHTML = deleteRoomTypeName + " is deleted";
+  };
 }
