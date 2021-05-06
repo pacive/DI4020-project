@@ -7,7 +7,7 @@ require_once('template.php');
 
     <form id="updateRoom" action="api/rooms.php">
         <label for="selectRoom">Select Room:</label>
-        <select name="roomId" id="selectRoom">
+        <select name="id" id="selectRoom">
         <option value="0">Select room</option>
         </select> <br>
         <label for="roomName">Edit room name:</label>
