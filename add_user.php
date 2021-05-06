@@ -19,4 +19,7 @@ require_once('template.php');
 
 <p id="userAdded"></p>
 
-
+<div>
+<button onclick="document.location='index.php'">Home</button> 
+<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+</div>

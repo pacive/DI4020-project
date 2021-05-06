@@ -6,13 +6,6 @@ $title = 'Add new room';
 require_once('template.php');
 ?> 
 
-<form id="newRoomTypeForm" action="api/roomtypes.php" method="POST" style="display: none">
-    <span> add new room type here:</span>
-    <input type="text" id="newRoomType" name="name" placeholder="new room type"> 
-    <input type="submit" value="add">
-    <p id="roomTypeAdded"></p>
-</form>
-
 <form id="addRoom" action="api/rooms.php" method="POST">
     <label for="roomname">Roomname:</label>
     <input type="text" id="roomname" name="name"><br>
@@ -23,8 +16,15 @@ require_once('template.php');
     </select>
     
     <br>
-    <input type="submit" value="Save">
+    <input type="submit" value="Save"> <br>
+    <label> Add a new room type: </label>
+    <input type="button" value="Add a room type" onclick="document.location='add_room_type.php'">
+
 </form>
 
 <p id="roomAdded"></p>
 
+<div>
+<button onclick="document.location='index.php'">Home</button> 
+<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+</div>

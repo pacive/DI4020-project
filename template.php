@@ -72,3 +72,4 @@ EOA;
         <h1 id="header"><?= isset($title) ? $title : 'SmartHome';  ?></h1>
       </div>
       <div class="content">
+      
