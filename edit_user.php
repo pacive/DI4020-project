@@ -17,7 +17,7 @@ require_once('template.php');
         <label for="isAdmin">Is admin:</label>
         <input type="checkbox" id="isAdmin" name="admin" value="isAdmin"><br>
         <input type="submit" value="save">
-        <input type="button" value="Delete user" onclick="deleteUser()">
+        <input type="button" value="Delete user" id="delete">
     </form>
 
     <p id="userUpdated"></p> 

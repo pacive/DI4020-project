@@ -20,7 +20,7 @@ require_once('template.php');
         <option value="0">Select room</option>
         </select> <br>
         <input type="submit" value="save">
-        <input type="button" value="Delete device" onclick="deleteDevice()">
+        <input type="button" value="Delete device" id="delete">
     </form>
 
     <p id="deviceUpdated"></p>

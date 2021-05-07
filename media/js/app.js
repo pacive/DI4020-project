@@ -1,5 +1,11 @@
 var SmartHome = {
-  config: {},
+  config: {
+    rooms: {},
+    devices: {},
+    users: {},
+    devicetypes: {},
+    roomtypes: {}
+  },
   INIT: {
     /*
     * Common functions that should be executed on every page
@@ -13,22 +19,34 @@ var SmartHome = {
         for (let i = 0; i < forms.length; i++) {
           forms[i].addEventListener('submit', e => e.preventDefault(), true);
         }
+        ['rooms', 'devices', 'users', 'devicetypes', 'roomtypes'].forEach(endpoint => {
+          onGet(endpoint, endpoint + 'Cache', entity => {
+            SmartHome.config[endpoint][entity.id] ||= {};
+            Object.assign(SmartHome.config[endpoint][entity.id], entity);
+          });  
+        });
+        onGet('status', 'statusCache', status => {
+          SmartHome.config.devices[status.id] ||= {};
+          SmartHome.config.devices[status.id].status = status.status;
+        });  
       },
       start: function() {
         // Get all rooms from the api
-        getAll("rooms", {includeDevices: true}).then(rooms => {
-          // Save the rooms in the browser
-          sessionStorage.setItem('rooms', JSON.stringify(rooms));
+        getAll('rooms', {includeDevices: true}).then(rooms => {
           // Create the rooms in the menu
-          rooms.forEach(createRoomMenu);
-          // Start listening for status updates
+          rooms.forEach(room => {
+            createRoomMenu(room);
+            room.devices.forEach(device => {
+              SmartHome.apiListeners.notify(['devices', device.id], device);
+            });
+          });
         }).then(() => {
+          // Start listening for status updates
           startSse('api/events.php', event => {
             console.log(event.data);
             let data = JSON.parse(event.data);
-            sessionStorage.setItem('device-' + data.id, data.status);
             SmartHome.apiListeners.notify(['status'], data);        
-          })
+          });
         }).catch(error => console.log(error));
       }
     },
@@ -37,12 +55,11 @@ var SmartHome = {
     * index
     */
     index: function() {
-      SmartHome.apiListeners.add(['rooms'], 'createArea', createArea);
+      onGet('rooms', 'createArea', createArea);
 
       // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
       window.addEventListener('resize', () => {
-        let rooms = JSON.parse(sessionStorage.getItem('rooms'));
-        rooms?.forEach(room => {
+        Object.values(SmartHome.config.rooms).forEach(room => {
           let area = document.getElementById('room-area-' + room.id);
           area.coords = scaleCoordinates(room.coordinates);
         });
@@ -95,12 +112,11 @@ var SmartHome = {
           nameElement.value = '';
           adminElem.checked = false;
         } else {
-          getById('users', id).then(user => {
-            nameElement.value = user.name;
-            adminElem.checked = user.admin;
-          });
+          nameElement.value = SmartHome.config.users[id].name;
+          adminElem.checked = SmartHome.config.users[id].admin;
         }
       });  
+      document.getElementById('delete').addEventListener('click', deleteUser);
     },
 
       /* add device */
@@ -117,9 +133,9 @@ var SmartHome = {
     },
 
   
-   /*
-    * edit devices
-    */
+    /*
+     * edit devices
+     */
     updateDevice: function() {
       getDevices();
       getDeviceTypes();
@@ -141,101 +157,96 @@ var SmartHome = {
           typeElem.value = 0;
           roomElem.value = 0;
         } else {
-          getById('devices', id).then(device => {
-            nameElement.value = device.name;
-            typeElem.value = device.typeId;
-            roomElem.value = device.roomId;
-          });
+          nameElement.value = SmartHome.config.devices[id].name;
+          typeElem.value = SmartHome.config.devices[id].typeId;
+          roomElem.value = SmartHome.config.devices[id].roomId;
         }
+      });
+      document.getElementById('delete').addEventListener('click', deleteDevice);
+    },
+
+    /* add room */      
+    addRoom: function() {
+      getRoomTypes();
+      document.getElementById('addRoom').addEventListener('submit', () => {
+        submitForm('addRoom').then(newRoom => {
+          console.log(newRoom);
+          let para = document.getElementById('roomAdded');
+          para.innerHTML = newRoom.name + " is added";
+          para.parentNode.appendChild(createElem('a', {href: 'draw_room.php?id=' + newRoom.id}, 'Add room to floorplan'));
+        });
       });
     },
 
-
- /* add room */
-    
- addRoom: function() {
-  getRoomTypes();
-  document.getElementById('addRoom').addEventListener('submit', () => {
-    submitForm('addRoom').then(newRoom => {
-      console.log(newRoom);
-      let para = document.getElementById('roomAdded');
-      para.innerHTML = newRoom.name + " is added";
-      let setCoordinatesLink = para.parentNode.appendChild(document.createElement('a'));
-      setCoordinatesLink.href = 'draw_room.php?id=' + newRoom.id;
-      setCoordinatesLink.textContent = 'Add room to floorplan';
-    });
-  });
-},
-
-/* add room type */
-  addRoomType: function() {
-    document.getElementById('newRoomTypeForm').addEventListener('submit', () => {
-      submitForm('newRoomTypeForm');
-      document.location="add_room.php"
-    });
-},
-
- /* edit room */
-  updateRoom: function() {
-    getRooms();
-    getRoomTypes(); 
-    document.getElementById('updateRoom').addEventListener('submit', () => {
-      submitForm('updateRoom', 'put').then(room => {
-        console.log(room);
-        let para = document.getElementById('updateRoom');
-        para.innerHTML = room.name + " is updated";
+    /* add room type */
+    addRoomType: function() {
+      document.getElementById('newRoomTypeForm').addEventListener('submit', () => {
+        submitForm('newRoomTypeForm');
+        document.location="add_room.php"
       });
-    });
-    document.getElementById('selectRoom').addEventListener('change', event => {
-      let id = event.target.value;
-      let nameElement = document.getElementById('roomName');
-      let typeElem = document.getElementById('roomTypes');
-      let drawRoomLink = document.getElementById('drawRoomLink');
-      if (id == 0) {
-        nameElement.value = '';
-        typeElem.value = 0;
-        drawRoomLink.href = '#';
-        drawRoomLink.style.display = 'none';
-      } else {
-        getById('rooms', id).then(room => {
-          nameElement.value = room.name;
-          typeElem.value = room.typeId;
+    },
+
+    /* edit room */
+    updateRoom: function() {
+      getRooms();
+      getRoomTypes(); 
+      document.getElementById('updateRoom').addEventListener('submit', () => {
+        submitForm('updateRoom', 'put').then(room => {
+          console.log(room);
+          let para = document.getElementById('roomUpdated');
+          para.innerHTML = room.name + " is updated";
+        });
+      });
+      document.getElementById('selectRoom').addEventListener('change', event => {
+        let id = event.target.value;
+        let nameElement = document.getElementById('roomName');
+        let typeElem = document.getElementById('roomTypes');
+        let drawRoomLink = document.getElementById('drawRoomLink');
+        if (id == 0) {
+          nameElement.value = '';
+          typeElem.value = 0;
+          drawRoomLink.href = '#';
+          drawRoomLink.style.display = 'none';
+        } else {
+          nameElement.value = SmartHome.config.rooms[id].name;
+          typeElem.value = SmartHome.config.rooms[id].typeId;
           drawRoomLink.href = 'draw_room.php?id=' + id;
           drawRoomLink.style.display = 'inline';
-        });
-      }
-    });
-  },
-
-   /* edit room type*/
-   updateRoomType: function() {
-    getRoomTypes(); 
-    document.getElementById('updateRoomType').addEventListener('submit', () => {
-      submitForm('updateRoomType', 'put').then(roomType => {
-        console.log(roomType);
-        let para = document.getElementById('updateRoomType');
-        para.innerHTML = roomType.name + " is updated";
+        }
       });
-    });
-    document.getElementById('roomTypes').addEventListener('change', event => {
-      let id = event.target.value;
-      let nameElement = document.getElementById('roomTypeName');
-      if (id == 0) {
-        nameElement.value = '';
-      } else {
-        getById('roomtypes', id).then(roomtype => {
-          nameElement.value = roomtype.name;
+      document.getElementById('delete').addEventListener('click', deleteRoom);
+    },
+
+    /* edit room type*/
+    updateRoomType: function() {
+      getRoomTypes(); 
+      document.getElementById('updateRoomType').addEventListener('submit', () => {
+        submitForm('updateRoomType', 'put').then(roomType => {
+          console.log(roomType);
+          let para = document.getElementById('updateRoomType');
+          para.innerHTML = roomType.name + " is updated";
         });
-    }
-  });
-},
+      });
+      document.getElementById('roomTypes').addEventListener('change', event => {
+        let id = event.target.value;
+        let nameElement = document.getElementById('roomTypeName');
+        if (id == 0) {
+          nameElement.value = '';
+        } else {
+          nameElement.value = SmartHome.config.roomtypes[id].name;
+        }
+      });
+      document.getElementById('delete').addEventListener('click', deleteRoomType);
+    },
 
-
-
+    /*
+     * Statistics
+     */
     statistics: function() {
       let canvas = document.getElementById('browser-chart');
       let ipTable = document.getElementById('ip-addresses')
       let chart;
+      //Chart config
       let broserChartConfig = {
         type: 'doughnut',
         options: {
@@ -267,34 +278,48 @@ var SmartHome = {
           }]
         }
       }
+      // Get data
       doGet('api/statistics.php').then(data => {
+        // Display browser chart
         data.browsers.forEach(entry => {
           broserChartConfig.data.labels.push(entry.userAgent);
           broserChartConfig.data.datasets[0].data.push(parseInt(entry.visits));
         });
-        data.ipAddresses.forEach(entry => {
-          let tr = ipTable.appendChild(document.createElement('tr'));
-          let ipCell = tr.appendChild(document.createElement('td'));
-          let visitsCell = tr.appendChild(document.createElement('td'));
-          let dateCell = tr.appendChild(document.createElement('td'));
-          ipCell.textContent = entry.ipAddress;
-          visitsCell.textContent = entry.visits;
-          dateCell.textContent = entry.lastVisit;
-         });
         chart = new Chart(canvas, broserChartConfig);
+        // Display ip table
+        data.ipAddresses.forEach(entry => {
+          let tr = ipTable.appendChild(createElem('tr'));
+          tr.appendChild(createElem('td', {}, entry.ipAddress));
+          tr.appendChild(createElem('td', {}, entry.visits));
+          tr.appendChild(createElem('td', {}, entry.lastVisit));
+         });
       });
     },
+
+    /*
+     * Log
+     */
     log: function() {
       let logWindow = document.getElementById('log');
       startSse('api/accesslog.php?initialSize=50', event => {  
-        let data = JSON.parse(event.data);      
-        let line = logWindow.insertBefore(document.createElement('p'), logWindow.firstChild);
+        let data = JSON.parse(event.data);
+        let line = logWindow.insertBefore(createElem('p'), logWindow.firstChild);
         line.textContent = `${data.time} ${data.requestType} ${data.page} (${data.responseCode}), user: ${data.user}`;
       });
+      setTimeout(() => {
+        onGet('status', 'log', data => {
+          let device = SmartHome.config.devices[data.id];
+          let line = logWindow.insertBefore(createElem('p'), logWindow.firstChild);
+          line.textContent = `${data.time} ${device.name} (${device.roomName}) is ${data.status}`;
+        });
+      }, 2000);
     },
+    /*
+     * Draw room
+     */
     drawRoom: function() {
       let roomId = new URLSearchParams(window.location.search).get('id');
-      getById('rooms', roomId).then(room => {
+      onGet(['rooms', parseInt(roomId)], 'drawRoom', room => {
         SmartHome.drawRoom.initialize(room.coordinates);
       });
       document.getElementById('save').addEventListener('click', () => {
@@ -312,8 +337,14 @@ var SmartHome = {
     }
   },
 
+  /*
+   * Pub/sub framework for api requests
+   */
   apiListeners: {
     listeners: new Map(),
+    /*
+     * Add listener for specified namespace
+     */
     add: function(namespace, key, callback) {
       let ns = this.listeners;
       namespace.forEach(key => {
@@ -323,6 +354,10 @@ var SmartHome = {
       ns.has('_listeners') || ns.set('_listeners', new Map());
       ns.get('_listeners').set(key, callback);
     },
+
+    /*
+     * Remove listener from all namespaces
+     */
     remove: function(key, ns = this.listeners) {
       ns.forEach((v, k) => {
         if (k == '_listeners') {
@@ -332,10 +367,14 @@ var SmartHome = {
         }
       });
     },
+
+    /*
+     * Notify all listeners in the specified namespace hierarchy
+     */
     notify: function(namespace, data) {
       if (Array.isArray(data)) {
         data.forEach(item => {
-          this.notify(namespace, item);
+          this.notify([...namespace], item);
         });
         return;
       }
@@ -352,6 +391,11 @@ var SmartHome = {
         });
       });
     },
+
+    /*
+     * Recurse down the namespace hierarchy to return all listeners at the last level
+     * optionally apply the specified function to all listeners in the namespace path
+     */
     dig: function(namespace, fn = null) {
       let ns = this.listeners;
       for (let key of namespace) {
@@ -367,111 +411,147 @@ var SmartHome = {
     }
   },
 
-  drawRoom: {
+  /*
+   * Functions for drawing rooms
+   */
+  drawRoom: (function() {
 
-    corners: [],
-    cornerHandles: [],
-    canvas: null,
-    ctx: null,
-    draggedElement: null,
+    var corners = [],
+    cornerHandles = [],
+    canvas = null,
+    ctx = null,
+    draggedElement = null;
 
-    initialize: function(corners = []) {
-      this.corners = corners;
-      this.canvas = document.getElementById('draw-room');
-      this.ctx = this.canvas.getContext('2d');
+    /*
+     * Initialize the drawing area, with the optionally provided
+     * corner coordinates
+     */
+    var initialize = function(coordinates = []) {
+      corners = coordinates;
+      canvas = document.getElementById('draw-room');
+      ctx = canvas.getContext('2d');
+      
+      // Adapt the canvas size to the image
       let background = new Image();
-
       background.addEventListener('load', () => {
-        this.canvas.width = background.width;
-        this.canvas.height = background.height;
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        this.draw();
+        canvas.width = background.width;
+        canvas.height = background.height;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        draw();
+        ctx.save();
       });
       background.src = 'media/images/blueprint.png';
 
-      this.canvas.addEventListener('mousedown', event => {
-        this.draggedElement = this.getTargetCorner(event.offsetX, event.offsetY);
-        if (!this.draggedElement) {
-          this.addCorner(event.offsetX, event.offsetY);
-          this.draggedElement = this.corners.length - 1;
+      // Add event listeners for mouse events
+      canvas.addEventListener('mousedown', event => {
+        draggedElement = getTargetCorner(event.offsetX, event.offsetY);
+        if (draggedElement === null) {
+          addCorner(event.offsetX, event.offsetY);
+          draggedElement = corners.length - 1;
         }
-        window.requestAnimationFrame(() => this.draw());
+        window.requestAnimationFrame(draw);
       });
 
-      this.canvas.addEventListener('mousemove', event => {
-        if (this.draggedElement != null) {
-          this.corners[this.draggedElement] = this.snapCorner(event.offsetX, event.offsetY, this.draggedElement);
+      canvas.addEventListener('mousemove', event => {
+        if (draggedElement != null) {
+          corners[draggedElement] = snapCorner(event.offsetX, event.offsetY, draggedElement);
         }
       });
 
-      this.canvas.addEventListener('mouseup', () => {
-        this.draggedElement = null;
+      canvas.addEventListener('mouseup', () => {
+        draggedElement = null;
       });
-    },
+    }
 
-    addCorner: function(x, y) {
-      this.corners.push(this.snapCorner(x, y));
-    },
+    /*
+     * Add a corner to the room
+     */
+    var addCorner = function(x, y) {
+      corners.push(snapCorner(x, y));
+    }
 
-    snapCorner: function(x, y, excludeCorner = null) {
+    /*
+     * Check if corner approximately lines up with previous corners and snap to
+     * the axis
+     */
+    var snapCorner = function(x, y, excludeCorner = null) {
       let coords = [x, y];
-      for (let i = 0; i < this.corners.length; i++) {
+      for (let i = 0; i < corners.length; i++) {
         if (i == excludeCorner) {
           continue;
         }
         for (let d = 0; d < 2; d++) {
-          if (Math.abs(coords[d] - this.corners[i][d]) < 10) {
-            coords[d] = this.corners[i][d];
+          if (Math.abs(coords[d] - corners[i][d]) < 10) {
+            coords[d] = corners[i][d];
           }  
         }
       }
       return coords;
-    },
+    }
 
-    draw: function() {
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      if (this.corners.length > 0) {
+    /*
+     * Draw the corners and path
+     */
+    var draw = function() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      cornerHandles = [];
+      if (corners.length > 0) {
         let roomPath = new Path2D();
-        this.cornerHandles = [];
-        roomPath.moveTo(...this.corners[0]);
-        this.cornerHandles[0] = new Path2D();
-        this.cornerHandles[0].arc(...this.corners[0], 5, 0, Math.PI * 2);
-        this.ctx.stroke(this.cornerHandles[0]);
-        for (let i = 1; i < this.corners.length; i++) {
-          roomPath.lineTo(...this.corners[i]);
-          this.cornerHandles[i] = new Path2D();
-          this.cornerHandles[i].arc(...this.corners[i], 5, 0, Math.PI * 2);
-          this.ctx.stroke(this.cornerHandles[i]);
-          }
+        roomPath.moveTo(...corners[0]);
+        cornerHandles[0] = new Path2D();
+        cornerHandles[0].arc(...corners[0], 5, 0, Math.PI * 2);
+        ctx.stroke(cornerHandles[0]);
+        for (let i = 1; i < corners.length; i++) {
+          roomPath.lineTo(...corners[i]);
+          cornerHandles[i] = new Path2D();
+          cornerHandles[i].arc(...corners[i], 5, 0, Math.PI * 2);
+          ctx.stroke(cornerHandles[i]);
+        }
         roomPath.closePath();
-        this.ctx.stroke(roomPath);
-        this.ctx.fill(roomPath);
-        if (this.draggedElement != null) {
-          window.requestAnimationFrame(() => this.draw());
+        ctx.stroke(roomPath);
+        ctx.fill(roomPath);
+        if (draggedElement != null) {
+          window.requestAnimationFrame(draw);
         }
       }
-    },
+    }
 
-    reset: function() {
-      this.corners = [];
-      this.cornerHandles = [];
-      this.draw();
-    },
+    /*
+     * Clear the drawing area
+     */
+    var reset = function() {
+      corners = [];
+      draw();
+    }
 
-    undo: function() {
-      this.corners.pop();
-      this.draw();
-    },
+    /*
+     * Undo the last placed corner
+     */
+    var undo = function() {
+      corners.pop();
+      draw();
+    }
 
-    getTargetCorner(x, y) {
-      for (let i = 0; i < this.cornerHandles.length; i++) {
-        if (this.ctx.isPointInPath(this.cornerHandles[i], x, y)) {
+    /*
+     * Get the corner at the specified position
+     */
+    var getTargetCorner = function(x, y) {
+      for (let i = cornerHandles.length; i--;) {
+        if (ctx.isPointInPath(cornerHandles[i], x, y)) {
+          console.log(cornerHandles[i]);
           return i;
         }
       }
       return null;
     }
-  }
+
+    return {
+      initialize: initialize,
+      reset: reset,
+      undo: undo,
+      corners: corners
+    };
+  }())
 }
 
 /*
@@ -497,7 +577,8 @@ window.addEventListener('load', () => {
 function startSse(uri, callback) {
   var events = new EventSource(uri);
   events.onmessage = callback
-  events.onerror = () => {
+  events.onerror = e => {
+    console.log(e)
     testConnection().then(status => {
       if (status == 403) {
         window.location.assign('login.php?redirectUri=' + window.location.pathname);
@@ -528,20 +609,20 @@ function closeBar() {
 /* create the rooms and devices in the sidemenu */
 function createRoomMenu(room) {
   let menuDiv = document.getElementById('menu');
-  let roomDiv = menuDiv.appendChild(document.createElement('div'));
-  let roomName = roomDiv.appendChild(document.createElement('p'));
-  let devicesDiv = roomDiv.appendChild(document.createElement('div'));
-  roomName.classList.add('roombtn');
-  roomName.id = 'menu-room-' + room.id;
-  roomName.textContent = room.name;
-  devicesDiv.classList.add('dropdown_content');
-  devicesDiv.id = "dropdown-" + room.id;
+  let roomDiv = menuDiv.appendChild(createElem('div'));
+  let roomName = roomDiv.appendChild(createElem('p', {id: 'menu-room-' + room.id, class: 'roombtn'}, room.name));
+  let devicesDiv = roomDiv.appendChild(createElem('div', {id: "dropdown-" + room.id, class: 'dropdown_content'}));
   roomName.addEventListener('click', () => {
     open_closeDropdown(devicesDiv) });
+  onUpdate('rooms', room.id, roomName, data => {
+    roomName.textContent = data.name;
+  });
+  onDelete('rooms', room.id, roomDiv, () => {
+    roomDiv.remove();
+  });
   room.devices?.forEach(device => {
-    let deviceElem = devicesDiv.appendChild(createDeviceElement(device));
-    deviceElem.id = 'menu-device-' + device.id;
-    SmartHome.apiListeners.add(['devices', device.id, 'updated'], deviceElem, data => {
+    let deviceElem = devicesDiv.appendChild(createDeviceElement(device, {id: 'menu-device-' + device.id}));
+    onUpdate('devices', device.id, deviceElem, data => {
       let newDiv = document.getElementById("dropdown-" + data.roomId);
       if (newDiv != deviceElem.parentElement) {
         newDiv.appendChild(deviceElem);
@@ -566,14 +647,10 @@ function createArea(room) {
   let area = document.getElementById('room-area-' + room.id);
   if (area == null) {
     if (room.coordinates.length == 0) { return; }
-    area = document.createElement('area');
-    area.shape = 'poly';
-    area.tabIndex = room.id;
-    area.id = 'room-area-' + room.id;
+    area = document.getElementById('blueprint').appendChild(createElem('area', {id: 'room-area-' + room.id, shape: 'poly'}));
     area.addEventListener('click', event => {
       showRoomPopUp(room, event.offsetX, event.offsetY);
     });
-    document.getElementById('blueprint').appendChild(area);
   }
   area.coords = scaleCoordinates(room.coordinates).toString();
 }
@@ -613,31 +690,28 @@ function populateRoomPopup(room) {
 
   let div = document.getElementById('devicelist');
   while (first = div.firstChild) {
-    SmartHome.apiListeners.remove(first);
+    removeListener(first);
     div.removeChild(first);
   }
   room.devices.forEach(device => {
-    let deviceElem = div.appendChild(createDeviceElement(device));
-    deviceElem.id = 'popup-device-' + device.id;
+    div.appendChild(createDeviceElement(device, {id: 'popup-device-' + device.id}));
   });
 }
 
 /*
  * Create an element for a device to be added to the device list
  */
-function createDeviceElement(device) {
-  let p = document.createElement("p");
-  let nameElem = p.appendChild(document.createElement("span"));
+function createDeviceElement(device, attrs = {}) {
+  let p = createElem('p', attrs);
+  let nameElem = p.appendChild(createElem('span', {}, device.name + ": "));
   let statusDisplay = p.appendChild(createStatusDisplayElement(device, device.typeName == 'Sensor'));
   
-  nameElem.textContent = device.name + ": ";
-  SmartHome.apiListeners.add(['devices', device.id, 'deleted'], p, () => {
-    SmartHome.apiListeners.remove(nameElem);
-    SmartHome.apiListeners.remove(statusDisplay);
-    SmartHome.apiListeners.remove(p);
+  onDelete('devices', device.id, p, () => {
+    removeListener(nameElem);
+    removeListener(statusDisplay);
     p.remove();
   });
-  SmartHome.apiListeners.add(['devices', device.id, 'updated'], nameElem, data => {
+  onUpdate('devices', device.id, nameElem, data => {
     nameElem.textContent = data.name + ": ";
   });
   return p;
@@ -646,21 +720,18 @@ function createDeviceElement(device) {
 function createStatusDisplayElement(device, readOnly = false) {
   let elem;
   if (readOnly) {
-    elem = document.createElement('span');
-    elem.textContent = device.status;
-    SmartHome.apiListeners.add(['status', device.id], elem, status => {
+    elem = createElem('span', {class: 'status'}, device.status);
+    onStatusUpdate(device.id, elem, status => {
       elem.textContent = status.status;
     });
   } else {
-    elem = document.createElement("input");
-    elem.type = 'checkbox';
+    elem = createElem("input", {type: 'checkbox', class: 'status'});
     elem.checked = getStatus(device.id) == 'ON';
     elem.addEventListener('change', () => { setStatus(device.id, elem.checked ? "ON" : "OFF"); });
-    SmartHome.apiListeners.add(['status', device.id], elem, status => {
+    onStatusUpdate(device.id, elem, status => {
       elem.checked = status.status == 'ON';
     });
   }
-  elem.classList.add('status')
   return elem;
 }
 
@@ -684,11 +755,10 @@ function getUsernames() {
     users.forEach(user => {
       var option = createOptionElement(user.id, user.name);
       selectElement.add(option);
-      SmartHome.apiListeners.add(['users', user.id, 'updated'], option, data => {
+      onUpdate('users', user.id, option, data => {
         option.text = data.name;
       });
-      SmartHome.apiListeners.add(['users', user.id, 'deleted'], option, () => {
-        SmartHome.apiListeners.remove(option);
+      onDelete('users', user.id, option, () => {
         option.remove();
       });
     });
@@ -701,15 +771,12 @@ function getDevices() {
   getAll('devices').then(devices => {
     let selectElement = document.getElementById('selectDevice');
     devices.forEach(device => {
-      let option = document.createElement('option');
-      option.text = device.name + ' (' + device.roomName + ')';
-      option.value = device.id;
+      let option = createOptionElement(device.id, device.name + ' (' + device.roomName + ')');
       selectElement.add(option);
-      SmartHome.apiListeners.add(['devices', device.id, 'updated'], option, data => {
+      onUpdate('devices', device.id, option, data => {
         option.text = data.name + ' (' + data.roomName + ')';
       });
-      SmartHome.apiListeners.add(['devices', device.id, 'deleted'], option, () => {
-        SmartHome.apiListeners.remove(option);
+      onDelete('devices', device.id, option, () => {
         option.remove();
       });
     });
@@ -731,7 +798,14 @@ function getRooms() {
   getAll('rooms').then(rooms => {
     let selectElement = document.getElementById('selectRoom');
     rooms.forEach(room => {
-      selectElement.add(createOptionElement(room.id, room.name));
+      let option = createOptionElement(room.id, room.name);
+      selectElement.add(option);
+      onUpdate('rooms', room.id, option, data => {
+        option.text = data.name;
+      });
+      onDelete('rooms', room.id, option, () => {
+        option.remove();
+      });
     });
   });
 }
@@ -840,9 +914,7 @@ function login() {
   .catch(() => {
     let p = document.getElementById("error");
     if (!p) {
-      p = document.getElementById("login").appendChild(document.createElement("p"));
-      p.id = "error";
-      p.class = "error";
+      p = document.getElementById("login").appendChild(createElem('p', {id: 'error', class: 'error'}));
    }
    p.textContent = "Invalid username or password";
   });
@@ -951,9 +1023,55 @@ async function doRequest(uri, req, params = {}) {
  * Get status for a specified device from browser storage
  */
 function getStatus(deviceId) {
-  return sessionStorage.getItem('device-' + deviceId);
+  return SmartHome.config.devices[deviceId]?.status;
 }
 
+/*
+ * Specify a callback to execute when an entity is retrieved from the server
+ */
+function onGet(endpoint, identifier, callback) {
+  let ns = Array.isArray(endpoint) ? endpoint : [endpoint];
+  SmartHome.apiListeners.add(ns, identifier, callback);
+}
+
+/*
+ * Specify a callback to execute when an entity is updated after a PUT request
+ */
+function onUpdate(endpoint, id, element, callback) {
+  SmartHome.apiListeners.add([endpoint, id, 'updated'], element, callback);
+}
+
+/*
+ * Specify a callback to execute when an entity is deleted after a DELETE request
+ */
+function onDelete(endpoint, id, element, callback) {
+  let fn = (data) => {
+    SmartHome.apiListeners.remove(element);
+    callback(data);
+  }
+  SmartHome.apiListeners.add([endpoint, id, 'deleted'], element, fn);
+}
+
+/*
+ * Specify a callback to execute when a device status update is recieved
+ */
+function onStatusUpdate(deviceId, element, callback) {
+  SmartHome.apiListeners.add(['status', deviceId], element, callback);
+}
+
+/*
+ * Remove a listener
+ */
+function removeListener(element) {
+  SmartHome.apiListeners.remove(element);
+}
+
+function createElem(type, attrs = {}, text = null) {
+  let elem = document.createElement(type);
+  Object.entries(attrs).forEach(([attr, value]) =>  { elem.setAttribute(attr, value); });
+  text && (elem.textContent = text);
+  return elem;
+}
 
 /* delete user from form */
 
