@@ -725,14 +725,21 @@ function createStatusDisplayElement(device, readOnly = false) {
       elem.textContent = status.status;
     });
   } else {
-    elem = createElem("input", {type: 'checkbox', class: 'status'});
-    elem.checked = getStatus(device.id) == 'ON';
-    elem.addEventListener('change', () => { setStatus(device.id, elem.checked ? "ON" : "OFF"); });
-    onStatusUpdate(device.id, elem, status => {
-      elem.checked = status.status == 'ON';
-    });
+    elem = createToggle(device.id, getStatus(device.id) == 'ON');
   }
   return elem;
+}
+
+function createToggle(deviceId, checked = false) {
+  let label = createElem('label', {class: 'toggle status'});
+  let checkbox = label.appendChild(createElem("input", {type: 'checkbox'}));
+  checkbox.checked = checked
+  checkbox.addEventListener('change', () => { setStatus(deviceId, checkbox.checked ? "ON" : "OFF"); });
+  onStatusUpdate(deviceId, checkbox, status => {
+    checkbox.checked = status.status == 'ON';
+  });
+  label.appendChild(createElem('span', {class: 'slider'}));
+  return label;  
 }
 
 /* function for bringing out the devices when clicking on a room in menu */
