@@ -319,8 +319,9 @@ var SmartHome = {
      */
     drawRoom: function() {
       let roomId = new URLSearchParams(window.location.search).get('id');
+      SmartHome.drawRoom.initialize();
       onGet(['rooms', parseInt(roomId)], 'drawRoom', room => {
-        SmartHome.drawRoom.initialize(room.coordinates);
+        SmartHome.drawRoom.setCorners(room.coordinates);
       });
       document.getElementById('save').addEventListener('click', () => {
         let data = { id: roomId, coordinates: SmartHome.drawRoom.corners };
@@ -463,6 +464,11 @@ var SmartHome = {
       });
     }
 
+    var setCorners = function(coords) {
+      corners = coords;
+      draw();
+    }
+
     /*
      * Add a corner to the room
      */
@@ -547,6 +553,7 @@ var SmartHome = {
 
     return {
       initialize: initialize,
+      setCorners: setCorners,
       reset: reset,
       undo: undo,
       corners: corners
