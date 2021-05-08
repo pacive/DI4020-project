@@ -13,20 +13,20 @@ var SmartHome = {
     common: {
       initialize: function() {
         // Add event listeners to menu open and close buttons
-        document.getElementById('open')?.addEventListener('click', openBar);
-        document.getElementById('close')?.addEventListener('click', closeBar);
+        document.getElementById('open').addEventListener('click', openBar);
+        document.getElementById('close').addEventListener('click', closeBar);
         let forms = document.getElementsByTagName('form');
         for (let i = 0; i < forms.length; i++) {
           forms[i].addEventListener('submit', e => e.preventDefault(), true);
         }
         ['rooms', 'devices', 'users', 'devicetypes', 'roomtypes'].forEach(endpoint => {
           onGet(endpoint, endpoint + 'Cache', entity => {
-            SmartHome.config[endpoint][entity.id] ||= {};
+            SmartHome.config[endpoint][entity.id] || (SmartHome.config[endpoint][entity.id] = {});
             Object.assign(SmartHome.config[endpoint][entity.id], entity);
           });  
         });
         onGet('status', 'statusCache', status => {
-          SmartHome.config.devices[status.id] ||= {};
+          SmartHome.config.devices[status.id] || (SmartHome.config.devices[status.id] = {});
           SmartHome.config.devices[status.id].status = status.status;
         });  
       },
@@ -66,7 +66,7 @@ var SmartHome = {
       });
 
       // Add event listener to popup close button
-      document.getElementById('closepopup')?.addEventListener('click', () => {
+      document.getElementById('closepopup').addEventListener('click', () => {
         document.getElementById('roompopup').style.visibility = 'hidden';
       });
     },
@@ -445,9 +445,9 @@ var SmartHome = {
 
       // Add event listeners for mouse events
       canvas.addEventListener('mousedown', event => {
-        draggedElement = getTargetCorner(event.offsetX, event.offsetY);
+        draggedElement = getTargetCorner(event.layerX, event.layerY);
         if (draggedElement === null) {
-          addCorner(event.offsetX, event.offsetY);
+          addCorner(event.layerX, event.layerY);
           draggedElement = corners.length - 1;
         }
         window.requestAnimationFrame(draw);
@@ -455,7 +455,7 @@ var SmartHome = {
 
       canvas.addEventListener('mousemove', event => {
         if (draggedElement != null) {
-          corners[draggedElement] = snapCorner(event.offsetX, event.offsetY, draggedElement);
+          corners[draggedElement] = snapCorner(event.layerX, event.layerY, draggedElement);
         }
       });
 
@@ -566,8 +566,9 @@ var SmartHome = {
  */
 window.addEventListener('load', () => {
   SmartHome.INIT.common.initialize();
-  var initFunctions = document.body.dataset.init?.split(' ');
-  initFunctions?.forEach(func => {
+  var initData = document.body.dataset.init;
+  var initFunctions = initData ? initData.split(' ') : [];
+  initFunctions.forEach(func => {
     if (SmartHome.INIT[func] !== undefined) {
       let config = SmartHome.INIT[func]();
       Object.assign(SmartHome.config, config);
@@ -627,15 +628,17 @@ function createRoomMenu(room) {
   onDelete('rooms', room.id, roomDiv, () => {
     roomDiv.remove();
   });
-  room.devices?.forEach(device => {
-    let deviceElem = devicesDiv.appendChild(createDeviceElement(device, {id: 'menu-device-' + device.id}));
-    onUpdate('devices', device.id, deviceElem, data => {
-      let newDiv = document.getElementById("dropdown-" + data.roomId);
-      if (newDiv != deviceElem.parentElement) {
-        newDiv.appendChild(deviceElem);
-      }
+  if (room.devices) {
+    room.devices.forEach(device => {
+      let deviceElem = devicesDiv.appendChild(createDeviceElement(device, {id: 'menu-device-' + device.id}));
+      onUpdate('devices', device.id, deviceElem, data => {
+        let newDiv = document.getElementById("dropdown-" + data.roomId);
+        if (newDiv != deviceElem.parentElement) {
+          newDiv.appendChild(deviceElem);
+        }
+      });
     });
-  });
+  }
 }
 
 /* create option elements */
@@ -656,7 +659,7 @@ function createArea(room) {
     if (room.coordinates.length == 0) { return; }
     area = document.getElementById('blueprint').appendChild(createElem('area', {id: 'room-area-' + room.id, shape: 'poly'}));
     area.addEventListener('click', event => {
-      showRoomPopUp(room, event.offsetX, event.offsetY);
+      showRoomPopUp(room, event.clientX, event.clientY);
     });
   }
   area.coords = scaleCoordinates(room.coordinates).toString();
@@ -671,10 +674,18 @@ function showRoomPopUp(room, mouseX, mouseY) {
   populateRoomPopup(room);
 
   let image = document.querySelector('.image img');
+  let imageRect = image.getBoundingClientRect();
   let roomCenter = calculateCenter(scaleCoordinates(room.coordinates));
-
+  mouseX -= imageRect.left;
+  mouseY -= imageRect.top;
   // If the popup is rotated the coordinates need to be adjusted a bit
-  let offset = window.matchMedia('(orientation:portrait)').matches ? (roomPopup.offsetWidth - roomPopup.offsetHeight) / 2 : 0;
+  let offset = 0;
+  if (window.matchMedia('(orientation:portrait)').matches) {
+    let tmp = mouseX;
+    mouseX = imageRect.height - mouseY;
+    mouseY = tmp;
+    offset = (roomPopup.offsetWidth - roomPopup.offsetHeight) / 2;
+  }
 
   let posX = roomCenter[0] < (image.offsetWidth / 2) ?
               Math.max(0 - offset, mouseX + offset - roomPopup.offsetWidth) :
@@ -935,7 +946,7 @@ function login() {
 }
 
 async function testConnection() {
-  return fetch('api/devices.php').then(response => response.status);
+  return fetch('api/events.php').then(response => response.status);
 }
 
   /*
@@ -1011,7 +1022,7 @@ async function doRequest(uri, req, params = {}) {
     });
     uri += '?' + query.toString();
   }
-  req.headers ||= {};
+  req.headers || (req.headers = {});
   req.headers['Accept'] = 'application/json';
 
   return fetch(uri, req).then(response => {
@@ -1037,7 +1048,8 @@ async function doRequest(uri, req, params = {}) {
  * Get status for a specified device from browser storage
  */
 function getStatus(deviceId) {
-  return SmartHome.config.devices[deviceId]?.status;
+  let device = SmartHome.config.devices[deviceId]
+  return device ? device.status : undefined;
 }
 
 /*
