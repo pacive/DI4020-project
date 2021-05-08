@@ -122,7 +122,8 @@ body {
     width: fit-content;
     background-color: white;
     padding: 4px;
-    box-shadow: 2px 2px 2px gray;
+    box-shadow: 0 0 2px 0px #000000;
+    border-radius: 10px;
 }
 
 @media only screen and (orientation:portrait) {
@@ -158,8 +159,9 @@ body {
 .toggle {
     position: relative;
     display: inline-block;
-    width: 30px;
+    width: 32px;
     height: 19px;
+    margin-left: 0.5rem;
 }
 
 .toggle input {
