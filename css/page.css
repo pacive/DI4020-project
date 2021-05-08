@@ -1,8 +1,7 @@
-html {
-    height: -webkit-fill-available;
-}
-
 body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
     font-family: Arial, Helvetica, sans-serif;
 
 }
@@ -10,8 +9,8 @@ body {
 .container {
     display: flex;
     flex-direction: column;
-    width: 100vw;
-    height: 95vh;
+    width: 100%;
+    height: 100%;
 }
 
 .head {
@@ -25,12 +24,8 @@ body {
     top: 0;
     left: 0;
     font-size: 2rem;
-    margin: 0;
-    padding-left: 5px;
-}
-
-#header {
-    margin-left: 2rem;
+    margin: 5px 5px 5px 10px;
+    cursor: pointer;
 }
 
 .content {
@@ -45,7 +40,7 @@ body {
 .sideBar {
     display: flex;
     flex-flow: column nowrap;
-    height: 100vh;
+    height: 100%;
     position: fixed;
     top: 0;
     left: 0;
@@ -67,21 +62,25 @@ body {
     min-width: 0vw
 }
 
-.sideBar p {
+.sideBar p, .sideBar a, .sideBar a:visited {
     color:white;
     font-family:Arial, Helvetica, sans-serif;
     margin: 20px;
     cursor: pointer;
     white-space: nowrap;
+    text-decoration: none;
+}
+
+.sideBar p:hover, .sideBar a:hover {
+    color: #726f6f;
+}
+
+.sideBar p.roombtn {
+    margin-bottom: 10px;
 }
 
 .sideBar .menu {
     flex-grow: 1;
-}
-
-.sideBar p.roombtn {
-    background-color: #474545;
-    margin-bottom: 10px;
 }
 
 .dropdown_content {
@@ -89,10 +88,6 @@ body {
     height: 0px;
     background-color: #3b3838;
     overflow-y: hidden;
-}
-
-.sideBar p:hover {
-    color: #726f6f;
 }
 
 .sideBar #close {
@@ -103,10 +98,6 @@ body {
     z-index: 2;
 }
 
-#open {
-    cursor: pointer;
-}
-
 .image {
     position: relative;
 }
@@ -114,6 +105,7 @@ body {
 .image img {
     max-width: 100vw;
     max-height: 70vh;
+    display: block;
 }
 
 .roompopup {
@@ -207,12 +199,17 @@ input:checked + .slider::before {
     justify-content: space-evenly;
     align-items: center;
     width: 100%;
-    height: 100%
+    height: 80%
 }
 
 .log {
-    height: 100%;
+    max-height: 80%;
+    max-width: 100%;
     overflow-y: scroll;
+}
+
+.log p {
+    white-space: pre-wrap;
 }
 
 .canvas-background {
@@ -228,14 +225,16 @@ input:checked + .slider::before {
     flex-flow: row wrap;
     justify-content: space-evenly;
     align-items: baseline;
-    align-content: space-around;
     width: 100%;
+    max-width: 600px;
+    overflow-y: scroll;
 }
 
 .admin-menu div {
     min-width: 5rem;
     padding: 1rem;
     text-align: center;
+    margin: auto;
 }
 
 ::-webkit-scrollbar {
@@ -245,7 +244,6 @@ input:checked + .slider::before {
 
 
 a:visited {
-    text-decoration: none;
     color: rgb(102, 98, 98)
 }
 
