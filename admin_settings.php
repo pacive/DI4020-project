@@ -4,9 +4,7 @@ $title = 'Settings';
 require_once('template.php');
 ?>
 
-<!-- maybe we could have these in three columns? -->
-<div class="admin-menu">
-<div>
+<div class="main-content admin-menu">
 <div>
 <h3>Users</h3>
 <p><a href="edit_user.php">Edit a user</a></p>
@@ -17,8 +15,6 @@ require_once('template.php');
 <p><a href="edit_device.php">Edit a device</a></p>
 <p><a href="add_device.php">Add new device</a></p>
 </div>
-</div>
-<div>
 <div>
 <h3>Rooms</h3>
 <p><a href="edit_room.php">Edit a room</a></p>
@@ -30,7 +26,6 @@ require_once('template.php');
 <p><a href="log.php">Log</a></p>
 </div>
 </div>
-</div>
-
+<div  class="nav">
 <button onclick="document.location='index.php'">Home</button> 
-
+</div>

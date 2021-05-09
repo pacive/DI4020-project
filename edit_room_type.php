@@ -5,6 +5,7 @@ $title = 'Edit room type';
 require_once('template.php');
 ?>
 
+<div class="main-content">
     <form id="updateRoomType" action="api/roomtypes.php">
         <label for="roomTypes">Select room type:</label>
         <select name="roomTypeId" id="roomTypes">
@@ -17,8 +18,8 @@ require_once('template.php');
     </form>
 
     <p id="roomTypeUpdated"></p>
-
-    <div>
+</div>
+    <div class="nav">
     <button onclick="document.location='index.php'">Home</button> 
     <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
     </div>

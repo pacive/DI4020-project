@@ -5,6 +5,7 @@ $title = 'Edit devices';
 require_once('template.php');
 ?>
 
+<div class="main-content">
     <form id="updateDevice" action="api/devices.php">
         <label for="selectDevice">Select device:</label>
         <select name="id" id="selectDevice">
@@ -24,7 +25,8 @@ require_once('template.php');
     </form>
 
     <p id="deviceUpdated"></p>
-    <div>
+</div>
+    <div class="nav">
     <button onclick="document.location='index.php'">Home</button> 
     <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
     </div>

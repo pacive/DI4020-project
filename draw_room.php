@@ -3,6 +3,7 @@ $admin = true;
 $init = 'drawRoom';
 require_once('template.php');
 ?>
+<div class="main-content">
   <div>
   <div class="canvas-background">
     <canvas id="draw-room"></canvas>
@@ -12,3 +13,4 @@ require_once('template.php');
     <button id="reset">Reset</button>
     <p id="roomUpdated"></p>
   </div>
+</div>
