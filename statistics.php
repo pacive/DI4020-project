@@ -7,6 +7,7 @@ $head = <<<HTML
 HTML;
 require_once('template.php');
 ?>
+<div class="main-content">
 <div class="statistics">
   <div>
     <canvas id="browser-chart"></canvas>
@@ -19,8 +20,8 @@ require_once('template.php');
     </tr>
   </table>
 </div>
-
-<div>
+</div>
+<div class="nav">
 <button onclick="document.location='index.php'">Home</button> 
 <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
 </div>

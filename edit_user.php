@@ -5,6 +5,7 @@ $title = 'Edit users';
 require_once('template.php');
 ?>
 
+<div class="main-content">
     <form id="updateUser" action="api/users.php">
         <label for="selectUsername">Select user:</label>
         <select name="id" id="selectUsername">
@@ -21,9 +22,9 @@ require_once('template.php');
     </form>
 
     <p id="userUpdated"></p> 
-
+</div>
     
-    <div>
+    <div class="nav">
     <button onclick="document.location='index.php'">Home</button> 
     <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
     </div>

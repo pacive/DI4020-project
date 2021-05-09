@@ -6,7 +6,7 @@ $title = 'Add new device';
 require_once('template.php');
 ?> 
 
-
+<div class="main-content">
 <form id="addDevice" action="api/devices.php" method="POST">
     <label for="username">Device name:</label>
     <input type="text" id="username" name="name"><br>
@@ -23,8 +23,9 @@ require_once('template.php');
 </form>
 
 <p id="deviceAdded"></p>
+</div>
 
-<div>
+<div class="nav">
 <button onclick="document.location='index.php'">Home</button> 
 <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
 </div>

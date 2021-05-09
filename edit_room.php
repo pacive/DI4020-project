@@ -5,6 +5,7 @@ $title = 'Edit room';
 require_once('template.php');
 ?>
 
+<div class="main-content">
     <form id="updateRoom" action="api/rooms.php">
         <label for="selectRoom">Select Room:</label>
         <select name="id" id="selectRoom">
@@ -25,8 +26,9 @@ require_once('template.php');
     </form>
 
     <p id="roomUpdated"></p>
+</div>
 
-    <div>
+    <div class="nav">
     <button onclick="document.location='index.php'">Home</button> 
     <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
     </div>

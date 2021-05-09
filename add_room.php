@@ -6,6 +6,7 @@ $title = 'Add new room';
 require_once('template.php');
 ?> 
 
+<div class="main-content">
 <form id="addRoom" action="api/rooms.php" method="POST">
     <label for="roomname">Roomname:</label>
     <input type="text" id="roomname" name="name"><br>
@@ -23,8 +24,9 @@ require_once('template.php');
 </form>
 
 <p id="roomAdded"></p>
+</div>
 
-<div>
+<div class="nav">
 <button onclick="document.location='index.php'">Home</button> 
 <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
 </div>
