@@ -586,7 +586,6 @@ function startSse(uri, callback) {
   var events = new EventSource(uri);
   events.onmessage = callback
   events.onerror = e => {
-    console.log(e)
     testConnection().then(status => {
       if (status == 403) {
         window.location.assign('login.php?redirectUri=' + window.location.pathname);
@@ -946,7 +945,8 @@ function login() {
 }
 
 async function testConnection() {
-  return fetch('api/events.php').then(response => response.status);
+  var req = { method: 'HEAD', headers: { 'Connection': 'close' }}
+  return fetch('api/events.php', req).then(response => response.status);
 }
 
   /*
