@@ -20,7 +20,7 @@
       }
       http_response_code(403);
       Logger::log_access();
-      die('Unauthorized');
+      exit($_SERVER['REQUEST_METHOD'] == 'HEAD' ? 0 : 'Unauthorized');
     }
 
     /*

@@ -38,15 +38,21 @@ SQL;
       session_write_close();
       try {
         $headers = apache_request_headers();
+        $keep_alive = isset($headers['Connection']) && $headers['Connection'] != 'close';
         header('Content-Type: text/event-stream');
         header('Cache-Control: no-cache');
-        header("Connection: keep-alive");
+        header('Connection: ' . ($keep_alive ? 'keep-alive' : 'close'));
+        if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
+          exit();
+        }
         $last_id = 0;
         if (isset($headers['Last-Event-ID'])) {
           $last_id = (int) $headers['Last-Event-ID'];
         }
         $last_id = self::push_latest($last_id);
-        self::loop($last_id);
+        if ($keep_alive) {
+          self::loop($last_id);
+        }
       } catch (\Exception $e) {
         exit();
       }
