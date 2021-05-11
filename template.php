@@ -1,13 +1,11 @@
 <?php
+if ($_SERVER['SCRIPT_FILENAME'] == __FILE__) {
+  define('ACCESSIBLE', false);
+}
+
 require_once('util/autoload.php');
 use \Util\Session;
 use \Util\Logger;
-
-if ($_SERVER['SCRIPT_FILENAME'] == __FILE__) {
-  http_response_code(404);
-  Logger::log_access();
-  exit();
-}
 
 if (!Session::logged_in() && !strpos($_SERVER['PHP_SELF'], 'login.php')) {
   http_response_code(302);

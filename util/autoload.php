@@ -1,5 +1,8 @@
 <?php
   namespace Util;
+  if (!defined('ACCESSIBLE') && count(get_included_files()) > 1) {
+    define('ACCESSIBLE', true);
+  }
   require_once('preventaccess.php');
 
   /*
