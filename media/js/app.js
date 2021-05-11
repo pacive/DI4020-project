@@ -47,7 +47,7 @@ var SmartHome = {
             let data = JSON.parse(event.data);
             SmartHome.apiListeners.notify(['status'], data);        
           });
-        }).catch(error => console.log(error));
+        }).catch(console.log);
       }
     },
 
@@ -286,7 +286,7 @@ var SmartHome = {
         SmartHome.drawRoom.setCorners(room.coordinates);
       });
       document.getElementById('save').addEventListener('click', () => {
-        let data = { id: roomId, coordinates: SmartHome.drawRoom.corners };
+        let data = { id: roomId, coordinates: SmartHome.drawRoom.getCorners() };
         doPut('api/rooms.php', data).then(room => {
           document.getElementById('roomUpdated').textContent = room.name + ' updated!';
         });
@@ -579,11 +579,14 @@ var SmartHome = {
     var getTargetCorner = function(x, y) {
       for (let i = cornerHandles.length; i--;) {
         if (ctx.isPointInPath(cornerHandles[i], x, y)) {
-          console.log(cornerHandles[i]);
           return i;
         }
       }
       return null;
+    }
+
+    var getCorners = function() {
+      return corners;
     }
 
     return {
@@ -591,7 +594,7 @@ var SmartHome = {
       setCorners: setCorners,
       reset: reset,
       undo: undo,
-      corners: corners
+      getCorners: getCorners
     };
   }())
 }
@@ -652,7 +655,7 @@ function closeBar() {
 function createRoomMenu(room) {
   let menuDiv = document.getElementById('menu');
   let roomDiv = menuDiv.appendChild(createElem('div'));
-  let roomName = roomDiv.appendChild(createElem('p', {id: 'menu-room-' + room.id, class: 'roombtn'}, room.name));
+  let roomName = roomDiv.appendChild(createElem('p', {class: 'roombtn'}, room.name));
   let devicesDiv = roomDiv.appendChild(createElem('div', {id: "dropdown-" + room.id, class: 'dropdown_content'}));
   roomName.addEventListener('click', () => {
     open_closeDropdown(devicesDiv) });
@@ -664,7 +667,7 @@ function createRoomMenu(room) {
   });
   if (room.devices) {
     room.devices.forEach(device => {
-      let deviceElem = devicesDiv.appendChild(createDeviceElement(device, {id: 'menu-device-' + device.id}));
+      let deviceElem = devicesDiv.appendChild(createDeviceElement(device));
       onUpdate('devices', device.id, deviceElem, data => {
         let newDiv = document.getElementById("dropdown-" + data.roomId);
         if (newDiv != deviceElem.parentElement) {
@@ -743,10 +746,10 @@ function populateRoomPopup(room) {
   let div = document.getElementById('devicelist');
   while (first = div.firstChild) {
     removeListener(first);
-    div.removeChild(first);
+    first.remove();
   }
   room.devices.forEach(device => {
-    div.appendChild(createDeviceElement(device, {id: 'popup-device-' + device.id}));
+    div.appendChild(createDeviceElement(device));
   });
 }
 
