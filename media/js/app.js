@@ -416,7 +416,6 @@ var SmartHome = {
     }
 
     var updateChart = function(data) {
-      console.log(data);
       chart.data.labels = [];
       chart.data.datasets[0].data = [];
 
@@ -426,11 +425,9 @@ var SmartHome = {
       });
 
       chart.update();
-      return chart;
     }
 
     var updateTable = function(data) {
-      console.log(data);
       let tBody = ipTable.tBodies[0]
       while (firstChild = tBody.firstChild) {
         firstChild.remove();
