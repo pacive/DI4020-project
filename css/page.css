@@ -219,6 +219,13 @@ input:checked + .slider::before {
     align-items: center;
 }
 
+.selectPeriod {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    width: 100%;
+}
+
 .log p {
     white-space: pre-wrap;
 }
