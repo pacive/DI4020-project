@@ -2,6 +2,7 @@
   namespace Api;
   require_once('../util/autoload.php');
   use \Util\DB;
+  use \Util\Utils;
 
   /*
    * Endpoint for subscribing to SSE
@@ -45,10 +46,8 @@ SQL;
         if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
           exit();
         }
-        $last_id = 0;
-        if (isset($headers['Last-Event-ID'])) {
-          $last_id = (int) $headers['Last-Event-ID'];
-        }
+
+        $last_id = Utils::get_or_default($headers, 'Last-Event-ID', 0);
         $last_id = self::push_latest($last_id);
         if ($keep_alive) {
           self::loop($last_id);

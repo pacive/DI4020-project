@@ -243,56 +243,18 @@ var SmartHome = {
      * Statistics
      */
     statistics: function() {
-      let canvas = document.getElementById('browser-chart');
-      let ipTable = document.getElementById('ip-addresses')
-      let chart;
-      //Chart config
-      let broserChartConfig = {
-        type: 'doughnut',
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
-            },
-            title: {
-              display: true,
-              text: 'Browsers'
-            }
-          }
-        },
-        data: {
-          labels: [],
-          datasets: [{
-            label: 'Browsers',
-            data: [],
-            backgroundColor: [
-              'rgb(255, 99, 132)',
-              'rgb(255, 159, 64)',
-              'rgb(255, 205, 86)',
-              'rgb(75, 192, 192)',
-              'rgb(54, 162, 235)',
-              'rgb(153, 102, 255)',
-              'rgb(201, 203, 207)'
-            ]
-          }]
-        }
-      }
+      SmartHome.statistics.initialize();
       // Get data
       doGet('api/statistics.php').then(data => {
-        // Display browser chart
-        data.browsers.forEach(entry => {
-          broserChartConfig.data.labels.push(entry.userAgent);
-          broserChartConfig.data.datasets[0].data.push(parseInt(entry.visits));
-        });
-        chart = new Chart(canvas, broserChartConfig);
-        // Display ip table
-        data.ipAddresses.forEach(entry => {
-          let tr = ipTable.appendChild(createElem('tr'));
-          tr.appendChild(createElem('td', {}, entry.ipAddress));
-          tr.appendChild(createElem('td', {}, entry.visits));
-          tr.appendChild(createElem('td', {}, entry.lastVisit));
-         });
+        SmartHome.statistics.updateChart(data.browsers);
+        SmartHome.statistics.updateTable(data.ipAddresses);
+      });
+
+      document.getElementById('selectPeriod').addEventListener('change', e => {
+        doGet('api/statistics.php', {period: e.target.value }).then(data => {
+          SmartHome.statistics.updateChart(data.browsers);
+          SmartHome.statistics.updateTable(data.ipAddresses);
+        });  
       });
     },
 
@@ -411,6 +373,82 @@ var SmartHome = {
       return ns.get('_listeners');
     }
   },
+
+  statistics: (function() {
+    var canvas = document.getElementById('browser-chart'),
+    ipTable = document.getElementById('ip-addresses'),
+    //Chart config
+    broserChartConfig = {
+      type: 'doughnut',
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Browsers'
+          }
+        }
+      },
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Browsers',
+          data: [],
+          backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(255, 159, 64)',
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)',
+            'rgb(54, 162, 235)',
+            'rgb(153, 102, 255)',
+            'rgb(201, 203, 207)'
+          ]
+        }]
+      }
+    },
+    chart = null;
+
+    var initialize = function() {
+      chart = new Chart(canvas, broserChartConfig);
+    }
+
+    var updateChart = function(data) {
+      console.log(data);
+      chart.data.labels = [];
+      chart.data.datasets[0].data = [];
+
+      data.forEach(entry => {
+        chart.data.labels.push(entry.userAgent);
+        chart.data.datasets[0].data.push(parseInt(entry.visits));
+      });
+
+      chart.update();
+      return chart;
+    }
+
+    var updateTable = function(data) {
+      console.log(data);
+      let tBody = ipTable.tBodies[0]
+      while (firstChild = tBody.firstChild) {
+        firstChild.remove();
+      }
+      data.forEach(entry => {
+        let tr = tBody.appendChild(createElem('tr'));
+        tr.appendChild(createElem('td', {}, entry.ipAddress));
+        tr.appendChild(createElem('td', {}, entry.visits));
+        tr.appendChild(createElem('td', {}, entry.lastVisit));
+      });
+    }
+
+    return {
+      initialize: initialize,
+      updateChart: updateChart,
+      updateTable: updateTable
+    }
+  }()),
 
   /*
    * Functions for drawing rooms
