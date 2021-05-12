@@ -24,14 +24,14 @@ require_once('template.php');
       </select>
       <input type="text" name="query" id="query" placeholder="?param=value" />
       <input type="submit" value="Send" />
-      <input type="reset" value="Clear" />
+      <input type="reset" id="reset" value="Clear" />
     </div>
     <div class="apiexplorer-body">
       <textarea name="body" id="body"></textarea>
     </div>
   </form>
   <div class="apiexplorer-result">
-    <textarea name="result" id="result"></textarea>
+    <pre id="result"></pre>
   </div>
 </div>
 <div class="nav">
