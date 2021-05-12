@@ -22,7 +22,11 @@ require_once('template.php');
         <option value="devicetypes">devicetypes.php</option>
         <option value="roomtypes">roomtypes.php</option>
       </select>
-      <input type="text" name="query" id="query" placeholder="?param=value" />
+      <input type="text" name="id" id="id" placeholder="&lt;id&gt;" />
+      <span id="inclDevices">
+        <label for="includeDevices">Incl devices:</label>
+        <input type="checkbox" name="includeDevices" id="includeDevices" />
+      </span>
       <input type="submit" value="Send" />
       <input type="reset" id="reset" value="Clear" />
     </div>

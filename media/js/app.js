@@ -303,6 +303,9 @@ var SmartHome = {
       document.getElementById('apiexplorer').addEventListener('submit', apiExplorer);
       document.getElementById('reset').addEventListener('click', () => {
         document.getElementById('result').innerHTML = '';
+      });
+      document.getElementById('endpoint').addEventListener('change', event => {
+        document.getElementById('inclDevices').style.display = event.target.value == 'rooms' ? 'inline' : 'none';
       })
     }
   },
@@ -1199,19 +1202,32 @@ function deleteRoomType() {
  * Function for Api explorer
  */
 function apiExplorer() {
-  let uri = 'api/' + document.getElementById("endpoint").value + ".php";
-  let query = document.getElementById("query").value;
+  let endpoint = document.getElementById("endpoint").value;
+  let method = document.getElementById("method").value
+  let uri = 'api/' + endpoint + ".php";
+  let id = document.getElementById("id").value;
+  let query = new URLSearchParams();
   let req = {
-    method: document.getElementById("method").value,
+    method: method,
     headers: {"Accept": "application/json",
               "Content-Type": "application/json" }
   };
+
+  if (req.method == 'GET' || req.method == 'DELETE') {
+    if (id != '' && id != null) {
+      query.append('id', id.toString());
+    }
+    if (req.method == 'GET' && endpoint == 'rooms' && document.getElementById('includeDevices').checked) {
+      query.append('includeDevices', 'true');
+    }  
+  }
   
   if (req.method == 'POST' || req.method == 'PUT') {
     req.body = document.getElementById("body").value
   }
+
   var start = new Date();
-  fetch(uri + query, req).then(response => {
+  fetch(uri + '?' + query.toString(), req).then(response => {
     var time = new Date() - start;
     document.getElementById("result").innerHTML = response.status + " " + response.statusText + 
     " (" + time + " ms)";
