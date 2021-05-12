@@ -24,6 +24,7 @@ require_once('template.php');
 <h3>Other</h3>
 <p><a href="statistics.php">Statistics</a></p>
 <p><a href="log.php">Log</a></p>
+<p><a href="apiexplorer.php">API Explorer</a></p>
 </div>
 </div>
 <div  class="nav">
