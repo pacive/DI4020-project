@@ -5,6 +5,8 @@
   use \Util\Utils;
   use \Util\Session;
 
+  define('DEBUG', true);
+
   /*
    * Abstract base class for the different api endpoints
    */
@@ -58,7 +60,9 @@
         $content_type = http_response_code() == 200 ? 'application/json' : 'text/plain';
         header("Content-Type: $content_type");
         Logger::log_access();
-        echo $response;  
+        if (http_response_code() == 200 || DEBUG) {
+          echo $response;  
+        }
       }
     }
 

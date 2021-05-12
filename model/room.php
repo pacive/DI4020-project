@@ -330,9 +330,9 @@ SQL;
     function to_array() {
       $arr = array(
         'id' => $this->id,
-        'name' => $this->name,
+        'name' => htmlspecialchars($this->name),
         'typeId' => $this->typeId,
-        'typeName' => $this->typeName,
+        'typeName' => htmlspecialchars($this->typeName),
         'coordinates' => $this->coordinates
       );
       isset($this->devices) && $arr['devices'] = $this->devices;

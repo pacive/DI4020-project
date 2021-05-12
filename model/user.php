@@ -87,7 +87,7 @@ SQL;
      * Convert to an associative array.
      */
     function to_array() {
-      return array('id' => $this->id, 'name' => $this->name, 'admin' => $this->admin);
+      return array('id' => $this->id, 'name' => htmlspecialchars($this->name), 'admin' => $this->admin);
     }
   }
 ?>
