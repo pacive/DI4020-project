@@ -234,7 +234,18 @@ input:checked + .slider::before {
 }
 
 .canvas-background {
-    background-image: url('../media/images/blueprint.png');
+    position: relative;
+}
+
+.canvas-background img {
+    max-width: 100vw;
+    max-height: 70vh;
+}
+
+.canvas-background #draw-room {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #drawRoomLink {

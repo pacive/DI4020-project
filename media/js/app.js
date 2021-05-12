@@ -466,27 +466,25 @@ var SmartHome = {
     cornerHandles = [],
     canvas = null,
     ctx = null,
-    draggedElement = null;
+    draggedElement = null,
+    scaleFactor = 1;
 
     /*
      * Initialize the drawing area, with the optionally provided
      * corner coordinates
      */
-    var initialize = function(coordinates = []) {
-      corners = coordinates;
+    var initialize = function() {
       canvas = document.getElementById('draw-room');
       ctx = canvas.getContext('2d');
       
       // Adapt the canvas size to the image
-      let background = new Image();
-      background.addEventListener('load', () => {
-        canvas.width = background.width;
-        canvas.height = background.height;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        draw();
-        ctx.save();
-      });
-      background.src = 'media/images/blueprint.png';
+      let background = document.querySelector('.canvas-background img');
+      canvas.width = background.offsetWidth;
+      canvas.height = background.offsetHeight;
+      scaleFactor = background.naturalWidth / background.offsetWidth;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      draw();
+      ctx.save();
 
       // Add event listeners for mouse events
       canvas.addEventListener('mousedown', event => {
@@ -510,7 +508,12 @@ var SmartHome = {
     }
 
     var setCorners = function(coords) {
-      corners = coords;
+      var scaled = coords.map(pair => {
+        return pair.map(c => {
+          return Math.round(c / scaleFactor);
+        })
+      })
+      corners = scaled;
       draw();
     }
 
@@ -596,7 +599,12 @@ var SmartHome = {
     }
 
     var getCorners = function() {
-      return corners;
+      var scaled = corners.map(pair => {
+        return pair.map(c => {
+          return c * scaleFactor;
+        })
+      })
+      return scaled;
     }
 
     return {
@@ -708,6 +716,7 @@ function createArea(room) {
     area.addEventListener('click', event => {
       showRoomPopUp(room, event.clientX, event.clientY);
     });
+    area.tabIndex = room.id;
   }
   area.coords = scaleCoordinates(room.coordinates).toString();
 }
