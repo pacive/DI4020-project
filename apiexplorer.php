@@ -1,11 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>SmartHome.net</title>
-    <script defer src="media/js/apiexplorer.js"></script>
-  </head>
-  <body>
-    <form name="apiexplorer" id="apiexplorer">
+<?php
+$admin = true;
+$init = 'apiExplorer';
+$title = 'API Explorer';
+require_once('template.php');
+?>
+
+<div class="main-content">
+<div class="apiexplorer">
+  <form id="apiexplorer">
+    <div class="apiexplorer-controls">
       <select name="method" id="method">
         <option value="GET">GET</option>
         <option value="PUT">PUT</option>
@@ -21,13 +24,19 @@
         <option value="roomtypes">roomtypes.php</option>
       </select>
       <input type="text" name="query" id="query" placeholder="?param=value" />
-      <input type="button" id="submit" value="Send" />
+      <input type="submit" value="Send" />
       <input type="reset" value="Clear" />
-      <br />
-      <textarea name="body" id="body" cols="100" rows="10"></textarea>
-      <br />
-      <textarea name="result" id="result" cols="100" rows="30"></textarea>
-      <br />
-    </form>
-  </body>
-</html>
+    </div>
+    <div class="apiexplorer-body">
+      <textarea name="body" id="body"></textarea>
+    </div>
+  </form>
+  <div class="apiexplorer-result">
+    <textarea name="result" id="result"></textarea>
+  </div>
+  </div>
+</div>
+<div class="nav">
+<button onclick="document.location='index.php'">Home</button> 
+<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+</div>
