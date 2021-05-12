@@ -300,7 +300,10 @@ var SmartHome = {
     },
 
     apiExplorer: function() {
-      document.getElementById("apiexplorer").addEventListener("submit", apiExplorer);
+      document.getElementById('apiexplorer').addEventListener('submit', apiExplorer);
+      document.getElementById('reset').addEventListener('click', () => {
+        document.getElementById('result').innerHTML = '';
+      })
     }
   },
 
