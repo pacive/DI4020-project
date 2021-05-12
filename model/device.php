@@ -176,12 +176,12 @@ SQL;
     function to_array() {
       return array(
         'id' => $this->id,
-        'name' => $this->name,
+        'name' => htmlspecialchars($this->name),
         'typeId' => $this->typeId,
-        'typeName' => $this->typeName,
+        'typeName' => htmlspecialchars($this->typeName),
         'roomId' => $this->roomId,
-        'roomName' => $this->roomName,
-        'status' => $this->status
+        'roomName' => htmlspecialchars($this->roomName),
+        'status' => htmlspecialchars($this->status)
       );
     }
   }
