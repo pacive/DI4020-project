@@ -198,7 +198,11 @@ input:checked + .slider::before {
 }
 
 .nav {
-    margin: 20px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-content: center;
+    flex: 0 0 60px;
 }
 
 .main-content {
@@ -208,7 +212,6 @@ input:checked + .slider::before {
     width: 100%;
     justify-content: center;
     align-items: center;
-    margin: auto;
     overflow-y: auto;
 }
 
@@ -260,11 +263,9 @@ a {
 }
 
 .apiexplorer {
-    display: flex;
     flex-flow: column nowrap;
     width: 95%;
     max-width: 600px;
-    height: 95%;
 }
 
 .apiexplorer form {

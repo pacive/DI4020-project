@@ -5,8 +5,7 @@ $title = 'API Explorer';
 require_once('template.php');
 ?>
 
-<div class="main-content">
-<div class="apiexplorer">
+<div class="main-content apiexplorer">
   <form id="apiexplorer">
     <div class="apiexplorer-controls">
       <select name="method" id="method">
@@ -33,7 +32,6 @@ require_once('template.php');
   </form>
   <div class="apiexplorer-result">
     <textarea name="result" id="result"></textarea>
-  </div>
   </div>
 </div>
 <div class="nav">
