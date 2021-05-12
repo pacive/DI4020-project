@@ -5,9 +5,10 @@ require_once('template.php');
 ?>
 <div class="main-content">
   <div>
-  <div class="canvas-background">
-    <canvas id="draw-room"></canvas>
-  </div>
+    <div class="canvas-background">
+      <img src="media/images/blueprint.png" alt="blueprint" />
+      <canvas id="draw-room"></canvas>
+    </div>
     <button id="save">Save</button>
     <button id="undo">Undo</button>
     <button id="reset">Reset</button>
