@@ -13,7 +13,7 @@ require_once('template.php');
 
     <label for="roomTypes">Select room type:</label>
     <select name="typeId" id="roomTypes">
-    <option value="0">Add new room type</option>
+    <option value="0">Select room type</option>
     </select>
     
     <br>

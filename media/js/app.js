@@ -181,8 +181,14 @@ var SmartHome = {
     /* add room type */
     addRoomType: function() {
       document.getElementById('newRoomTypeForm').addEventListener('submit', () => {
-        submitForm('newRoomTypeForm');
-        document.location="add_room.php"
+        submitForm('newRoomTypeForm').then(() => { document.location="add_room.php"});
+      });
+    },
+
+     /* add device type */
+     addDeviceType: function() {
+      document.getElementById('newDeviceTypeForm').addEventListener('submit', () => {
+        submitForm('newDeviceTypeForm').then(() => { document.location="add_device.php"});
       });
     },
 
@@ -223,7 +229,7 @@ var SmartHome = {
       document.getElementById('updateRoomType').addEventListener('submit', () => {
         submitForm('updateRoomType', 'put').then(roomType => {
           console.log(roomType);
-          let para = document.getElementById('updateRoomType');
+          let para = document.getElementById('roomTypeUpdated');
           para.innerHTML = roomType.name + " is updated";
         });
       });
@@ -238,6 +244,27 @@ var SmartHome = {
       });
       document.getElementById('delete').addEventListener('click', deleteRoomType);
     },
+      /* edit device type*/
+      updateDeviceType: function() {
+        getDeviceTypes(); 
+        document.getElementById('updateDeviceType').addEventListener('submit', () => {
+          submitForm('updateDeviceType', 'put').then(deviceType => {
+            console.log(deviceType);
+            let para = document.getElementById('deviceTypeUpdated');
+            para.innerHTML = deviceType.name + " is updated";
+          });
+        });
+        document.getElementById('deviceTypes').addEventListener('change', event => {
+          let id = event.target.value;
+          let nameElement = document.getElementById('deviceTypeName');
+          if (id == 0) {
+            nameElement.value = '';
+          } else {
+            nameElement.value = SmartHome.config.devicetypes[id].name;
+          }
+        });
+        document.getElementById('delete').addEventListener('click', deleteDeviceType);
+      },
 
     /*
      * Statistics
@@ -863,9 +890,11 @@ function getDevices() {
   });
 }
 
+/* get device types */
+
 function getDeviceTypes() {
   getAll('devicetypes').then(types => {
-    let selectElement = document.getElementById('getTypeIds');
+    let selectElement = document.getElementById('deviceTypes');
     types.forEach(type => {
       selectElement.add(createOptionElement(type.id, type.name));
     });
@@ -1203,6 +1232,18 @@ function deleteRoomType() {
     let para = document.getElementById('roomTypeUpdated');
   let deleteRoomTypeName = selectedRoomType.options[selectedRoomType.selectedIndex].text;
     para.innerHTML = deleteRoomTypeName + " is deleted";
+  };
+}
+/* delete device types */
+function deleteDeviceType() {
+  let selectedDeviceType = document.getElementById('deviceTypes');
+  let deleteDeviceTypeId = selectedDeviceType.value;
+  let deleteDeviceTypeName = selectedDeviceType.options[selectedDeviceType.selectedIndex].text;
+  if (confirm('Are you sure you want to delete ' + deleteDeviceTypeName + '?')) {
+    doDelete('api/devicetypes.php?id=' + deleteDeviceTypeId);
+    let para = document.getElementById('deviceTypeUpdated');
+  let deleteDeviceTypeName = selectedDeviceType.options[selectedDeviceType.selectedIndex].text;
+    para.innerHTML = deleteDeviceTypeName + " is deleted";
   };
 }
 

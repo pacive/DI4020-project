@@ -8,7 +8,7 @@ require_once('template.php');
 <div class="main-content">
     <form id="updateRoomType" action="api/roomtypes.php">
         <label for="roomTypes">Select room type:</label>
-        <select name="roomTypeId" id="roomTypes">
+        <select name="typeId" id="roomTypes">
         <option value="0">Select room type</option>
         </select> <br>
         <label for="roomTypeName">Edit room type name:</label>
@@ -17,7 +17,7 @@ require_once('template.php');
         <input type="button" value="Delete room type" id="delete"> 
     </form>
 
-    <p id="roomTypeUpdated"></p>
+    <p id="roomTypeUpdated"></p> <!-- är detta fel? -->
 </div>
     <div class="nav">
     <button onclick="document.location='index.php'">Home</button> 

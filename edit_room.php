@@ -14,15 +14,15 @@ require_once('template.php');
         </select> <br>
         <label for="roomName">Edit room name:</label>
         <input type="text" id="roomName" name="name"><br>
-        <label for="roomTypes">Edit room type:</label>
+        <label for="roomTypes">Change room type:</label>
         <select name="typeId" id="roomTypes">
         </select> <br>
         <a id="drawRoomLink" href="#">Edit room coordinates</a><br />
         <input type="submit" value="save">
         <input type="button" value="Delete room" id="delete"> <br>
         <br>
-        <label> Edit a room type here: </label>
-        <input type="button" value="Edit a room type" onclick="document.location='edit_room_type.php'">
+        <label> Edit an existing room type here: </label>
+        <input type="button" value="Edit room type" onclick="document.location='edit_room_type.php'">
     </form>
 
     <p id="roomUpdated"></p>
