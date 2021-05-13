@@ -10,8 +10,8 @@ require_once('template.php');
 <form id="addDevice" action="api/devices.php" method="POST">
     <label for="username">Device name:</label>
     <input type="text" id="username" name="name"><br>
-    <label for="getTypeIds">Select device type:</label>
-    <select name="typeId" id="getTypeIds">
+    <label for="deviceTypes">Select device type:</label>
+    <select name="typeId" id="deviceTypes">
     <option value="0">Select device type</option>
     </select> <br>
     <label for="selectRoom">Select room:</label>
@@ -20,6 +20,9 @@ require_once('template.php');
 
     </select> <br>
     <input type="submit" value="Save">
+    <br>
+    <label> Add a new device type: </label>
+    <input type="button" value="Add a device type" onclick="document.location='add_device_type.php'">
 </form>
 
 <p id="deviceAdded"></p>

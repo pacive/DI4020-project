@@ -13,8 +13,8 @@ require_once('template.php');
         </select> <br>
         <label for="name">Edit device name:</label>
         <input type="text" id="name" name="name"><br>
-        <label for="getTypeIds">Device type:</label>
-        <select name="typeId" id="getTypeIds">
+        <label for="deviceTypes">Device type:</label>
+        <select name="typeId" id="deviceTypes">
         </select> <br>
         <label for="selectRoom">Change room the device belongs to:</label>
         <select name="roomId" id="selectRoom">
@@ -22,6 +22,9 @@ require_once('template.php');
         </select> <br>
         <input type="submit" value="save">
         <input type="button" value="Delete device" id="delete">
+        <br>
+        <label> Edit an existing device type here: </label>
+        <input type="button" value="Edit device type" onclick="document.location='edit_device_type.php'">
     </form>
 
     <p id="deviceUpdated"></p>
