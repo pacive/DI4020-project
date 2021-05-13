@@ -716,7 +716,6 @@ function createArea(room) {
     area.addEventListener('click', event => {
       showRoomPopUp(room, event.clientX, event.clientY);
     });
-    area.tabIndex = room.id;
   }
   area.coords = scaleCoordinates(room.coordinates).toString();
 }
@@ -914,7 +913,7 @@ function scaleCoordinates(array) {
   var scaleFactor = img.offsetWidth / img.naturalWidth;
   var scaled = array.map(pair => {
     return pair.map(c => {
-      return c * scaleFactor;
+      return Math.round(c * scaleFactor);
     })
   })
   return scaled;

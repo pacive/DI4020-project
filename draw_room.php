@@ -15,3 +15,8 @@ require_once('template.php');
     <p id="roomUpdated"></p>
   </div>
 </div>
+<div class="nav">
+<button onclick="document.location='index.php'">Home</button> 
+<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+<button onclick="document.location='edit_room.php'">Back to edit room</button>
+</div>
