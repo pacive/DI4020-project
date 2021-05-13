@@ -712,7 +712,7 @@ function createRoomMenu(room) {
   });
   if (room.devices) {
     room.devices.forEach(device => {
-      let deviceElem = devicesDiv.appendChild(createDeviceElement(device));
+      let deviceElem = devicesDiv.appendChild(createDeviceElement(device, {id: 'menu-device-' + device.id}));
       onUpdate('devices', device.id, deviceElem, data => {
         let newDiv = document.getElementById("dropdown-" + data.roomId);
         if (newDiv != deviceElem.parentElement) {
@@ -794,7 +794,7 @@ function populateRoomPopup(room) {
     first.remove();
   }
   room.devices.forEach(device => {
-    div.appendChild(createDeviceElement(device));
+    div.appendChild(createDeviceElement(device, {id: 'popup-device-' + device.id}));
   });
 }
 
@@ -802,9 +802,13 @@ function populateRoomPopup(room) {
  * Create an element for a device to be added to the device list
  */
 function createDeviceElement(device, attrs = {}) {
+  let id = attrs.id;
+  delete attrs.id;
+  let labelAttrs = id ? { for: id } : {};
+  let statusAttrs = id ? { id: id } : {};
   let p = createElem('p', attrs);
-  let nameElem = p.appendChild(createElem('span', {}, device.name + ": "));
-  let statusDisplay = p.appendChild(createStatusDisplayElement(device, device.typeName == 'Sensor'));
+  let nameElem = p.appendChild(createElem('label', labelAttrs, device.name + ": "));
+  let statusDisplay = p.appendChild(createStatusDisplayElement(device, device.typeName == 'Sensor', statusAttrs));
   
   onDelete('devices', device.id, p, () => {
     removeListener(nameElem);
@@ -817,29 +821,29 @@ function createDeviceElement(device, attrs = {}) {
   return p;
 }
 
-function createStatusDisplayElement(device, readOnly = false) {
+function createStatusDisplayElement(device, readOnly = false, attrs = {}) {
   let elem;
   if (readOnly) {
-    elem = createElem('span', {class: 'status'}, device.status);
+    elem = createElem('span', Object.assign({class: 'status'}, attrs), device.status);
     onStatusUpdate(device.id, elem, status => {
       elem.textContent = status.status;
     });
   } else {
-    elem = createToggle(device.id, getStatus(device.id) == 'ON');
+    elem = createToggle(device.id, getStatus(device.id) == 'ON', attrs);
   }
   return elem;
 }
 
-function createToggle(deviceId, checked = false) {
-  let label = createElem('label', {class: 'toggle status'});
-  let checkbox = label.appendChild(createElem("input", {type: 'checkbox'}));
+function createToggle(deviceId, checked = false, attrs = {}) {
+  let span = createElem('span', {class: 'toggle status'});
+  let checkbox = span.appendChild(createElem("input", Object.assign({type: 'checkbox'}, attrs)));
   checkbox.checked = checked
   checkbox.addEventListener('change', () => { setStatus(deviceId, checkbox.checked ? "ON" : "OFF"); });
   onStatusUpdate(deviceId, checkbox, status => {
     checkbox.checked = status.status == 'ON';
   });
-  label.appendChild(createElem('span', {class: 'slider'}));
-  return label;  
+  span.appendChild(createElem('span', {class: 'slider'}));
+  return span;  
 }
 
 /* function for bringing out the devices when clicking on a room in menu */
