@@ -4,7 +4,7 @@
 ?>
 <div>
     <h2 class="head">Welcome!</h2>
-    <p>Please enter credentials bellow</p>
+    <p>Please enter credentials below</p>
 </div>
 <div class="main-content">
 

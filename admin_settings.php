@@ -26,8 +26,8 @@ require_once('template.php');
 <p><a href="log.php">Log</a></p>
 <p><a href="apiexplorer.php">API Explorer</a></p>
 </div>
-
 </div>
+<div>
     <ul class="nav_white">
         <li><a href="index.php">Home</a></li>
         <li>Admin settings</li>
