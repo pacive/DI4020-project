@@ -69,6 +69,12 @@ var SmartHome = {
       document.getElementById('closepopup').addEventListener('click', () => {
         document.getElementById('roompopup').style.visibility = 'hidden';
       });
+      var welcomeModal = document.getElementById('modal');
+      if (welcomeModal != null) {
+        document.getElementById('close-modal').addEventListener('click', () => {
+          modal.style.visibility = 'hidden';
+        });  
+      }
     },
 
     /*

@@ -1,4 +1,3 @@
-
 <?php
 $admin = true;
 $init = 'addRoom';
