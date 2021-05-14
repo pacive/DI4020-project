@@ -88,6 +88,9 @@ var SmartHome = {
           console.log(newUser);
           let para = document.getElementById('userAdded');
           para.innerHTML = newUser.name + " is added";
+        }).catch(() => {
+          let para = document.getElementById('userAdded');
+          para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
         });
       });
     },
@@ -102,6 +105,9 @@ var SmartHome = {
           console.log(user);
           let para = document.getElementById('userUpdated');
           para.innerHTML = user.name + " is updated";
+        }).catch(() => {
+          let para = document.getElementById('userUpdated');
+          para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
         });
       });
       document.getElementById('selectUsername').addEventListener('change', event => {
@@ -128,6 +134,9 @@ var SmartHome = {
           console.log(newDevice);
           let para = document.getElementById('deviceAdded');
           para.innerHTML = newDevice.name + " is added";
+        }).catch(() => {
+          let para = document.getElementById('deviceAdded');
+          para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
         });
       });
     },
@@ -145,6 +154,9 @@ var SmartHome = {
           console.log(device);
           let para = document.getElementById('deviceUpdated');
           para.innerHTML = device.name + " is updated";
+        }).catch(() => {
+          let para = document.getElementById('deviceUpdated');
+          para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
         });
       });
       document.getElementById('selectDevice').addEventListener('change', event => {
@@ -174,6 +186,9 @@ var SmartHome = {
           let para = document.getElementById('roomAdded');
           para.innerHTML = newRoom.name + " is added";
           para.parentNode.appendChild(createElem('a', {href: 'draw_room.php?id=' + newRoom.id}, 'Add room to floorplan'));
+        }).catch(() => {
+          let para = document.getElementById('roomAdded');
+          para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
         });
       });
     },
@@ -181,15 +196,21 @@ var SmartHome = {
     /* add room type */
     addRoomType: function() {
       document.getElementById('newRoomTypeForm').addEventListener('submit', () => {
-        submitForm('newRoomTypeForm').then(() => { document.location="add_room.php"});
+        submitForm('newRoomTypeForm').then(() => { document.location="add_room.php"}).catch(() => {
+          let para = document.getElementById('roomTypeAdded');
+          para.innerHTML = "Please write a new room type";
       });
-    },
+    });
+  },
 
      /* add device type */
      addDeviceType: function() {
       document.getElementById('newDeviceTypeForm').addEventListener('submit', () => {
-        submitForm('newDeviceTypeForm').then(() => { document.location="add_device.php"});
+        submitForm('newDeviceTypeForm').then(() => { document.location="add_device.php"}).catch(() => {
+          let para = document.getElementById('deviceTypeAdded');
+          para.innerHTML = "Please write a new device type";
       });
+    });
     },
 
     /* edit room */
@@ -201,6 +222,9 @@ var SmartHome = {
           console.log(room);
           let para = document.getElementById('roomUpdated');
           para.innerHTML = room.name + " is updated";
+        }).catch(() => {
+          let para = document.getElementById('roomUpdated');
+          para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
         });
       });
       document.getElementById('selectRoom').addEventListener('change', event => {
@@ -231,6 +255,9 @@ var SmartHome = {
           console.log(roomType);
           let para = document.getElementById('roomTypeUpdated');
           para.innerHTML = roomType.name + " is updated";
+        }).catch(() => {
+          let para = document.getElementById('roomTypeUpdated');
+          para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
         });
       });
       document.getElementById('roomTypes').addEventListener('change', event => {
@@ -252,6 +279,9 @@ var SmartHome = {
             console.log(deviceType);
             let para = document.getElementById('deviceTypeUpdated');
             para.innerHTML = deviceType.name + " is updated";
+          }).catch(() => {
+            let para = document.getElementById('deviceTypeUpdated');
+            para.innerHTML = "Something went wrong, make sure you have filled in all the fields";
           });
         });
         document.getElementById('deviceTypes').addEventListener('change', event => {

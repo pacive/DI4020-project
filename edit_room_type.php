@@ -9,15 +9,16 @@ require_once('template.php');
     <form id="updateRoomType" action="api/roomtypes.php">
         <label for="roomTypes">Select room type:</label>
         <select name="typeId" id="roomTypes">
-        <option value="0">Select room type</option>
+        <option >Select room type</option>
         </select> <br>
         <label for="roomTypeName">Edit room type name:</label>
         <input type="text" id="roomTypeName" name="name"><br>
         <input type="submit" value="save">
         <input type="button" value="Delete room type" id="delete"> 
+        <p id="roomTypeUpdated"></p> 
+
     </form>
 
-    <p id="roomTypeUpdated"></p> <!-- är detta fel? -->
 </div>
     <div class="nav">
     <button onclick="document.location='index.php'">Home</button> 
