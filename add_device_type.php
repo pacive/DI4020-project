@@ -8,13 +8,20 @@ require_once('template.php');
 
 <div class="main-content">
 <form id="newDeviceTypeForm" action="api/devicetypes.php" method="POST">
-    <input type="text" id="newDeviceType" name="name" placeholder="new device type"> 
-    <input type="submit" value="save"> 
+    <label for="newDeviceType">Device type name:</label>
+    <input type="text" id="newDeviceType" name="name">
+    <div class="action-buttons">
+        <input type="submit" value="Save">
+    </div>
     <p id="deviceTypeAdded"></p>
 </form>
 </div>
 
-<div class="nav">
-<button onclick="document.location='index.php'">Home</button> 
-<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+<div>
+<ul class="nav_white">
+        <li><a href="index.php">Home</a></li>
+        <li><a href="admin_settings.php">Admin settings</a></li>
+        <li><a href="add_device.php">Add a device</a></li>
+        <li>Add new device type</li>
+    </ul>
 </div>

@@ -23,20 +23,19 @@ require_once('template.php');
         <option value="roomtypes">roomtypes.php</option>
       </select>
       <input type="text" name="id" id="id" placeholder="&lt;id&gt;" />
-      <span id="inclDevices">
-        <label for="includeDevices">Incl devices:</label>
-        <input type="checkbox" name="includeDevices" id="includeDevices" />
-      </span>
+        <label id="inclDevices" for="includeDevices">Incl devices:
+          <input type="checkbox" name="includeDevices" id="includeDevices" />
+        </label>
       <input type="submit" value="Send" />
       <input type="reset" id="reset" value="Clear" />
     </div>
     <div class="apiexplorer-body">
       <textarea name="body" id="body"></textarea>
     </div>
+    <div class="apiexplorer-result">
+      <pre id="result"></pre>
+    </div>
   </form>
-  <div class="apiexplorer-result">
-    <pre id="result"></pre>
-  </div>
 </div>
 <div>
     <ul class="nav_white">

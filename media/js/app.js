@@ -168,7 +168,7 @@ var SmartHome = {
       document.getElementById('selectDevice').addEventListener('change', event => {
         let id = event.target.value;
         let nameElement = document.getElementById('name');
-        let typeElem = document.getElementById('getTypeIds');
+        let typeElem = document.getElementById('deviceTypes');
         let roomElem = document.getElementById('selectRoom');
         if (id == 0) {
           nameElement.value = '';
@@ -368,7 +368,7 @@ var SmartHome = {
         document.getElementById('result').innerHTML = '';
       });
       document.getElementById('endpoint').addEventListener('change', event => {
-        document.getElementById('inclDevices').style.display = event.target.value == 'rooms' ? 'inline' : 'none';
+        document.getElementById('inclDevices').style.display = event.target.value == 'rooms' ? 'inline-block' : 'none';
       })
     }
   },

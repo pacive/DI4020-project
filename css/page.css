@@ -198,14 +198,6 @@ input:checked + .slider::before {
     transform: translateX(13px);
 }
 
-.nav {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-content: center;
-    flex: 0 0 60px;
-}
-
 ul.nav_white {
     padding: 10px 16px;
     list-style: none;
@@ -239,6 +231,70 @@ ul.nav_white li a:hover {
     overflow-y: auto;
 }
 
+.main-content form {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 95%;
+    max-width: 600px;
+}
+
+.main-content form#login {
+    max-width: 400px;
+}
+
+.main-content form input, .main-content form select, button {
+    height: 1.5rem;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 0 5px;
+    margin-bottom: 1.5rem;
+}
+
+.main-content form select {
+    height: 1.75rem;
+}
+
+.main-content form input[type="checkbox"] {
+    height: auto;
+}
+
+
+.main-content form label {
+    font-size: 0.9rem;
+}
+
+.main-content form a {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.main-content form .action-buttons {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    max-width: 300px;
+    align-self: flex-end;
+    justify-content: space-between;
+}
+
+.draw-room .action-buttons {
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.draw-room p {
+    color: white;
+    margin: 0;
+}
+
+.action-buttons input, .action-buttons button {
+    margin: 0 0 0.5rem;
+    width: 120px;
+    flex: 1 0 auto;
+}
+
 .statistics {
     display: flex;
     flex-flow: row wrap;
@@ -259,6 +315,9 @@ ul.nav_white li a:hover {
 
 .log p {
     white-space: pre-wrap;
+}
+.draw-room {
+    flex-flow: column nowrap;
 }
 
 .canvas-background {
@@ -303,15 +362,10 @@ a {
 
 .apiexplorer {
     flex-flow: column nowrap;
-    width: 95%;
-    max-width: 600px;
 }
 
 .apiexplorer form {
-    display: flex;
-    flex-flow: column nowrap;
     flex: 1;
-    width: 100%;
 }
 
 .apiexplorer input#id {
@@ -332,6 +386,8 @@ a {
     height: 100%;
     resize: none;
     box-sizing: border-box;
+    border: 2px solid black;
+    border-radius: 5px;
 }
 
 .apiexplorer-result {
@@ -341,9 +397,11 @@ a {
 }
 
 .apiexplorer pre {
+    background-color: white;
     height: 100%;
     overflow-y: auto;
-    border: 1px solid black;
+    border: 2px solid black;
+    border-radius: 5px;
     box-sizing: border-box;
     margin: 0;
 }
