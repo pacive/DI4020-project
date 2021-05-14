@@ -38,7 +38,10 @@ require_once('template.php');
     <pre id="result"></pre>
   </div>
 </div>
-<div class="nav">
-<button onclick="document.location='index.php'">Home</button> 
-<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
+<div>
+    <ul class="nav_white">
+        <li><a href="index.php">Home</a></li>
+        <li><a href="admin_settings.php">Admin settings</a></li>
+        <li>API explorer</li>
+    </ul>
 </div>
