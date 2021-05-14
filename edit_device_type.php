@@ -1,8 +1,6 @@
-
-
 <?php
 $admin = true;
-$init = 'updateDeviceType'; 
+$init = 'updateDeviceType';
 $title = 'Edit device type';
 require_once('template.php');
 ?>
@@ -12,17 +10,21 @@ require_once('template.php');
         <label for="deviceTypes">Select device type:</label>
         <select name="typeId" id="deviceTypes">
         <option >Select device type</option>
-        </select> <br>
-        <label for="deviceTypeName">Edit device type name:</label>
-        <input type="text" id="deviceTypeName" name="name"><br>
-        <input type="submit" value="save">
-        <input type="button" value="Delete device type" id="delete"> 
-        <p id="deviceTypeUpdated"></p>
-        
+        </select>
+        <label for="deviceTypeName">New name:</label>
+        <input type="text" id="deviceTypeName" name="name">
+        <div class="action-buttons">
+            <input type="submit" value="Save">
+            <input type="button" value="Delete device type" id="delete">
+        </div>
     </form>
 
 </div>
-    <div class="nav">
-    <button onclick="document.location='index.php'">Home</button> 
-    <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
-    </div>
+<div>
+<ul class="nav_white">
+        <li><a href="index.php">Home</a></li>
+        <li><a href="admin_settings.php">Admin settings</a></li>
+        <li><a href="edit_device.php">Edit a device</a></li>
+        <li>Edit device type</li>
+    </ul>
+</div>

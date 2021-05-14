@@ -3,24 +3,22 @@ $admin = true;
 $init = 'addRoom';
 $title = 'Add new room';
 require_once('template.php');
-?> 
+?>
 
 <div class="main-content">
 <form id="addRoom" action="api/rooms.php" method="POST">
     <label for="roomname">Roomname:</label>
-    <input type="text" id="roomname" name="name" ><br>
+    <input type="text" id="roomname" name="name">
 
     <label for="roomTypes">Select room type:</label>
     <select name="typeId" id="roomTypes" >
     <option >Select room type</option>
     </select>
-    
-    <br>
-    <input type="submit" value="Save"> <br>
-    <label> Add a new room type: </label>
-    <input type="button" value="Add a room type" onclick="document.location='add_room_type.php'">
+    <a href="add_room_type.php">Add a new room type</a>
+    <div class="action-buttons">
+        <input type="submit" value="Save">
+    </div>
     <p id="roomAdded"></p>
-
 </form>
 </div>
 

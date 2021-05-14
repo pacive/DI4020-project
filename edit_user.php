@@ -10,19 +10,20 @@ require_once('template.php');
         <label for="selectUsername">Select user:</label>
         <select name="id" id="selectUsername">
         <option>Select user</option>
-        </select><br>
+        </select>
         <label for="username">Edit username:</label>
-        <input type="text" id="username" name="name"><br>
+        <input type="text" id="username" name="name">
         <label for="password">Edit password:</label>
-        <input type="password" id="password" name="password"><br>
-        <label for="isAdmin">Is admin:</label>
-        <input type="checkbox" id="isAdmin" name="admin" value="isAdmin"><br>
-        <input type="submit" value="save">
-        <input type="button" value="Delete user" id="delete">
+        <input type="password" id="password" name="password">
+        <label for="isAdmin">Is admin:
+            <input type="checkbox" id="isAdmin" name="admin" value="isAdmin">
+        </label>
+        <div class="action-buttons">
+            <input type="submit" value="Save">
+            <input type="button" value="Delete user" id="delete">
+        </div>
         <p id="userUpdated"></p> 
-
     </form>
-
 </div>
     
 <div>

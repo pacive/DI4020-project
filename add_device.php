@@ -1,31 +1,27 @@
-
 <?php
 $admin = true;
 $init = 'addDevice';
 require_once('template.php');
-?> 
+?>
 
 <div class="main-content">
 <form id="addDevice" action="api/devices.php" method="POST">
     <label for="username">Device name:</label>
-    <input type="text" id="username" name="name" ><br>
+    <input type="text" id="username" name="name">
     <label for="deviceTypes">Select device type:</label>
-    <select name="typeId" id="deviceTypes" >
-    <option >Select device type</option>
-    </select> <br>
+    <select name="typeId" id="deviceTypes">
+    <option>Select device type</option>
+    </select>
+    <a href="add_device_type.php">Add a new device type</a>
     <label for="selectRoom">Select room:</label>
     <select name="roomId" id="selectRoom">
-    <option >Select room</option>
-
-    </select> <br>
-    <input type="submit" value="Save">
-    <br>
-    <label> Add a new device type: </label>
-    <input type="button" value="Add a device type" onclick="document.location='add_device_type.php'">
+    <option value="0">Select room</option>
+    </select>
+    <div class="action-buttons">
+        <input type="submit" value="Save">
+    </div>
     <p id="deviceAdded"></p>
 </form>
-
-
 </div>
 
 <div>

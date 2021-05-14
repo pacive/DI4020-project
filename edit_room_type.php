@@ -10,15 +10,13 @@ require_once('template.php');
         <label for="roomTypes">Select room type:</label>
         <select name="typeId" id="roomTypes">
         <option >Select room type</option>
-        </select> <br>
+        </select>
         <label for="roomTypeName">New name:</label>
-        <input type="text" id="roomTypeName" name="name"><br>
+        <input type="text" id="roomTypeName" name="name">
         <input type="submit" value="save">
         <input type="button" value="Delete room type" id="delete"> 
         <p id="roomTypeUpdated"></p> 
-
     </form>
-
 </div>
 <div>
     <ul class="nav_white">

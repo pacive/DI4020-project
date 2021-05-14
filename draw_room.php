@@ -1,22 +1,26 @@
 <?php
 $admin = true;
 $init = 'drawRoom';
+$title = 'Draw room';
 require_once('template.php');
 ?>
-<div class="main-content">
-  <div>
+<div class="main-content draw-room">
     <div class="canvas-background">
       <img src="media/images/blueprint.png" alt="blueprint" />
       <canvas id="draw-room"></canvas>
-    </div>
-    <button id="save">Save</button>
-    <button id="undo">Undo</button>
-    <button id="reset">Reset</button>
+        <div class="action-buttons">
+            <button id="save">Save</button>
+            <button id="undo">Undo</button>
+            <button id="reset">Reset</button>
+        </div>
     <p id="roomUpdated"></p>
-  </div>
+    </div>
 </div>
-<div class="nav">
-<button onclick="document.location='index.php'">Home</button> 
-<button onclick="document.location='admin_settings.php'">Back to admin settings</button>
-<button onclick="document.location='edit_room.php'">Back to edit room</button>
+<div>
+    <ul class="nav_white">
+        <li><a href="index.php">Home</a></li>
+        <li><a href="admin_settings.php">Admin settings</a></li>
+        <li><a href="edit_room.php">Edit a room</a></li>
+        <li>Draw room</li>
+    </ul>
 </div>
