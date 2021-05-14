@@ -11,7 +11,7 @@ require_once('template.php');
         <select name="typeId" id="roomTypes">
         <option >Select room type</option>
         </select> <br>
-        <label for="roomTypeName">Edit room type name:</label>
+        <label for="roomTypeName">New name:</label>
         <input type="text" id="roomTypeName" name="name"><br>
         <input type="submit" value="save">
         <input type="button" value="Delete room type" id="delete"> 
@@ -20,7 +20,11 @@ require_once('template.php');
     </form>
 
 </div>
-    <div class="nav">
-    <button onclick="document.location='index.php'">Home</button> 
-    <button onclick="document.location='admin_settings.php'">Back to admin settings</button>
-    </div>
+<div>
+    <ul class="nav_white">
+        <li><a href="index.php">Home</a></li>
+        <li><a href="admin_settings.php">Admin settings</a></li>
+        <li><a href="edit_room.php">Edit a room</a></li>
+        <li>Edit room type</li>
+    </ul>
+</div>
