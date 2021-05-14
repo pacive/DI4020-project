@@ -9,7 +9,7 @@ require_once('template.php');
     <form id="updateUser" action="api/users.php">
         <label for="selectUsername">Select user:</label>
         <select name="id" id="selectUsername">
-        <option value="0">Select user</option>
+        <option>Select user</option>
         </select><br>
         <label for="username">Edit username:</label>
         <input type="text" id="username" name="name"><br>
@@ -19,9 +19,10 @@ require_once('template.php');
         <input type="checkbox" id="isAdmin" name="admin" value="isAdmin"><br>
         <input type="submit" value="save">
         <input type="button" value="Delete user" id="delete">
+        <p id="userUpdated"></p> 
+
     </form>
 
-    <p id="userUpdated"></p> 
 </div>
     
     <div class="nav">

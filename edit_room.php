@@ -10,7 +10,7 @@ require_once('template.php');
         <label for="selectRoom">Select Room:</label>
         <select name="id" id="selectRoom">
 
-        <option value="0">Select room</option>
+        <option value="">Select room</option>
         </select> <br>
         <label for="roomName">Edit room name:</label>
         <input type="text" id="roomName" name="name"><br>
@@ -23,9 +23,10 @@ require_once('template.php');
         <br>
         <label> Edit an existing room type here: </label>
         <input type="button" value="Edit room type" onclick="document.location='edit_room_type.php'">
+        <p id="roomUpdated"></p>
+
     </form>
 
-    <p id="roomUpdated"></p>
 </div>
 
     <div class="nav">
