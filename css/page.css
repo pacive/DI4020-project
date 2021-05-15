@@ -139,7 +139,6 @@ body {
 
 #roomname {
     font-weight: bold;
-    cursor: unset;
 }
 
 #closepopup {
@@ -255,10 +254,7 @@ input, select, button {
     border-radius: 5px;
     padding: 0 5px;
     margin-bottom: 1.5rem;
-}
-
-select {
-    height: 1.75rem;
+    box-sizing: content-box;
 }
 
 input[type="checkbox"] {
