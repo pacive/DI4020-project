@@ -16,7 +16,7 @@ if (!Session::logged_in() && !strpos($_SERVER['PHP_SELF'], 'login.php')) {
 
 if (isset($admin) && $admin) {
   if (!Session::is_admin()) {
-    http_response_code(403);
+    header('Location: index.php');
     Logger::log_access();
     exit();  
   }
