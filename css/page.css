@@ -152,6 +152,7 @@ body {
 
 .status {
     float: right;
+    margin-left: 0.5rem;
 }
 
 .toggle {
@@ -159,7 +160,6 @@ body {
     display: inline-block;
     width: 32px;
     height: 19px;
-    margin-left: 0.5rem;
 }
 
 .toggle input {
