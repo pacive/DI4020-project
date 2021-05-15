@@ -57,6 +57,11 @@ var SmartHome = {
     index: function() {
       onGet('rooms', 'createArea', createArea);
 
+      document.querySelector('.content').addEventListener('click', () => {
+        document.getElementById('roompopup').style.visibility = 'hidden';
+        closeBar();
+      });
+
       // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
       window.addEventListener('resize', () => {
         Object.values(SmartHome.config.rooms).forEach(room => {
@@ -790,6 +795,7 @@ function createArea(room) {
     if (room.coordinates.length == 0) { return; }
     area = document.getElementById('blueprint').appendChild(createElem('area', {id: 'room-area-' + room.id, shape: 'poly'}));
     area.addEventListener('click', event => {
+      event.stopPropagation();
       showRoomPopUp(room, event.clientX, event.clientY);
     });
   }
