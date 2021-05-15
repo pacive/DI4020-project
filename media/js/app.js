@@ -242,12 +242,12 @@ var SmartHome = {
           nameElement.value = '';
           typeElem.value = 0;
           drawRoomLink.href = '#';
-          drawRoomLink.style.display = 'none';
+          drawRoomLink.style.visibility = 'hidden';
         } else {
           nameElement.value = SmartHome.config.rooms[id].name;
           typeElem.value = SmartHome.config.rooms[id].typeId;
           drawRoomLink.href = 'draw_room.php?id=' + id;
-          drawRoomLink.style.display = 'inline';
+          drawRoomLink.style.visibility = 'visible';
         }
       });
       document.getElementById('delete').addEventListener('click', deleteRoom);
@@ -348,6 +348,13 @@ var SmartHome = {
       onGet(['rooms', parseInt(roomId)], 'drawRoom', room => {
         SmartHome.drawRoom.setCorners(room.coordinates);
       });
+
+      window.addEventListener('resize', () => {
+        let coordinates = SmartHome.drawRoom.getCorners();
+        SmartHome.drawRoom.adjustSize();
+        SmartHome.drawRoom.setCorners(coordinates);
+      });
+
       document.getElementById('save').addEventListener('click', () => {
         let data = { id: roomId, coordinates: SmartHome.drawRoom.getCorners() };
         doPut('api/rooms.php', data).then(room => {
@@ -461,6 +468,7 @@ var SmartHome = {
           },
           title: {
             display: true,
+            color: 'rgb(0, 0, 0)',
             text: 'Browsers'
           }
         }
@@ -540,15 +548,8 @@ var SmartHome = {
       canvas = document.getElementById('draw-room');
       ctx = canvas.getContext('2d');
       
-      // Adapt the canvas size to the image
-      let background = document.querySelector('.canvas-background img');
-      canvas.width = background.offsetWidth;
-      canvas.height = background.offsetHeight;
-      scaleFactor = background.naturalWidth / background.offsetWidth;
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      draw();
-      ctx.save();
-
+      adjustSize();
+      
       // Add event listeners for mouse events
       canvas.addEventListener('mousedown', event => {
         draggedElement = getTargetCorner(event.layerX, event.layerY);
@@ -568,6 +569,17 @@ var SmartHome = {
       canvas.addEventListener('mouseup', () => {
         draggedElement = null;
       });
+    }
+
+    // Adapt the canvas size to the image
+    var adjustSize = function() {
+      let background = document.getElementById('blueprint');
+      canvas.width = background.offsetWidth;
+      canvas.height = background.offsetHeight;
+      scaleFactor = background.naturalWidth / background.offsetWidth;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.save();
+      draw();
     }
 
     var setCorners = function(coords) {
@@ -672,10 +684,11 @@ var SmartHome = {
 
     return {
       initialize: initialize,
+      adjustSize: adjustSize,
+      getCorners: getCorners,
       setCorners: setCorners,
       reset: reset,
-      undo: undo,
-      getCorners: getCorners
+      undo: undo
     };
   }())
 }

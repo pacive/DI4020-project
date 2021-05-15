@@ -20,7 +20,7 @@ body {
 }
 
 #open {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     font-size: 2rem;
@@ -31,7 +31,7 @@ body {
 .content {
     display: flex;
     flex-flow: column nowrap;
-    flex: 1 0 85%;
+    flex: 1;
     justify-content: space-between;
     width: 100%;
     align-items: center;
@@ -62,30 +62,28 @@ body {
     min-width: 0vw
 }
 
-.sideBar p {
+.sideBar p, .sideBar a, .sideBar a:visited {
     color:white;
     font-family:Arial, Helvetica, sans-serif;
-    margin: 20px;
     cursor: pointer;
     white-space: nowrap;
     text-decoration: none;
 }
 
-.sideBar a, .sideBar a:visited {
-    color:white;
-    text-decoration: none;
+.sideBar p {
+    margin: 20px;
 }
 
 .sideBar p:hover, .sideBar a:hover {
     color: rgb(114, 111, 111);
 }
 
-.sideBar p.roombtn {
-    margin-bottom: 10px;
+.sideBar .menu {
+    flex: 1;
 }
 
-.sideBar .menu {
-    flex-grow: 1;
+.menu label, .roompopup label {
+    cursor: pointer;
 }
 
 .dropdown_content {
@@ -98,7 +96,7 @@ body {
 .sideBar #close {
     margin: 10px;
     align-self: flex-end;
-    font-size: 35px;
+    font-size: 2rem;
     z-index: 2;
 }
 
@@ -121,6 +119,7 @@ body {
     padding: 4px;
     box-shadow: 0 0 2px 0px #000000;
     border-radius: 10px;
+    cursor: default;
 }
 
 @media only screen and (orientation:portrait) {
@@ -139,14 +138,17 @@ body {
 }
 
 #roomname {
-    display: inline;
+    font-weight: bold;
+    cursor: unset;
 }
 
 #closepopup {
     position: absolute;
-    right: 0%;
-    padding-right: 4px;
+    right: 0;
+    top: 0;
+    padding: 0 4px;
     cursor: pointer;
+    font-size: 1.5rem;
 }
 
 .status {
@@ -190,32 +192,36 @@ body {
     transition: 0.2s linear;
 }
 
-input:checked + .slider {
+.toggle input:checked + .slider {
     background-color: white;
 }
 
-input:checked + .slider::before {
+.toggle input:checked + .slider::before {
     transform: translateX(13px);
 }
 
 ul.nav_white {
     padding: 10px 16px;
     list-style: none;
- }
+}
+
 ul.nav_white li {
     display: inline;
     font-size: 18px;
     color: rgb(255, 255, 255);
 }
+
 ul.nav_white li+li:before {
     padding: 8px;
     color:  rgb(255, 255, 255);
     content: "/";
 }
+
 ul.nav_white li a {
     color: rgb(255, 255, 255);
     text-decoration: none;
 }
+
 ul.nav_white li a:hover {
     color: rgb(114, 111, 111);
     text-decoration: underline;
@@ -229,20 +235,21 @@ ul.nav_white li a:hover {
     justify-content: center;
     align-items: center;
     overflow-y: auto;
+    min-height: 0;
 }
 
-.main-content form {
+form {
     display: flex;
     flex-flow: column nowrap;
     width: 95%;
     max-width: 600px;
 }
 
-.main-content form#login {
+form#login {
     max-width: 400px;
 }
 
-.main-content form input, .main-content form select, button {
+input, select, button {
     height: 1.5rem;
     border: 2px solid black;
     border-radius: 5px;
@@ -250,25 +257,23 @@ ul.nav_white li a:hover {
     margin-bottom: 1.5rem;
 }
 
-.main-content form select {
+select {
     height: 1.75rem;
 }
 
-.main-content form input[type="checkbox"] {
+input[type="checkbox"] {
     height: auto;
 }
 
-
-.main-content form label {
+form label, form a, .roompopup label {
     font-size: 0.9rem;
 }
 
-.main-content form a {
-    font-size: 0.9rem;
+form a {
     margin-bottom: 1.5rem;
 }
 
-.main-content form .action-buttons {
+.action-buttons {
     display: flex;
     flex-flow: row wrap;
     width: 100%;
@@ -278,10 +283,9 @@ ul.nav_white li a:hover {
 }
 
 .draw-room .action-buttons {
-    display: flex;
     flex-flow: row nowrap;
-    width: 100%;
-    justify-content: space-between;
+    align-self: unset;
+    max-width: fit-content;
 }
 
 .draw-room p {
@@ -295,27 +299,21 @@ ul.nav_white li a:hover {
     flex: 1 0 auto;
 }
 
-.statistics {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-#ip-addresses {
+#ip-addresses, .log {
     background-image: linear-gradient(to top, rgb(100,100,100), rgb(255,255,255));
+    border-radius: 5px;
 }
 
-.selectPeriod {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    width: 100%;
+.log {
+    height: 95%;
+    overflow-y: auto;
+    margin: 0;
 }
 
 .log p {
     white-space: pre-wrap;
 }
+
 .draw-room {
     flex-flow: column nowrap;
 }
@@ -336,7 +334,7 @@ ul.nav_white li a:hover {
 }
 
 #drawRoomLink {
-    display: none;
+    visibility: hidden;
 }
 
 .admin-menu {
@@ -407,7 +405,6 @@ a {
 }
 
 .modal {
-    /*display: none;*/
 	position: fixed;
 	z-index: 100;
 	padding: 60px 0 40px 0;
@@ -418,9 +415,9 @@ a {
 	overflow: auto;
 	background-color: rgba(0, 0, 0, .3);
 }
+
 .popup {
 	width: 40%;
-  	border: none;
   	background-color: rgb(255, 255, 255);
 	margin: auto;
 	padding: 15px;
@@ -429,15 +426,16 @@ a {
 	text-align: center;
 	box-shadow: 3px 3px 20px 6px rgba(0,0,0,0.8);	
 }
+
 .close {
 	color: rgb(0, 0, 0);
 	float: right;
-	font-size: 30px;
+	font-size: 2rem;
 	font-weight: 700
 }
+
 .close:focus,
 .close:hover {
 	color: #000;
-	text-decoration: none;
 	cursor: pointer
 }

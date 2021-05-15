@@ -1,6 +1,7 @@
 <?php
 $admin = true;
 $init = 'log';
+$title = 'Log';
 require_once('template.php');
 ?>
 <div class="main-content">
