@@ -28,7 +28,7 @@ setcookie('first-login', 'false', (1 << 32), '', 'ideweb2.hh.se', false, true);
   <map id="blueprint" name="blueprint">
   </map>
   <div id="roompopup" class="roompopup">
-    <h6 id="roomname">roomname</h6><span id="closepopup">X</span>
+    <span id="roomname"></span><span id="closepopup">&times;</span>
     <div id="devicelist"></div>
   </div>
 </div>

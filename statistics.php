@@ -7,8 +7,6 @@ $head = <<<HTML
 HTML;
 require_once('template.php');
 ?>
-<div class="main-content">
-<div class="selectPeriod">
   <select id="selectPeriod">
     <option value="all">All</option>
     <option value="1d">Last day</option>
@@ -19,8 +17,7 @@ require_once('template.php');
     <option value="6m">Last 6 months</option>
     <option value="1y">Last year</option>
   </select>
-</div>
-<div class="statistics">
+<div class="main-content">
   <div>
     <canvas id="browser-chart"></canvas>
   </div>
@@ -36,7 +33,6 @@ require_once('template.php');
 
     </tbody>
   </table>
-</div>
 </div>
 <div>
     <ul class="nav_white">

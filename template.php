@@ -33,6 +33,12 @@ function print_page(&$buffer) {
 EOF;
 }
 
+header("Content-security-policy: default-src 'none'; connect-src 'self'; img-src 'self'; style-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/chart.js");
+header("X-XSS-Protection: 1; mode=block");
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: DENY");
+header("Referrer-Policy same-origin");
+
 ob_start('print_page');
 ?>
 <!DOCTYPE html>

@@ -6,15 +6,15 @@ require_once('template.php');
 ?>
 <div class="main-content draw-room">
     <div class="canvas-background">
-      <img src="media/images/blueprint.png" alt="blueprint" />
+      <img id="blueprint" src="media/images/blueprint.png" alt="blueprint" />
       <canvas id="draw-room"></canvas>
-        <div class="action-buttons">
-            <button id="save">Save</button>
-            <button id="undo">Undo</button>
-            <button id="reset">Reset</button>
-        </div>
-    <p id="roomUpdated"></p>
     </div>
+    <div class="action-buttons">
+        <button id="save">Save</button>
+        <button id="undo">Undo</button>
+        <button id="reset">Reset</button>
+    </div>
+    <p id="roomUpdated"></p> 
 </div>
 <div>
     <ul class="nav_white">
