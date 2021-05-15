@@ -884,15 +884,15 @@ function createStatusDisplayElement(device, readOnly = false, attrs = {}) {
 }
 
 function createToggle(deviceId, checked = false, attrs = {}) {
-  let span = createElem('span', {class: 'toggle status'});
-  let checkbox = span.appendChild(createElem("input", Object.assign({type: 'checkbox'}, attrs)));
+  let toggle = createElem('label', {class: 'toggle status'});
+  let checkbox = toggle.appendChild(createElem("input", Object.assign({type: 'checkbox'}, attrs)));
   checkbox.checked = checked
   checkbox.addEventListener('change', () => { setStatus(deviceId, checkbox.checked ? "ON" : "OFF"); });
   onStatusUpdate(deviceId, checkbox, status => {
     checkbox.checked = status.status == 'ON';
   });
-  span.appendChild(createElem('span', {class: 'slider'}));
-  return span;  
+  toggle.appendChild(createElem('span', {class: 'slider'}));
+  return toggle;  
 }
 
 /* function for bringing out the devices when clicking on a room in menu */
