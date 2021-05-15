@@ -91,6 +91,7 @@ body {
     height: 0px;
     background-color: #3b3838;
     overflow: hidden;
+    min-width: 250px;
 }
 
 .sideBar #close {
