@@ -148,7 +148,7 @@
       $entity_class = static::ENTITY;
       if (isset($_GET['id'])) {
         if ($entity_class::delete($_GET['id'])) {
-          return json_encode(array('id' => $_GET['id'], 'event' => 'deleted'));
+          return json_encode(array('id' => intval($_GET['id']), 'event' => 'deleted'));
         } else {
           http_response_code(500);
           return 'Error';

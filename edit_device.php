@@ -26,6 +26,7 @@ require_once('template.php');
             <input type="submit" value="Save">
             <input type="button" value="Delete device" id="delete">
         </div>
+        <p id="deviceUpdated"></p>
     </form>
 
 </div>

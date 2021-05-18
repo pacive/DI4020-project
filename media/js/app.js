@@ -62,6 +62,8 @@ var SmartHome = {
         closeBar();
       });
 
+      document.getElementById('roompopup').addEventListener('click', event => event.stopPropagation());
+
       // Resize the areas so they always match the image size if it's changed, e.g if changing to portrait view on a phone
       window.addEventListener('resize', () => {
         Object.values(SmartHome.config.rooms).forEach(room => {
