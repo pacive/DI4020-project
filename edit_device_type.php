@@ -8,7 +8,7 @@ require_once('template.php');
 <div class="main-content">
     <form id="updateDeviceType" action="api/devicetypes.php">
         <label for="deviceTypes">Select device type:</label>
-        <select name="typeId" id="deviceTypes">
+        <select name="id" id="deviceTypes">
         <option >Select device type</option>
         </select>
         <label for="deviceTypeName">New name:</label>
@@ -17,6 +17,7 @@ require_once('template.php');
             <input type="submit" value="Save">
             <input type="button" value="Delete device type" id="delete">
         </div>
+        <p id="deviceTypeUpdated"></p>
     </form>
 
 </div>
