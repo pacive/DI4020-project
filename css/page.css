@@ -262,6 +262,14 @@ input[type="checkbox"] {
     height: auto;
 }
 
+button, input[type="submit"], input[type="reset"], input[type="button"] {
+    cursor: pointer;
+}
+
+button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover {
+    background-color: rgb(133, 133, 133);
+}
+
 form label, form a, .roompopup label {
     font-size: 0.9rem;
 }
@@ -336,7 +344,6 @@ form a {
 
 .admin-menu {
     align-items: baseline;
-    align-content: center;
     justify-content: space-evenly;
     max-width: 600px;
 }
@@ -345,6 +352,7 @@ form a {
     min-width: 12rem;
     padding: 1rem;
     text-align: center;
+    margin: auto;
 }
 
 a:visited {
